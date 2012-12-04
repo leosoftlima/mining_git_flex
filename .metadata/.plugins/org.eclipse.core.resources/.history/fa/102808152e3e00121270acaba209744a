@@ -1,6 +1,5 @@
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 
@@ -8,7 +7,7 @@ import java.util.List;
 
 /*everything related to git repo 
  * step 1: read input file --ok
- * step 2: download zipped commits from github --ok
+ * step 2: download zipped commits from github
  * step 3: unzip commits
  * step 4: load commits directories
  * step 5: compute features changeset
@@ -44,7 +43,7 @@ public class GitMiner {
 	
 	public void readInput() throws IOException  {
 		
-		GitMiner temp = this.fileHandler.reader(this.inputFile);
+		GitMiner temp = FileHandler.reader(this.inputFile);
 		
 		this.userId = temp.getUserId();
 		this.repoName = temp.getRepoName();
@@ -53,9 +52,7 @@ public class GitMiner {
 		
 	}
 	
-	public void downloadCommits() throws MalformedURLException, IOException{
-		
-		this.fileHandler.downloader(this);
+	public void downloadCommits(){
 		
 	}
 	
@@ -116,7 +113,6 @@ public class GitMiner {
 		GitMiner repo = new GitMiner("input.csv");
 		try {
 			repo.readInput();
-			repo.downloadCommits();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

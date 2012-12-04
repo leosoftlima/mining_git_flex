@@ -73,13 +73,12 @@ public class FileHandler {
 		String url = gitUrl  + repo.getBase().getSHAKey() + ".zip";
 		
 		this.auxiliarDownload(url, repo.getBase().getName());
-		System.out.println("end of " + repo.getBase().getName() + " download.");
+		
 		//download feature commits
 		
 		for(FeatureCommit f : repo.getFeatures()){
 			String fUrl = gitUrl + f.getSHAKey() + ".zip";
 			this.auxiliarDownload(fUrl, f.getName());
-			System.out.println("end of " + f.getName() + " download.");
 		}
 
 		

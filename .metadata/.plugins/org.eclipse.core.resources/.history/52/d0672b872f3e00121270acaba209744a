@@ -73,23 +73,22 @@ public class FileHandler {
 		String url = gitUrl  + repo.getBase().getSHAKey() + ".zip";
 		
 		this.auxiliarDownload(url, repo.getBase().getName());
-		System.out.println("end of " + repo.getBase().getName() + " download.");
+		
 		//download feature commits
 		
 		for(FeatureCommit f : repo.getFeatures()){
 			String fUrl = gitUrl + f.getSHAKey() + ".zip";
 			this.auxiliarDownload(fUrl, f.getName());
-			System.out.println("end of " + f.getName() + " download.");
 		}
 
 		
 		
 	}
 	
-	private void auxiliarDownload(String url, String name) throws MalformedURLException, IOException{
+	private void auxiliarDownload(String url, String name ) throws MalformedURLException, IOException{
 		
 		BufferedInputStream in = new java.io.BufferedInputStream(new java.net.URL(url).openStream());
-		FileOutputStream fos = new java.io.FileOutputStream(name + ".zip");
+		FileOutputStream fos = new java.io.FileOutputStream(name);
 		BufferedOutputStream bout = new BufferedOutputStream(fos,8192);
 		byte[] data = new byte[8192];
 		int x=0;
