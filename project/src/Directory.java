@@ -15,11 +15,13 @@ public class Directory {
 	
 	public Directory(String name){
 		
+		this.name = name;
+		
 		this.filesNames = new ArrayList<String>();
 		
 		this.subDirectories = new ArrayList<Directory>();
 		
-		this.name = name;
+		
 		
 	}
 	
@@ -41,6 +43,7 @@ public class Directory {
 				String name = file.getName();
 				Directory sub = new Directory(name);
 				sub.listFilesAndFilesSubDirectories(name);
+				this.subDirectories.add(sub);
 
 			}
 			
@@ -49,7 +52,12 @@ public class Directory {
 		
 	}
 
+	public ChangeSet compareDirectories(Directory baseDir){
+		ChangeSet result = null;
 	
+		
+		return result;
+	}
 	
 	
 }

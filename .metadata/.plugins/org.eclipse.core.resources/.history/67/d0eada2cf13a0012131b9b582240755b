@@ -1,0 +1,44 @@
+
+public class Commit {
+	
+	private String name;
+	
+	private String SHAKey;
+	
+	private Directory directory;
+	
+	
+	
+	public Commit(){
+		
+		
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSHAKey() {
+		return SHAKey;
+	}
+
+	public void setSHAKey(String sHAKey) {
+		SHAKey = sHAKey;
+	}
+
+	public Directory getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory() {
+		
+	}
+
+
+	
+
+}

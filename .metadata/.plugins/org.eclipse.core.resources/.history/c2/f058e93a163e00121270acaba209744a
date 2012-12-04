@@ -1,0 +1,29 @@
+import java.io.File;
+import com.csvreader.CsvReader;
+import com.csvreader.CsvWriter;
+
+/*the input must contain the following informations:
+ * the repository user's id
+ * the repository name
+ * baseCommit, key
+ * baseName, key
+ * an so on
+ * 
+ * */
+
+public class FileHandler {
+	
+	CsvReader input;
+	CsvWriter output;
+	
+	
+	public void reader(File fileName){
+		
+		
+	}
+	
+	public void writer(){
+		
+	}
+
+}

@@ -1,0 +1,34 @@
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
+
+import au.com.bytecode.opencsv.CSVReader;
+
+/*the input must contain the following informations:
+ * the repository user's id
+ * the repository name
+ * baseCommit, key
+ * baseName, key
+ * an so on
+ * 
+ * */
+
+public class FileHandler {
+
+	private GitMiner input;
+	
+	public List reader(File fileName)throws IOException{
+		CSVReader reader = new CSVReader(new FileReader(fileName));
+		
+		List result = reader.readAll();
+		
+		return result;
+		
+	}
+	
+	public void writer(){
+		
+	}
+
+}

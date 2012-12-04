@@ -1,0 +1,60 @@
+
+public class BaseCommit {
+	
+	private String name;
+	
+	private String SHAKey;
+	
+	private String path;
+	
+
+	private Directory directory;
+	
+	
+	
+	public BaseCommit(String absolutePath){
+		
+		this.setPath(absolutePath);
+		
+		
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSHAKey() {
+		return SHAKey;
+	}
+
+	public void setSHAKey(String sHAKey) {
+		SHAKey = sHAKey;
+	}
+
+	public Directory getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory() {
+		this.directory.listFilesAndFilesSubDirectories(this.path);
+	}
+
+
+	public void loadDirectory(){
+		
+	}
+	
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+
+}

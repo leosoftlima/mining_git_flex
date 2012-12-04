@@ -1,0 +1,15 @@
+import java.util.List;
+
+public class GitMiner {
+	
+	private String userId;
+	
+	private String repoName;
+	
+	private BaseCommit base;
+	
+	private List<FeatureCommit> features;
+	
+	
+
+}

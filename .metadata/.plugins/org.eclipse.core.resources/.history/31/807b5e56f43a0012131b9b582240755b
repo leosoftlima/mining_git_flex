@@ -1,0 +1,11 @@
+
+public class FeatureCommit extends BaseCommit {
+	
+	private ChangeSet changeset;
+	
+public FeatureCommit(String absolutePath){
+		
+		super(absolutePath);
+	}
+
+}
