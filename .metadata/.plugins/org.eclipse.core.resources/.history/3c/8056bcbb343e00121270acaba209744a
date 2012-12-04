@@ -9,7 +9,7 @@ import java.util.List;
 /*everything related to git repo 
  * step 1: read input file --ok
  * step 2: download zipped commits from github --ok
- * step 3: unzip commits --ok
+ * step 3: unzip commits
  * step 4: load commits directories
  * step 5: compute features changeset
  * step 6: compute features intersection
@@ -59,8 +59,8 @@ public class GitMiner {
 		
 	}
 	
-	public void unzipCommits() throws IOException{
-		this.fileHandler.unzipper(this);
+	public void unzipCommits(){
+		
 	}
 	
 		
@@ -121,7 +121,6 @@ public class GitMiner {
 		try {
 			repo.readInput();
 			repo.downloadCommits();
-			repo.unzipCommits();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

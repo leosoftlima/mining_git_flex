@@ -86,14 +86,14 @@ public class FileHandler {
 			System.out.println("end of " + f.getName() + " download.");
 		}
 
-		System.out.println("done downloading");
+		
 		
 	}
 	
 	private void auxiliarDownload(String url, String name) throws MalformedURLException, IOException{
 		
 		BufferedInputStream in = new java.io.BufferedInputStream(new java.net.URL(url).openStream());
-		FileOutputStream fos = new java.io.FileOutputStream(name + ".zip");
+		FileOutputStream fos = new java.io.FileOutputStream("repo\\" + name + ".zip");
 		BufferedOutputStream bout = new BufferedOutputStream(fos,8192);
 		byte[] data = new byte[8192];
 		int x=0;
@@ -105,35 +105,26 @@ public class FileHandler {
 		in.close();
 		}
 	
-	public void unzipper(GitMiner repo) throws IOException{
-		
-		
-		
+	public void unzipper(){
 		//unzip base
-		String zipFile = repo.getBase().getName() + ".zip";
-		String outputFolder =  repo.getBase().getName();
-		this.auxiliarUnzip(zipFile, outputFolder);
-		System.out.println("done unzipping base commit.");
+		
+		
 		
 		//unzip other features
-		for(FeatureCommit f : repo.getFeatures()){
-			
-			String fZipFile =  f.getName() + ".zip";
-			String fOutputFolder =  f.getName();
-			this.auxiliarUnzip(fZipFile, fOutputFolder);
-			System.out.println("done unzipping feature " + f.getName() + " commit.");
-		}
 	}
 	
-	private void auxiliarUnzip(String zipFile, String outputFolder) throws IOException{
+	private void auxiliarUnzip(String zipFile, String outputFolder){
 	 
-			byte[] buffer = new byte[1024];
-
+	     byte[] buffer = new byte[1024];
+	 
+	     try{
+	 
 	    	//create output directory is not exists
 	    	File folder = new File(outputFolder);
 	    	if(!folder.exists()){
 	    		folder.mkdir();
-	    	
+	    	}
+	 
 	    	//get the zip file content
 	    	ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
 	    	//get the zipped file list entry
@@ -178,6 +169,8 @@ public class FileHandler {
 	 
 	    	System.out.println("Done");
 	 
+	    }catch(IOException ex){
+	       ex.printStackTrace(); 
 	    }
 	   }    
 	

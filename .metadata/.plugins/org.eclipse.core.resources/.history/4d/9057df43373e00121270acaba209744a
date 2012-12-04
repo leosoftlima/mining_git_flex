@@ -93,7 +93,7 @@ public class FileHandler {
 	private void auxiliarDownload(String url, String name) throws MalformedURLException, IOException{
 		
 		BufferedInputStream in = new java.io.BufferedInputStream(new java.net.URL(url).openStream());
-		FileOutputStream fos = new java.io.FileOutputStream(name + ".zip");
+		FileOutputStream fos = new java.io.FileOutputStream("repo\\" + name + ".zip");
 		BufferedOutputStream bout = new BufferedOutputStream(fos,8192);
 		byte[] data = new byte[8192];
 		int x=0;
@@ -107,21 +107,19 @@ public class FileHandler {
 	
 	public void unzipper(GitMiner repo) throws IOException{
 		
-		
+		String output = "repo\\";
 		
 		//unzip base
-		String zipFile = repo.getBase().getName() + ".zip";
-		String outputFolder =  repo.getBase().getName();
+		String zipFile = output + repo.getBase().getName() + ".zip";
+		String outputFolder = output + repo.getBase().getName();
 		this.auxiliarUnzip(zipFile, outputFolder);
-		System.out.println("done unzipping base commit.");
 		
 		//unzip other features
 		for(FeatureCommit f : repo.getFeatures()){
 			
-			String fZipFile =  f.getName() + ".zip";
-			String fOutputFolder =  f.getName();
+			String fZipFile = output + f.getName() + ".zip";
+			String fOutputFolder = output + f.getName();
 			this.auxiliarUnzip(fZipFile, fOutputFolder);
-			System.out.println("done unzipping feature " + f.getName() + " commit.");
 		}
 	}
 	

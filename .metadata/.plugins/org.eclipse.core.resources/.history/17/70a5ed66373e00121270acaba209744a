@@ -113,7 +113,6 @@ public class FileHandler {
 		String zipFile = repo.getBase().getName() + ".zip";
 		String outputFolder =  repo.getBase().getName();
 		this.auxiliarUnzip(zipFile, outputFolder);
-		System.out.println("done unzipping base commit.");
 		
 		//unzip other features
 		for(FeatureCommit f : repo.getFeatures()){
@@ -121,7 +120,6 @@ public class FileHandler {
 			String fZipFile =  f.getName() + ".zip";
 			String fOutputFolder =  f.getName();
 			this.auxiliarUnzip(fZipFile, fOutputFolder);
-			System.out.println("done unzipping feature " + f.getName() + " commit.");
 		}
 	}
 	
