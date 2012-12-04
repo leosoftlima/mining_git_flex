@@ -1,6 +1,5 @@
 import java.util.List;
-import java.util.ArrayList;
-
+import java.util.Iterator;
 
 public class ChangeSet {
 	
@@ -9,12 +8,6 @@ public class ChangeSet {
 	private List<String> addedFiles;
 	
 	private List<String> modifiedFiles;
-	
-	public ChangeSet(){
-		this.removedFiles = new ArrayList<String>();
-		this.addedFiles = new ArrayList<String>();
-		this.modifiedFiles = new ArrayList<String>();
-	}
 
 	public List<String> getRemovedFiles() {
 		return removedFiles;

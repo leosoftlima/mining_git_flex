@@ -79,15 +79,6 @@ public class GitMiner {
 	}
 
 	
-	public void computeChangeSet(){
-		
-		for(FeatureCommit f : this.features){
-			
-			f.computeChangeSet(this.base);
-			
-		}
-	}
-	
 	public String getInputFile() {
 		return inputFile;
 	}
