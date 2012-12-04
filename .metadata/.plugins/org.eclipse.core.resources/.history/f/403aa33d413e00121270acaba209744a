@@ -40,7 +40,7 @@ public class Directory {
 				//only add files with one the following extensions
 				if(filename.endsWith(".groovy") || filename.endsWith(".gsp") ||
 						filename.endsWith(".properties")){
-				this.filesNames.add(filename);
+				this.filesNames.add(file.getName());
 				}
 				
 			} else if (file.isDirectory()){

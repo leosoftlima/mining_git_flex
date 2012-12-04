@@ -45,7 +45,7 @@ public class BaseCommit {
 
 
 	public void loadDirectory(){
-		this.directory.listFilesAndFilesSubDirectories(this.name);
+		this.directory.listFilesAndFilesSubDirectories();
 	}
 	
 

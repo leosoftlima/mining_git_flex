@@ -14,7 +14,6 @@ public class BaseCommit {
 	
 		this.name = name;
 		this.SHAKey = sha;
-		this.directory = new Directory(this.name);
 	}
 
 	public String getName() {
@@ -37,15 +36,13 @@ public class BaseCommit {
 		return directory;
 	}
 
-	public void setDirectory(Directory dir) {
-		
-		this.directory = dir;
-		
+	public void setDirectory() {
+		this.directory.listFilesAndFilesSubDirectories(this.name);
 	}
 
 
 	public void loadDirectory(){
-		this.directory.listFilesAndFilesSubDirectories(this.name);
+		
 	}
 	
 

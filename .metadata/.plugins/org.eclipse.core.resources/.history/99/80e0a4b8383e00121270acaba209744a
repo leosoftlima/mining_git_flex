@@ -10,9 +10,7 @@ import java.util.List;
  * step 1: read input file --ok
  * step 2: download zipped commits from github --ok
  * step 3: unzip commits --ok
- * step 4: load commits directories --ok
- * obs: limit the loadDirectory method to file extensions and folder that matter --ok
- * 
+ * step 4: load commits directories
  * step 5: compute features changeset
  * step 6: compute features intersection
  * step 7: write features report
@@ -52,7 +50,6 @@ public class GitMiner {
 		this.repoName = temp.getRepoName();
 		this.base = temp.getBase();
 		this.features = temp.getFeatures();
-		System.out.println("done reading input file.");
 		
 	}
 	
@@ -67,16 +64,7 @@ public class GitMiner {
 	}
 	
 		
-	public void loadDirectories(){
 		
-		this.base.loadDirectory();
-		
-		for(FeatureCommit f : this.features){
-			
-			f.loadDirectory();
-		}
-		
-	}
 
 	
 	public String getInputFile() {
@@ -134,13 +122,6 @@ public class GitMiner {
 			repo.readInput();
 			repo.downloadCommits();
 			repo.unzipCommits();
-			repo.loadDirectories();
-			String base = repo.getBase().getDirectory().toString();
-			System.out.println("Commit base: \n" + base);
-			for(FeatureCommit feature : repo.getFeatures()){
-				String f = feature.getDirectory().toString();
-				System.out.println("Commit feature " + feature.getName() + ":\n" + f);
-			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -136,10 +136,10 @@ public class GitMiner {
 			repo.unzipCommits();
 			repo.loadDirectories();
 			String base = repo.getBase().getDirectory().toString();
-			System.out.println("Commit base: \n" + base);
+			System.out.println(base);
 			for(FeatureCommit feature : repo.getFeatures()){
 				String f = feature.getDirectory().toString();
-				System.out.println("Commit feature " + feature.getName() + ":\n" + f);
+				System.out.println(f);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

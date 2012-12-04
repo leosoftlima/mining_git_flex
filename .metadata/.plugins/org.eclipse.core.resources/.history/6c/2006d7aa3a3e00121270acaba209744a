@@ -25,9 +25,9 @@ public class Directory {
 	}
 	
 	//this method gets all files names inside a directory and its sub directories
-	public void listFilesAndFilesSubDirectories(String path){
+	public void listFilesAndFilesSubDirectories(){
 		
-		File directory = new File (path);
+		File directory = new File (this.name);
 		
 		File[] fList = directory.listFiles();
 		
@@ -35,19 +35,13 @@ public class Directory {
 			
 			if(file.isFile()){
 				
-				String filename = file.getName();
-				
-				//only add files with one the following extensions
-				if(filename.endsWith(".groovy") || filename.endsWith(".gsp") ||
-						filename.endsWith(".properties")){
-				this.filesNames.add(filename);
-				}
+				this.filesNames.add(file.getName());
 				
 			} else if (file.isDirectory()){
 				
 				String name = file.getName();
 				Directory sub = new Directory(name);
-				sub.listFilesAndFilesSubDirectories(file.getAbsolutePath());
+				sub.listFilesAndFilesSubDirectories();
 				this.subDirectories.add(sub);
 
 			}
@@ -65,7 +59,7 @@ public class Directory {
 		
 		for(Directory dir : this.subDirectories){
 			
-			result = result + "Directory " + dir.getName() + ":\n" + dir.toString() + "\n";
+			result = result + "Directory " dir.getName() + ":\n" + dir.toString();
 		}
 		
 		return result;

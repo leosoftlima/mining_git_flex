@@ -176,7 +176,7 @@ public class FileHandler {
 	        zis.closeEntry();
 	    	zis.close();
 	 
-	    	System.out.println("Done unzipping");
+	    	System.out.println("Done");
 	 
 	    }
 	   }    

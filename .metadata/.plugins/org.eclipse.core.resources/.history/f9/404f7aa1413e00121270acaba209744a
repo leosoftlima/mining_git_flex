@@ -11,7 +11,7 @@ import java.util.List;
  * step 2: download zipped commits from github --ok
  * step 3: unzip commits --ok
  * step 4: load commits directories --ok
- * obs: limit the loadDirectory method to file extensions and folder that matter --ok
+ * obs: limit the loadDirectory method to file extensions and folder that matter
  * 
  * step 5: compute features changeset
  * step 6: compute features intersection
@@ -136,10 +136,10 @@ public class GitMiner {
 			repo.unzipCommits();
 			repo.loadDirectories();
 			String base = repo.getBase().getDirectory().toString();
-			System.out.println("Commit base: \n" + base);
+			System.out.println(base);
 			for(FeatureCommit feature : repo.getFeatures()){
 				String f = feature.getDirectory().toString();
-				System.out.println("Commit feature " + feature.getName() + ":\n" + f);
+				System.out.println(f);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

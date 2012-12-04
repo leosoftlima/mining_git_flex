@@ -139,7 +139,7 @@ public class GitMiner {
 			System.out.println("Commit base: \n" + base);
 			for(FeatureCommit feature : repo.getFeatures()){
 				String f = feature.getDirectory().toString();
-				System.out.println("Commit feature " + feature.getName() + ":\n" + f);
+				System.out.println(f);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
