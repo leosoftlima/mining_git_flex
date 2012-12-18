@@ -1,7 +1,9 @@
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -115,6 +117,11 @@ public class FileHandler {
 		this.auxiliarUnzip(zipFile, outputFolder);
 		System.out.println("done unzipping base commit.");
 		
+		//renames the root directory from rgms-shaKey to "soucecode"
+		File oldName = new File (repo.getBase().getName() + File.separator + "rgms-" + repo.getBase().getSHAKey() );
+		File newName = new File (repo.getBase().getName() + File.separator +"sourcecode");
+		oldName.renameTo(newName);
+		
 		//unzip other features
 		for(FeatureCommit f : repo.getFeatures()){
 			
@@ -122,7 +129,14 @@ public class FileHandler {
 			String fOutputFolder =  f.getName();
 			this.auxiliarUnzip(fZipFile, fOutputFolder);
 			System.out.println("done unzipping feature " + f.getName() + " commit.");
+			
+			//renames the root directory from rgms-shaKey to "soucecode"
+			oldName = new File (f.getName() + File.separator + "rgms-" + f.getSHAKey());
+			newName = new File (f.getName() +  File.separator + "sourcecode");
+			oldName.renameTo(newName);
 		}
+		
+		
 	}
 	
 	private void auxiliarUnzip(String zipFile, String outputFolder) throws IOException{
@@ -138,8 +152,9 @@ public class FileHandler {
 	    	ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
 	    	//get the zipped file list entry
 	    	ZipEntry ze = zis.getNextEntry();
-	 
+	       
 	    	while(ze!=null){
+	    		
 	 
 	    	   String fileName = ze.getName();
 	           File newFile = new File(outputFolder + File.separator + fileName);
@@ -177,6 +192,7 @@ public class FileHandler {
 	    	zis.close();
 	 
 	    	System.out.println("Done unzipping");
+	    	
 	 
 	    }
 	   }    
@@ -184,6 +200,33 @@ public class FileHandler {
 	
 	public void writer(){
 		
+	}
+	
+	public boolean compareTwoFiles(String baseFile , String featureFile) throws IOException{
+		boolean result;
+
+	    String s1 = "";
+	    String s2 = "";
+	    String y = "", z = "";
+
+	    BufferedReader bfr = new BufferedReader(new FileReader(baseFile));
+	    BufferedReader bfr1 = new BufferedReader(new FileReader(featureFile));
+
+	    while ((z = bfr1.readLine()) != null)
+	      s2 += z;
+
+	    while ((y = bfr.readLine()) != null)
+	      s1 += y;
+
+
+	    if (s2.equals(s1)) {
+	     result = true;
+	    } else {
+
+	     result = false;
+	    }
+		
+		return result;
 	}
 
 }

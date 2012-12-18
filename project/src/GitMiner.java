@@ -12,6 +12,7 @@ import java.util.List;
  * step 3: unzip commits --ok
  * step 4: load commits directories --ok
  * obs: limit the loadDirectory method to file extensions and folder that matter --ok
+ * obs: rename commit root directory from rgms-shaKey to "sourcecode" --ok
  * 
  * step 5: compute features changeset
  * step 6: compute features intersection
@@ -79,7 +80,7 @@ public class GitMiner {
 	}
 
 	
-	public void computeChangeSet(){
+	public void computeChangeSet() throws IOException{
 		
 		for(FeatureCommit f : this.features){
 			
@@ -141,14 +142,19 @@ public class GitMiner {
 		GitMiner repo = new GitMiner("input.csv");
 		try {
 			repo.readInput();
-			repo.downloadCommits();
-			repo.unzipCommits();
+//			repo.downloadCommits();
+//			repo.unzipCommits();*/
 			repo.loadDirectories();
-			String base = repo.getBase().getDirectory().toString();
+			/*String base = repo.getBase().getDirectory().toString();
 			System.out.println("Commit base: \n" + base);
 			for(FeatureCommit feature : repo.getFeatures()){
 				String f = feature.getDirectory().toString();
 				System.out.println("Commit feature " + feature.getName() + ":\n" + f);
+			}*/
+			repo.computeChangeSet();
+			for(FeatureCommit f2 : repo.getFeatures()){
+				String x = f2.getChangeset().toString();
+				System.out.println("Changeset feature: " + f2.getName() + "\n" + x);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

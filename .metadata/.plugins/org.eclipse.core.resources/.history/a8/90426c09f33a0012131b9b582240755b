@@ -1,9 +1,0 @@
-
-public class FeatureCommit extends Commit {
-	
-public FeatureCommit(String absolutePath){
-		
-		super(absolutePath);
-	}
-
-}

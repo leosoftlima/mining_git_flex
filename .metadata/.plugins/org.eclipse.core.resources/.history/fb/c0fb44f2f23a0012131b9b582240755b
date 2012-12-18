@@ -1,9 +1,0 @@
-
-public class BaseCommit extends Commit{
-	
-	public BaseCommit(String absolutePath){
-		
-		super(absolutePath);
-	}
-
-}

@@ -1,6 +1,9 @@
 import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 
 
@@ -35,7 +38,9 @@ public class Directory {
 			
 			if(file.isFile()){
 				
-				String filename = file.getName();
+				String filename = file.getAbsolutePath();
+				
+				//filename = filename.split("[s][o][u][r][c][e][c][o][d][e]")[1];
 				
 				//only add files with one the following extensions
 				if(filename.endsWith(".groovy") || filename.endsWith(".gsp") ||
@@ -45,7 +50,7 @@ public class Directory {
 				
 			} else if (file.isDirectory()){
 				
-				String name = file.getName();
+				String name = file.getAbsolutePath();
 				Directory sub = new Directory(name);
 				sub.listFilesAndFilesSubDirectories(file.getAbsolutePath());
 				this.subDirectories.add(sub);
@@ -70,12 +75,7 @@ public class Directory {
 		
 		return result;
 	}
-	public ChangeSet compareDirectories(Directory baseDir){
-		ChangeSet result = null;
-		
-		
-		return result;
-	}
+	
 
 	public String getName() {
 		return name;

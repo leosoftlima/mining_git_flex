@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbench progressCount="36" version="2.0">
 <workbenchAdvisor/>
-<window height="728" maximized="true" width="1024" x="150" y="0">
+<window height="728" maximized="true" width="705" x="549" y="15">
 <fastViewData fastViewLocation="1024"/>
 <perspectiveBar>
 <itemSize x="160"/>
@@ -23,6 +23,7 @@
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="190" y="22"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.help" itemType="typeToolBarContribution" x="-1" y="-1"/>
@@ -40,55 +41,50 @@
 <part id="4"/>
 <part id="5"/>
 <part id="6"/>
-<part id="7"/>
-<part id="8"/>
-<part id="9"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Downloader.java" partName="Downloader.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/Downloader.java" title="Downloader.java" tooltip="project/src/Downloader.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/Downloader.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="593" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Unziper.java" partName="Unziper.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/Unziper.java" title="Unziper.java" tooltip="project/src/Unziper.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/Unziper.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ListFiles.java" partName="ListFiles.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/ListFiles.java" title="ListFiles.java" tooltip="project/src/ListFiles.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/ListFiles.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
-</editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="CompareTwoFiles.java" partName="CompareTwoFiles.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/CompareTwoFiles.java" title="CompareTwoFiles.java" tooltip="project/src/CompareTwoFiles.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/CompareTwoFiles.java"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
 </editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BaseCommit.java" partName="BaseCommit.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/BaseCommit.java" title="BaseCommit.java" tooltip="project/src/BaseCommit.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/BaseCommit.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="107" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="298" selectionTopPixel="180"/>
 </editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FeatureCommit.java" partName="FeatureCommit.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/FeatureCommit.java" title="FeatureCommit.java" tooltip="project/src/FeatureCommit.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/FeatureCommit.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="308" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="273" selectionTopPixel="0"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Directory.java" partName="Directory.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/Directory.java" title="Directory.java" tooltip="project/src/Directory.java" workbook="DefaultEditorWorkbook">
+<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Directory.java" partName="Directory.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/Directory.java" title="Directory.java" tooltip="project/src/Directory.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/Directory.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="20" selectionOffset="0" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1743" selectionTopPixel="810"/>
 </editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ChangeSet.java" partName="ChangeSet.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/ChangeSet.java" title="ChangeSet.java" tooltip="project/src/ChangeSet.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/ChangeSet.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="257" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="368" selectionTopPixel="0"/>
 </editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GitMiner.java" partName="GitMiner.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/GitMiner.java" title="GitMiner.java" tooltip="project/src/GitMiner.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/GitMiner.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="31" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1615" selectionTopPixel="855"/>
 </editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FileHandler.java" partName="FileHandler.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/FileHandler.java" title="FileHandler.java" tooltip="project/src/FileHandler.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/FileHandler.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="185" selectionTopPixel="0"/>
+<editor id="org.eclipse.ui.DefaultTextEditor" name="input.csv" partName="input.csv" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/input.csv" title="input.csv" tooltip="project/input.csv" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/input.csv"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="280" selectionTopPixel="0"/>
 </editor>
 </editors>
 <views>
+<view id="org.eclipse.debug.ui.DebugView" partName="Debug">
+<viewState/>
+</view>
+<view id="org.eclipse.ui.views.TaskList" partName="Tasks"/>
+<view id="org.eclipse.debug.ui.BreakpointView" partName="Breakpoints">
+<viewState/>
+</view>
+<view id="org.eclipse.debug.ui.VariableView" partName="Variables">
+<viewState/>
+</view>
 <view id="org.eclipse.ui.views.ContentOutline" partName="Outline">
 <viewState/>
 </view>
@@ -117,9 +113,6 @@
 <visible IMemento.internal.id="org.eclipse.ui.ide.locationField"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.markerType"/>
 </viewState>
-</view>
-<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
-<viewState/>
 </view>
 <view id="org.eclipse.jdt.ui.PackageExplorer" partName="Package Explorer">
 <viewState group_libraries="1" layout="2" linkWithEditor="0" rootMode="1" workingSetName="">
@@ -152,6 +145,9 @@
 </xmlDefinedFilters>
 </customFilters>
 </viewState>
+</view>
+<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
+<viewState/>
 </view>
 <view id="org.eclipse.mylyn.tasks.ui.views.tasks" partName="Task List">
 <viewState linkWithEditor="true" presentation="org.eclipse.mylyn.tasks.ui.categorized">
@@ -348,11 +344,11 @@
 <perspective_action id="org.eclipse.wst.jsdt.ui.JavaPerspective"/>
 <hide_toolbar_item_id id="org.eclipse.jdt.ui.actions.OpenProjectWizard"/>
 <hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
-<view id="org.eclipse.jdt.ui.PackageExplorer"/>
 <view id="org.eclipse.ui.views.ProblemView"/>
 <view id="org.eclipse.jdt.ui.JavadocView"/>
 <view id="org.eclipse.jdt.ui.SourceView"/>
 <view id="org.eclipse.ui.console.ConsoleView"/>
+<view id="org.eclipse.jdt.ui.PackageExplorer"/>
 <view id="org.eclipse.ui.views.ContentOutline"/>
 <fastViewBars/>
 <layout>
@@ -374,10 +370,11 @@
 <page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
 <page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.2496318" ratioLeft="339" ratioRight="1019" relationship="2" relative="left"/>
-<info folder="true" part="bottom" ratio="0.74959874" ratioLeft="467" ratioRight="156" relationship="4" relative="org.eclipse.ui.editorss">
+<info part="org.eclipse.ui.editorss" ratio="0.16678967" ratioLeft="226" ratioRight="1129" relationship="2" relative="left"/>
+<info folder="true" part="bottom" ratio="0.68225807" ratioLeft="423" ratioRight="197" relationship="4" relative="org.eclipse.ui.editorss">
 <folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ProblemView" label="Problems"/>
 <page content="org.eclipse.jdt.ui.JavadocView" label="Javadoc"/>
@@ -413,168 +410,278 @@
 </mainWindow>
 </layout>
 </perspective>
+<perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
+<descriptor class="org.eclipse.debug.internal.ui.DebugPerspectiveFactory" id="org.eclipse.debug.ui.DebugPerspective" label="Debug"/>
+<alwaysOnActionSet id="org.eclipse.mylyn.context.ui.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.mylyn.doc.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.mylyn.tasks.ui.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
+<alwaysOnActionSet id="org.eclipse.rse.core.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.search.searchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.annotationNavigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.navigation"/>
+<alwaysOnActionSet id="org.eclipse.ui.edit.text.actionSet.convertLineDelimitersTo"/>
+<alwaysOnActionSet id="org.eclipse.ui.externaltools.ExternalToolsSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.keyBindings"/>
+<alwaysOnActionSet id="org.eclipse.ui.actionSet.openFiles"/>
+<alwaysOnActionSet id="org.codehaus.groovy.eclipse.ui.groovyElementCreation"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.launchActionSet"/>
+<alwaysOnActionSet id="org.eclipse.ui.NavigateActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.breakpointActionSet"/>
+<alwaysOnActionSet id="org.eclipse.jdt.debug.ui.JDTDebugActionSet"/>
+<alwaysOnActionSet id="org.eclipse.jdt.ui.JavaActionSet"/>
+<alwaysOnActionSet id="org.eclipse.debug.ui.debugActionSet"/>
+<show_view_action id="org.eclipse.debug.ui.DebugView"/>
+<show_view_action id="org.eclipse.debug.ui.VariableView"/>
+<show_view_action id="org.eclipse.debug.ui.BreakpointView"/>
+<show_view_action id="org.eclipse.debug.ui.ExpressionView"/>
+<show_view_action id="org.eclipse.ui.views.ContentOutline"/>
+<show_view_action id="org.eclipse.ui.console.ConsoleView"/>
+<show_view_action id="org.eclipse.ui.views.TaskList"/>
+<show_view_action id="org.eclipse.ant.ui.views.AntView"/>
+<show_view_action id="org.eclipse.datatools.sqltools.result.resultView"/>
+<show_view_action id="org.eclipse.pde.runtime.LogView"/>
+<show_view_action id="org.eclipse.jdt.debug.ui.DisplayView"/>
+<perspective_action id="org.eclipse.datatools.sqltools.sqleditor.perspectives.EditorPerspective"/>
+<perspective_action id="org.eclipse.jdt.ui.JavaPerspective"/>
+<perspective_action id="org.eclipse.jdt.ui.JavaBrowsingPerspective"/>
+<perspective_action id="org.eclipse.wst.jsdt.ui.JavaPerspective"/>
+<perspective_action id="org.eclipse.wst.xml.ui.perspective"/>
+<hide_toolbar_item_id id="org.eclipse.jdt.ui.actions.OpenProjectWizard"/>
+<hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
+<view id="org.eclipse.debug.ui.VariableView"/>
+<view id="org.eclipse.debug.ui.BreakpointView"/>
+<view id="org.eclipse.ui.console.ConsoleView"/>
+<view id="org.eclipse.ui.views.TaskList"/>
+<view id="org.eclipse.debug.ui.DebugView"/>
+<view id="org.eclipse.wst.server.ui.ServersView"/>
+<view id="org.eclipse.ui.views.ContentOutline"/>
+<fastViewBars/>
+<layout>
+<mainWindow>
+<info folder="true" part="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder activePageID="org.eclipse.debug.ui.DebugView" appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
+<page content="org.eclipse.wst.server.ui.ServersView" label="Servers"/>
+<page content="org.eclipse.ui.views.ResourceNavigator" label="LabelNotFound"/>
+<page content="org.eclipse.jdt.ui.PackageExplorer" label="LabelNotFound"/>
+<page content="org.eclipse.jdt.ui.TypeHierarchy" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+<part id="1"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="stickyFolderRight" ratio="0.7496318" ratioLeft="1018" ratioRight="340" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.debug.internal.ui.ConsoleFolderView" ratio="0.74959874" ratioLeft="467" ratioRight="156" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
+<page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
+<page content="org.eclipse.ui.views.TaskList" label="Tasks"/>
+<page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.PropertySheet" label="LabelNotFound"/>
+<page content="org.eclipse.datatools.sqltools.result.resultView" label="LabelNotFound"/>
+<page content="org.eclipse.jdt.debug.ui.DisplayView" label="LabelNotFound"/>
+<page content="org.eclipse.search.SearchResultView" label="LabelNotFound"/>
+<page content="org.eclipse.wst.xsl.jaxp.debug.ui.view1" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+<part id="1"/>
+</presentation>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.527115" ratioLeft="243" ratioRight="218" relationship="4" relative="org.eclipse.debug.internal.ui.NavigatorFolderView"/>
+<info folder="true" part="org.eclipse.debug.internal.ui.OutlineFolderView" ratio="0.7496318" ratioLeft="1018" ratioRight="340" relationship="2" relative="org.eclipse.ui.editorss">
+<folder activePageID="org.eclipse.ui.views.ContentOutline" appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.ContentOutline" label="Outline"/>
+<page content="org.eclipse.ant.ui.views.AntView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+</presentation>
+</folder>
+</info>
+<info folder="true" part="org.eclipse.debug.internal.ui.ToolsFolderView" ratio="0.45387453" ratioLeft="615" ratioRight="740" relationship="2" relative="org.eclipse.debug.internal.ui.NavigatorFolderView">
+<folder activePageID="org.eclipse.debug.ui.VariableView" appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.VariableView" label="Variables"/>
+<page content="org.eclipse.debug.ui.BreakpointView" label="Breakpoints"/>
+<page content="org.eclipse.debug.ui.ExpressionView" label="LabelNotFound"/>
+<page content="org.eclipse.debug.ui.RegisterView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+<part id="1"/>
+</presentation>
+</folder>
+</info>
+</mainWindow>
+</layout>
+</perspective>
 </perspectives>
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/Commit.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/GitMiner.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/Ch1Servlet.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/ChangeSet.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/Directory.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/BaseCommit.java"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/FeatureCommit.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/Directory.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/ChangeSet.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/GitMiner.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/UserInterface.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" path="/project/input.csv"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/FileHandler.java"/>
 </editors>
-<item historyLabel="Commit.java" index="0">
-<position info="not_deleted" x="165" y="19"/>
+<item historyLabel="Ch1Servlet.java" index="1">
+<position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="BaseCommit.java" index="1">
+<item historyLabel="Ch1Servlet.java" index="1">
 <position/>
 </item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="306" y="0"/>
-</item>
-<item historyLabel="BaseCommit.java" index="1">
+<item historyLabel="Ch1Servlet.java" index="1">
 <position/>
 </item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="157" y="0"/>
+<item historyLabel="GitMiner.java" index="0">
+<position info="not_deleted" x="253" y="0"/>
+</item>
+<item historyLabel="ChangeSet.java" index="2">
+<position info="not_deleted" x="364" y="0"/>
 </item>
 <item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="325" y="0"/>
+<position info="not_deleted" x="1781" y="0"/>
 </item>
 <item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="988" y="0"/>
+<position info="not_deleted" x="1781" y="0"/>
+</item>
+<item historyLabel="ChangeSet.java" index="2">
+<position info="not_deleted" x="364" y="0"/>
+</item>
+<item historyLabel="BaseCommit.java" index="4">
+<position info="not_deleted" x="757" y="0"/>
+</item>
+<item historyLabel="FeatureCommit.java" index="5">
+<position info="not_deleted" x="273" y="0"/>
 </item>
 <item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="1135" y="0"/>
+<position info="not_deleted" x="1637" y="0"/>
 </item>
-<item historyLabel="BaseCommit.java" index="1">
+<item historyLabel="BaseCommit.java" index="4">
+<position info="not_deleted" x="298" y="0"/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position info="not_deleted" x="544" y="0"/>
+</item>
+<item historyLabel="input.csv" index="6">
+<position info="not_deleted" x="227" y="0"/>
+</item>
+<item historyLabel="BaseCommit.java" index="4">
+<position info="not_deleted" x="298" y="0"/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position info="not_deleted" x="2566" y="0"/>
+</item>
+<item historyLabel="input.csv" index="6">
+<position info="not_deleted" x="280" y="0"/>
+</item>
+<item historyLabel="Directory.java" index="3">
+<position info="not_deleted" x="1637" y="0"/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position info="not_deleted" x="2566" y="0"/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position info="not_deleted" x="1523" y="0"/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
 <position/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="1020" y="0"/>
-</item>
-<item historyLabel="BaseCommit.java" index="1">
-<position/>
-</item>
-<item historyLabel="Commit.java" index="0">
-<position info="not_deleted" x="106" y="0"/>
-</item>
-<item historyLabel="BaseCommit.java" index="1">
-<position/>
-</item>
-<item historyLabel="Commit.java" index="0">
-<position info="not_deleted" x="106" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="157" y="0"/>
-</item>
-<item historyLabel="Commit.java" index="0">
-<position info="not_deleted" x="106" y="0"/>
-</item>
-<item historyLabel="BaseCommit.java" index="1">
-<position info="not_deleted" x="106" y="0"/>
-</item>
-<item historyLabel="BaseCommit.java" index="1">
-<position info="not_deleted" x="107" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="313" y="0"/>
-</item>
-<item historyLabel="ChangeSet.java" index="4">
-<position info="not_deleted" x="257" y="0"/>
-</item>
-<item historyLabel="BaseCommit.java" index="1">
-<position info="not_deleted" x="107" y="0"/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="185" y="0"/>
-</item>
-<item historyLabel="ChangeSet.java" index="4">
-<position info="not_deleted" x="257" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="313" y="0"/>
-</item>
-<item historyLabel="BaseCommit.java" index="1">
-<position info="not_deleted" x="107" y="0"/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="165" y="32"/>
-</item>
-<item historyLabel="ChangeSet.java" index="4">
-<position info="not_deleted" x="243" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="313" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="296" y="0"/>
-</item>
-<item historyLabel="ChangeSet.java" index="4">
-<position info="not_deleted" x="243" y="0"/>
-</item>
-<item historyLabel="ChangeSet.java" index="4">
-<position info="not_deleted" x="311" y="0"/>
-</item>
-<item historyLabel="ChangeSet.java" index="4">
-<position/>
-</item>
-<item historyLabel="BaseCommit.java" index="1">
-<position info="not_deleted" x="107" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="296" y="0"/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="22" y="26"/>
-</item>
-<item historyLabel="ChangeSet.java" index="4">
-<position info="not_deleted" x="257" y="0"/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="245" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="296" y="0"/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="245" y="0"/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="1109" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="196" y="10"/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="1109" y="0"/>
-</item>
-<item historyLabel="FeatureCommit.java" index="2">
-<position info="not_deleted" x="308" y="0"/>
-</item>
-<item historyLabel="GitMiner.java" index="5">
-<position info="not_deleted" x="31" y="0"/>
-</item>
-<item historyLabel="UserInterface.java" index="6">
-<position info="not_deleted" x="24" y="0"/>
-</item>
-<item historyLabel="UserInterface.java" index="6">
-<position info="not_deleted" x="147" y="0"/>
-</item>
-<item historyLabel="Directory.java" index="3">
-<position info="not_deleted" x="0" y="20"/>
-</item>
-<item historyLabel="UserInterface.java" index="6">
-<position info="not_deleted" x="20" y="0"/>
 </item>
 <item historyLabel="FileHandler.java" index="7">
-<position info="not_deleted" x="278" y="0"/>
+<position info="not_deleted" x="5641" y="0"/>
 </item>
-<item active="true" historyLabel="FileHandler.java" index="7">
-<position info="not_deleted" x="276" y="0"/>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="2979" y="8"/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="3173" y="0"/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="4136" y="13"/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="4579" y="12"/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="4641" y="0"/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="4606" y="0"/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="3557" y="0"/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="3551" y="0"/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="4067" y="0"/>
+</item>
+<item historyLabel="FileHandler.java" index="7">
+<position info="not_deleted" x="3276" y="0"/>
+</item>
+<item historyLabel="GitMiner.java" index="0">
+<position info="not_deleted" x="1615" y="0"/>
+</item>
+<item historyLabel="Directory.java" index="3">
+<position info="not_deleted" x="1637" y="0"/>
+</item>
+<item historyLabel="ChangeSet.java" index="2">
+<position info="not_deleted" x="368" y="0"/>
+</item>
+<item historyLabel="Directory.java" index="3">
+<position info="not_deleted" x="1637" y="0"/>
+</item>
+<item historyLabel="Directory.java" index="3">
+<position info="not_deleted" x="1781" y="0"/>
+</item>
+<item historyLabel="Directory.java" index="3">
+<position info="not_deleted" x="1752" y="0"/>
+</item>
+<item historyLabel="Directory.java" index="3">
+<position info="not_deleted" x="1748" y="0"/>
+</item>
+<item active="true" historyLabel="Directory.java" index="3">
+<position/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -582,6 +689,13 @@
 <workbenchWindowAdvisor/>
 <actionBarAdvisor/>
 <trimLayout>
+<trimArea IMemento.internal.id="16384">
+<trimItem IMemento.internal.id="left"/>
+</trimArea>
+<trimArea IMemento.internal.id="131072">
+<trimItem IMemento.internal.id="right"/>
+<trimItem IMemento.internal.id="org.eclipse.ui.editorss"/>
+</trimArea>
 <trimArea IMemento.internal.id="128">
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.WorkbenchWindow.topBar"/>
 <trimItem IMemento.internal.id="org.eclipse.mylyn.tasks.ui.trim.container"/>
@@ -590,10 +704,20 @@
 <trimItem IMemento.internal.id="org.eclise.ui.internal.FastViewBar"/>
 <trimItem IMemento.internal.id="org.eclipse.jface.action.StatusLineManager"/>
 <trimItem IMemento.internal.id="org.eclipse.ui.internal.progress.ProgressRegion"/>
+<trimItem IMemento.internal.id="bottom"/>
 </trimArea>
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Ch1Servlet.java" tooltip="project/src/Ch1Servlet.java">
+<persistable path="/project/src/Ch1Servlet.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GitRepoAnalyzer.java" tooltip="project/src/GitRepoAnalyzer.java">
+<persistable path="/project/src/GitRepoAnalyzer.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="input.csv" tooltip="project/input.csv">
+<persistable path="/project/input.csv"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="UserInterface.java" tooltip="project/src/UserInterface.java">
 <persistable path="/project/src/UserInterface.java"/>
 </file>
@@ -623,9 +747,6 @@
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Unziper.java" tooltip="project/src/Unziper.java">
 <persistable path="/project/src/Unziper.java"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Downloader.java" tooltip="project/src/Downloader.java">
-<persistable path="/project/src/Downloader.java"/>
 </file>
 </mruList>
 </workbench>
