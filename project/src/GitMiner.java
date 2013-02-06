@@ -1,6 +1,7 @@
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -14,7 +15,9 @@ import java.util.List;
  * obs: limit the loadDirectory method to file extensions and folder that matter --ok
  * obs: rename commit root directory from rgms-shaKey to "sourcecode" --ok
  * 
- * step 5: compute features changeset
+ * step 5: compute features changeset --ok (could be optimized)
+ * changes suggested by Paulo Borba:
+ * remove changeset as an atribute of class feature
  * step 6: compute features intersection
  * step 7: write features report
  * */
@@ -33,6 +36,8 @@ public class GitMiner {
 	private BaseCommit base;
 	
 	private List<FeatureCommit> features;
+	
+	private List<ChangeSet> changeSets;
 	
 	private FileHandler fileHandler;
 	
@@ -82,11 +87,34 @@ public class GitMiner {
 	
 	public void computeChangeSet() throws IOException{
 		
+		this.changeSets = new ArrayList<ChangeSet>();
+		
 		for(FeatureCommit f : this.features){
 			
-			f.computeChangeSet(this.base);
+			ChangeSet changeSet = new ChangeSet(); 
+			changeSet.setFeatureName(f.getName());
+			changeSet.setSHAKey(f.getSHAKey());
+			changeSet.loadChangeSet(f.getDirectory(), this.base.getDirectory());
+			
+			this.changeSets.add(changeSet);
 			
 		}
+	}
+	
+	public void computeIntersection(){
+/*		
+		for(int i = 0; i < this.features.size(); i++){
+			
+			FeatureCommit featureA = this.features.get(i);
+			List<FeatureCommit> listRemaining = this.features.subList((i+1), (this.features.size() - 1));
+			
+			for(FeatureCommit featureB : listRemaining ){
+				
+				featureA.computeChangeSetIntersection(featureB.getChangeset());
+				
+			}
+			
+		}*/
 	}
 	
 	public String getInputFile() {
@@ -136,6 +164,16 @@ public class GitMiner {
 	public void setFeatures(List<FeatureCommit> features) {
 		this.features = features;
 	}
+	
+	
+
+	public List<ChangeSet> getChangeSets() {
+		return changeSets;
+	}
+
+	public void setChangeSets(List<ChangeSet> changeSets) {
+		this.changeSets = changeSets;
+	}
 
 	public static void main(String[] args) {
 		
@@ -143,18 +181,18 @@ public class GitMiner {
 		try {
 			repo.readInput();
 //			repo.downloadCommits();
-//			repo.unzipCommits();*/
+//			repo.unzipCommits();
 			repo.loadDirectories();
-			/*String base = repo.getBase().getDirectory().toString();
-			System.out.println("Commit base: \n" + base);
+			//String base = repo.getBase().getDirectory().toString();
+			/*System.out.println("Commit base: \n" + base);
 			for(FeatureCommit feature : repo.getFeatures()){
 				String f = feature.getDirectory().toString();
 				System.out.println("Commit feature " + feature.getName() + ":\n" + f);
 			}*/
 			repo.computeChangeSet();
-			for(FeatureCommit f2 : repo.getFeatures()){
-				String x = f2.getChangeset().toString();
-				System.out.println("Changeset feature: " + f2.getName() + "\n" + x);
+			for(ChangeSet cs : repo.getChangeSets()){
+				String x = cs.toString();
+				System.out.println("Changeset feature: " + cs.getFeatureName() + "\n" + x);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

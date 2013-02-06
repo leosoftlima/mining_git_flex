@@ -5,17 +5,20 @@
 <fullyQualifiedTypeName name="au.com.bytecode.opencsv.CSVReader"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="java.io.BufferedInputStream"/>
-<fullyQualifiedTypeName name="FileHandler"/>
 <fullyQualifiedTypeName name="java.io.FileOutputStream"/>
-<fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="java.util.zip.ZipInputStream"/>
 <fullyQualifiedTypeName name="java.io.FileInputStream"/>
 <fullyQualifiedTypeName name="java.util.zip.ZipEntry"/>
 <fullyQualifiedTypeName name="GitMiner"/>
-<fullyQualifiedTypeName name="Directory"/>
 <fullyQualifiedTypeName name="BaseCommit"/>
-<fullyQualifiedTypeName name="FeatureCommit"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="Directory"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="FileHandler"/>
 <fullyQualifiedTypeName name="ChangeSet"/>
+<fullyQualifiedTypeName name="java.util.Scanner"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="FeatureCommit"/>
+<fullyQualifiedTypeName name="Intersection"/>
 </qualifiedTypeNameHistroy>
