@@ -11,14 +11,14 @@
 <fullyQualifiedTypeName name="java.util.zip.ZipEntry"/>
 <fullyQualifiedTypeName name="GitMiner"/>
 <fullyQualifiedTypeName name="BaseCommit"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="Directory"/>
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="FileHandler"/>
-<fullyQualifiedTypeName name="ChangeSet"/>
 <fullyQualifiedTypeName name="java.util.Scanner"/>
 <fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="FeatureCommit"/>
 <fullyQualifiedTypeName name="Intersection"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="ChangeSet"/>
 </qualifiedTypeNameHistroy>

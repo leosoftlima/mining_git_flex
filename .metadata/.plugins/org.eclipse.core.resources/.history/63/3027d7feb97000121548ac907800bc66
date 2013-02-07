@@ -104,17 +104,14 @@ public class GitMiner {
 	
 	public void computeIntersection(){
 		
-		this.intersections = new ArrayList<Intersection>();
-		
-		for(int i = 0; i < this.changeSets.size(); i++){
+		for(int i = 0; i < this.features.size(); i++){
 			
-			ChangeSet changeSetA = this.changeSets.get(i);
-			List<ChangeSet> listRemaining = this.changeSets.subList((i+1), (this.changeSets.size() - 1));
+			FeatureCommit featureA = this.features.get(i);
+			List<FeatureCommit> listRemaining = this.features.subList((i+1), (this.features.size() - 1));
 			
-			for(ChangeSet changeSetB : listRemaining ){
+			for(FeatureCommit featureB : listRemaining ){
 				
-				Intersection intersection = changeSetA.computeChangeSetIntersection(changeSetB);
-				this.intersections.add(intersection);
+				//this.computeIntersection(featureA, featureB);
 				
 			}
 			
@@ -206,7 +203,7 @@ public class GitMiner {
 			repo.computeChangeSet();
 			for(ChangeSet cs : repo.getChangeSets()){
 				String x = cs.toString();
-				System.out.println("Changeset feature: " + cs.getFeature().getName() + "\n" + x);
+				System.out.println("Changeset feature: " + cs.getFeatureName() + "\n" + x);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

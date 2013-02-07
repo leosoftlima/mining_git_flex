@@ -166,13 +166,7 @@ private void recursion(Directory featureDir,Directory baseDir, String equalpath)
 	
 }
 
-public Intersection computeChangeSetIntersection(ChangeSet changeSetB){
-	
-	Intersection intersection = new Intersection(this.getFeature(), changeSetB.getFeature());
-	
-	intersection.loadIntersection();
-	
-	return intersection;
+public void computeIntersection(ChangeSet featureB){
 	
 }
 	public String toString(){

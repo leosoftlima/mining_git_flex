@@ -21,8 +21,9 @@ public class ChangeSet {
 	
 	private List<ChangeSet> subChangeSets;
 	
-	private FeatureCommit feature;
+	private String SHAKey;
 	
+	private String featureName;
 
 
 
@@ -166,13 +167,7 @@ private void recursion(Directory featureDir,Directory baseDir, String equalpath)
 	
 }
 
-public Intersection computeChangeSetIntersection(ChangeSet changeSetB){
-	
-	Intersection intersection = new Intersection(this.getFeature(), changeSetB.getFeature());
-	
-	intersection.loadIntersection();
-	
-	return intersection;
+public void computeIntersection(ChangeSet featureB){
 	
 }
 	public String toString(){
@@ -242,13 +237,20 @@ public Intersection computeChangeSetIntersection(ChangeSet changeSetB){
 		this.subChangeSets = subChangeSets;
 	}
 	
-
-	public FeatureCommit getFeature() {
-		return feature;
+		public String getSHAKey() {
+		return SHAKey;
 	}
 
-	public void setFeature(FeatureCommit feature) {
-		this.feature = feature;
+	public void setSHAKey(String sHAKey) {
+		SHAKey = sHAKey;
+	}
+
+	public String getFeatureName() {
+		return featureName;
+	}
+
+	public void setFeatureName(String featureName) {
+		this.featureName = featureName;
 	}
 
 	

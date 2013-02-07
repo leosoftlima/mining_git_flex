@@ -10,9 +10,5 @@ public class Intersection {
 	public Intersection(FeatureCommit featureA, FeatureCommit featureB ){
 		
 	}
-	
-	public void loadIntersection(){
-		//TODO
-	}
 
 }
