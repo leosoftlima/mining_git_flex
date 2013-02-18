@@ -1,10 +1,11 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
 /*changeset is the delta between the base commit and the feature commit, i.e. base + feature A
- * it recordas the names of the files that were added, deleted and modified.
+ * it records the names of the files that were added, deleted and modified.
  * Each changeset instance contains
  * */
 public class ChangeSet {
@@ -22,6 +23,8 @@ public class ChangeSet {
 	private List<ChangeSet> subChangeSets;
 	
 	private FeatureCommit feature;
+	
+	private String directoryName;
 	
 
 
@@ -51,7 +54,24 @@ public void loadChangeSet(Directory featureDir,Directory baseDir) throws IOExcep
 	
 private void baseCase (Directory featureDir,Directory baseDir, String equalpath) throws IOException{
 	
+	
+	//set directory name
+	if(featureDir.getName().equals(this.feature.getName())){
+		
+		this.setDirectoryName(featureDir.getName());
+		
+		
+	}else if(featureDir.getName().endsWith("sourcecode")){
+		this.setDirectoryName("sourcecode");
+	}else{
+		this.setDirectoryName(featureDir.getName().split(equalpath)[1]);
+		
+	}
+	//set directory name
+	
 	for( String featureFile : featureDir.getFilesNames()){
+		
+		
 		
 		boolean containsFeatureFile = false;
 		
@@ -62,12 +82,13 @@ private void baseCase (Directory featureDir,Directory baseDir, String equalpath)
 			shortBaseFilename = baseFile.split(equalpath)[1];
 			
 			
+			
 			if(shortFeatureFilename.equals(shortBaseFilename)){
 				containsFeatureFile = true;
 				boolean equals = this.fileHandler.compareTwoFiles(baseFile, featureFile);
 				if(!equals){
 					//modified
-					this.modifiedFiles.add(featureFile);
+					this.modifiedFiles.add(shortFeatureFilename);
 				}
 			}
 			
@@ -86,7 +107,7 @@ private void baseCase (Directory featureDir,Directory baseDir, String equalpath)
 			}
 			if(removed){
 				
-				this.removedFiles.put(baseFile, baseFile);
+				this.removedFiles.put(shortBaseFilename, shortBaseFilename);
 			}
 			//end of removed file
 			
@@ -94,7 +115,7 @@ private void baseCase (Directory featureDir,Directory baseDir, String equalpath)
 		
 		if(!containsFeatureFile){
 			//added
-			this.addedFiles.add(featureFile);
+			this.addedFiles.add(featureFile.split(equalpath)[1]);
 		}
 		
 		
@@ -127,6 +148,7 @@ private void recursion(Directory featureDir,Directory baseDir, String equalpath)
 			if(shortSubDirectoryName.equals(shortSubBaseDirectoryName)){
 				contains = true;
 				ChangeSet sub = new ChangeSet();
+				sub.setFeature(this.feature);
 				sub.loadChangeSet(subDirectory, subBaseDirectory);
 				this.subChangeSets.add(sub);
 			}
@@ -166,17 +188,9 @@ private void recursion(Directory featureDir,Directory baseDir, String equalpath)
 	
 }
 
-public Intersection computeChangeSetIntersection(ChangeSet changeSetB){
-	
-	Intersection intersection = new Intersection(this.getFeature(), changeSetB.getFeature());
-	
-	intersection.loadIntersection();
-	
-	return intersection;
-	
-}
+
 	public String toString(){
-		String result = "";
+		String result = "Directory name: " + this.directoryName + "\n";
 		
 		
 		for(String addedFile : this.addedFiles){
@@ -251,5 +265,32 @@ public Intersection computeChangeSetIntersection(ChangeSet changeSetB){
 		this.feature = feature;
 	}
 
+	public String getDirectoryName() {
+		return directoryName;
+	}
+
+/*	public void setDirectoryName(Directory featureDir, String equalpath) {
+		
+		//checks if there is at least one file in the directory
+		if(featureDir.getFilesNames().size() >= 1){
+			String file = featureDir.getFilesNames().get(0);
+			File f = new File(file);
+			this.directoryName = f.getParent().split(equalpath)[1];
+			
+		}else{
+			this.directoryName = "no file";
+		}
+		
+	}*/
 	
+	public void setDirectoryName(String directoryName){
+		this.directoryName = directoryName;
+	}
+
+	public static void main(String[] args) {
+		
+		File f = new File("C:/Users/Paola2/Desktop/teste.txt");
+	    System.out.println(f.getParent());  
+		
+	}
 }

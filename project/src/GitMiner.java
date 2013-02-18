@@ -17,8 +17,8 @@ import java.util.List;
  * 
  * step 5: compute features changeset --ok (could be optimized)
  * changes suggested by Paulo Borba:
- * remove changeset as an atribute of class feature
- * step 6: compute features intersection
+ * remove changeset as an atribute of class feature --ok
+ * step 6: compute features intersection --ok
  * step 7: write features report
  * */
 
@@ -109,16 +109,26 @@ public class GitMiner {
 		for(int i = 0; i < this.changeSets.size(); i++){
 			
 			ChangeSet changeSetA = this.changeSets.get(i);
-			List<ChangeSet> listRemaining = this.changeSets.subList((i+1), (this.changeSets.size() - 1));
+			List<ChangeSet> listRemaining = this.changeSets.subList((i+1), (this.changeSets.size()));
 			
 			for(ChangeSet changeSetB : listRemaining ){
 				
-				Intersection intersection = changeSetA.computeChangeSetIntersection(changeSetB);
+				Intersection intersection = this.computeChangeSetIntersection(changeSetA, changeSetB);
 				this.intersections.add(intersection);
 				
 			}
 			
 		}
+	}
+	
+	public Intersection computeChangeSetIntersection(ChangeSet changeSetA, ChangeSet changeSetB){
+		
+		Intersection intersection = new Intersection();
+		
+		intersection.loadIntersection(changeSetA, changeSetB);
+		
+		return intersection;
+		
 	}
 	
 	public String getInputFile() {
@@ -204,10 +214,20 @@ public class GitMiner {
 				System.out.println("Commit feature " + feature.getName() + ":\n" + f);
 			}*/
 			repo.computeChangeSet();
-			for(ChangeSet cs : repo.getChangeSets()){
+		for(ChangeSet cs : repo.getChangeSets()){
 				String x = cs.toString();
+				System.out.println("=======================================================");
 				System.out.println("Changeset feature: " + cs.getFeature().getName() + "\n" + x);
+				System.out.println("=======================================================");
 			}
+			
+		repo.computeIntersection();
+			
+		for(Intersection intersections : repo.getIntersections()){
+			
+			System.out.println(intersections.toString());
+			
+		}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

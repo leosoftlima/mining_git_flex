@@ -3,7 +3,6 @@
 <fullyQualifiedTypeName name="com.csvreader.CsvReader"/>
 <fullyQualifiedTypeName name="java.io.FileReader"/>
 <fullyQualifiedTypeName name="au.com.bytecode.opencsv.CSVReader"/>
-<fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="java.io.BufferedInputStream"/>
 <fullyQualifiedTypeName name="java.io.FileOutputStream"/>
 <fullyQualifiedTypeName name="java.util.zip.ZipInputStream"/>
@@ -12,13 +11,14 @@
 <fullyQualifiedTypeName name="GitMiner"/>
 <fullyQualifiedTypeName name="BaseCommit"/>
 <fullyQualifiedTypeName name="Directory"/>
-<fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="FileHandler"/>
 <fullyQualifiedTypeName name="java.util.Scanner"/>
 <fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="FeatureCommit"/>
-<fullyQualifiedTypeName name="Intersection"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="ChangeSet"/>
+<fullyQualifiedTypeName name="Intersection"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
 </qualifiedTypeNameHistroy>
