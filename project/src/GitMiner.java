@@ -19,7 +19,10 @@ import java.util.List;
  * changes suggested by Paulo Borba:
  * remove changeset as an atribute of class feature --ok
  * step 6: compute features intersection --ok
- * step 7: write features report
+ * step 7: write changesets and intersections reports --ok
+ * improvements:
+ * 1-rename FeatureCommit to TaskCommit
+ * 2-add reference two both commits on a changeset instance
  * */
 
 
@@ -99,7 +102,16 @@ public class GitMiner {
 			
 			this.changeSets.add(changeSet);
 			
+			this.reportChangeSet(changeSet);
+			
 		}
+	}
+	
+	public void reportChangeSet(ChangeSet cs){
+		
+		this.fileHandler.writer((cs.getFeature().getName() + "ChangeSet"), cs.toString());
+		
+		
 	}
 	
 	public void computeIntersection(){
@@ -115,10 +127,16 @@ public class GitMiner {
 				
 				Intersection intersection = this.computeChangeSetIntersection(changeSetA, changeSetB);
 				this.intersections.add(intersection);
-				
+				this.reportIntersection(intersection);
 			}
 			
 		}
+	}
+	
+	public void reportIntersection(Intersection it){
+		String title = it.getChangeSetA().getFeature().getName() + "_and_" + it.getChangeSetB().getFeature().getName() + "_intersection";
+		
+		this.fileHandler.writer(title, it.toString());
 	}
 	
 	public Intersection computeChangeSetIntersection(ChangeSet changeSetA, ChangeSet changeSetB){
@@ -214,20 +232,20 @@ public class GitMiner {
 				System.out.println("Commit feature " + feature.getName() + ":\n" + f);
 			}*/
 			repo.computeChangeSet();
-		for(ChangeSet cs : repo.getChangeSets()){
+		/*for(ChangeSet cs : repo.getChangeSets()){
 				String x = cs.toString();
 				System.out.println("=======================================================");
 				System.out.println("Changeset feature: " + cs.getFeature().getName() + "\n" + x);
 				System.out.println("=======================================================");
-			}
+			}*/
 			
 		repo.computeIntersection();
 			
-		for(Intersection intersections : repo.getIntersections()){
+	/*	for(Intersection intersections : repo.getIntersections()){
 			
 			System.out.println(intersections.toString());
 			
-		}
+		}*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

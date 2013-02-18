@@ -1,10 +1,12 @@
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import au.com.bytecode.opencsv.CSVReader;
+
 
 /*the input must contain the following informations:
  * the repository user's id
@@ -197,8 +200,17 @@ public class FileHandler {
 	   }    
 	
 	
-	public void writer(){
+	public void writer(String fileName, String fileContent){
 		
+		try {
+			 BufferedWriter out = new BufferedWriter(new FileWriter(fileName + ".csv"));
+			 out.write(fileContent);
+			 out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	       
 	}
 	
 	public boolean compareTwoFiles(String baseFile , String featureFile) throws IOException{
