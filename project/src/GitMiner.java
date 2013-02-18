@@ -21,7 +21,7 @@ import java.util.List;
  * step 6: compute features intersection --ok
  * step 7: write changesets and intersections reports --ok
  * improvements:
- * 1-rename FeatureCommit to TaskCommit
+ * 1-rename FeatureCommit to TaskCommit --ok
  * 2-add reference two both commits on a changeset instance
  * */
 
@@ -38,7 +38,7 @@ public class GitMiner {
 	
 	private BaseCommit base;
 	
-	private List<FeatureCommit> features;
+	private List<TaskCommit> tasksCommits;
 	
 	private List<ChangeSet> changeSets;
 	
@@ -62,7 +62,7 @@ public class GitMiner {
 		this.userId = temp.getUserId();
 		this.repoName = temp.getRepoName();
 		this.base = temp.getBase();
-		this.features = temp.getFeatures();
+		this.tasksCommits = temp.getTasksCommits();
 		System.out.println("done reading input file.");
 		
 	}
@@ -82,7 +82,7 @@ public class GitMiner {
 		
 		this.base.loadDirectory();
 		
-		for(FeatureCommit f : this.features){
+		for(TaskCommit f : this.tasksCommits){
 			
 			f.loadDirectory();
 		}
@@ -94,10 +94,10 @@ public class GitMiner {
 		
 		this.changeSets = new ArrayList<ChangeSet>();
 		
-		for(FeatureCommit f : this.features){
+		for(TaskCommit f : this.tasksCommits){
 			
 			ChangeSet changeSet = new ChangeSet(); 
-			changeSet.setFeature(f);
+			changeSet.setTaskCommit(f);
 			changeSet.loadChangeSet(f.getDirectory(), this.base.getDirectory());
 			
 			this.changeSets.add(changeSet);
@@ -109,7 +109,7 @@ public class GitMiner {
 	
 	public void reportChangeSet(ChangeSet cs){
 		
-		this.fileHandler.writer((cs.getFeature().getName() + "ChangeSet"), cs.toString());
+		this.fileHandler.writer((cs.getTaskCommit().getName() + "ChangeSet"), cs.toString());
 		
 		
 	}
@@ -134,7 +134,7 @@ public class GitMiner {
 	}
 	
 	public void reportIntersection(Intersection it){
-		String title = it.getChangeSetA().getFeature().getName() + "_and_" + it.getChangeSetB().getFeature().getName() + "_intersection";
+		String title = it.getChangeSetA().getTaskCommit().getName() + "_and_" + it.getChangeSetB().getTaskCommit().getName() + "_intersection";
 		
 		this.fileHandler.writer(title, it.toString());
 	}
@@ -189,12 +189,12 @@ public class GitMiner {
 		this.base = base;
 	}
 
-	public List<FeatureCommit> getFeatures() {
-		return features;
+	public List<TaskCommit> getTasksCommits() {
+		return tasksCommits;
 	}
 
-	public void setFeatures(List<FeatureCommit> features) {
-		this.features = features;
+	public void setTasksCommits(List<TaskCommit> tasks) {
+		this.tasksCommits = tasks;
 	}
 	
 	

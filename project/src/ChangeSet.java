@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
-/*changeset is the delta between the base commit and the feature commit, i.e. base + feature A
+/*changeset is the delta between the base commit and the task commit, i.e. base + task A
  * it records the names of the files that were added, deleted and modified.
  * Each changeset instance contains
  * */
@@ -22,7 +22,7 @@ public class ChangeSet {
 	
 	private List<ChangeSet> subChangeSets;
 	
-	private FeatureCommit feature;
+	private TaskCommit taskCommit;
 	
 	private String directoryName;
 	
@@ -41,54 +41,54 @@ public class ChangeSet {
 		
 	}
 	
-public void loadChangeSet(Directory featureDir,Directory baseDir) throws IOException{
+public void loadChangeSet(Directory taskDir,Directory baseDir) throws IOException{
 	
 			String equalpath = "[s][o][u][r][c][e][c][o][d][e]";
 
-			this.baseCase(featureDir, baseDir, equalpath);
-			this.recursion(featureDir, baseDir, equalpath);
+			this.baseCase(taskDir, baseDir, equalpath);
+			this.recursion(taskDir, baseDir, equalpath);
 			
 			
 	
 }
 	
-private void baseCase (Directory featureDir,Directory baseDir, String equalpath) throws IOException{
+private void baseCase (Directory taskDir,Directory baseDir, String equalpath) throws IOException{
 	
 	
 	//set directory name
-	if(featureDir.getName().equals(this.feature.getName())){
+	if(taskDir.getName().equals(this.taskCommit.getName())){
 		
-		this.setDirectoryName(featureDir.getName());
+		this.setDirectoryName(taskDir.getName());
 		
 		
-	}else if(featureDir.getName().endsWith("sourcecode")){
+	}else if(taskDir.getName().endsWith("sourcecode")){
 		this.setDirectoryName("sourcecode");
 	}else{
-		this.setDirectoryName(featureDir.getName().split(equalpath)[1]);
+		this.setDirectoryName(taskDir.getName().split(equalpath)[1]);
 		
 	}
 	//set directory name
 	
-	for( String featureFile : featureDir.getFilesNames()){
+	for( String taskFile : taskDir.getFilesNames()){
 		
 		
 		
-		boolean containsFeatureFile = false;
+		boolean containsTaskFile = false;
 		
 		for(String baseFile : baseDir.getFilesNames()){
 
-			String shortFeatureFilename, shortBaseFilename, shortfFilename;
-			shortFeatureFilename = featureFile.split(equalpath)[1];
+			String shortTaskFilename, shortBaseFilename, shortfFilename;
+			shortTaskFilename = taskFile.split(equalpath)[1];
 			shortBaseFilename = baseFile.split(equalpath)[1];
 			
 			
 			
-			if(shortFeatureFilename.equals(shortBaseFilename)){
-				containsFeatureFile = true;
-				boolean equals = this.fileHandler.compareTwoFiles(baseFile, featureFile);
+			if(shortTaskFilename.equals(shortBaseFilename)){
+				containsTaskFile = true;
+				boolean equals = this.fileHandler.compareTwoFiles(baseFile, taskFile);
 				if(!equals){
 					//modified
-					this.modifiedFiles.add(shortFeatureFilename);
+					this.modifiedFiles.add(shortTaskFilename);
 				}
 			}
 			
@@ -96,7 +96,7 @@ private void baseCase (Directory featureDir,Directory baseDir, String equalpath)
 			boolean removed = true;
 			
 			
-			for(String fFile : featureDir.getFilesNames()){
+			for(String fFile : taskDir.getFilesNames()){
 				
 				
 				shortfFilename = fFile.split(equalpath)[1];
@@ -113,19 +113,19 @@ private void baseCase (Directory featureDir,Directory baseDir, String equalpath)
 			
 		}
 		
-		if(!containsFeatureFile){
+		if(!containsTaskFile){
 			//added
-			this.addedFiles.add(featureFile.split(equalpath)[1]);
+			this.addedFiles.add(taskFile.split(equalpath)[1]);
 		}
 		
 		
 	}
 }
 
-private void recursion(Directory featureDir,Directory baseDir, String equalpath) throws IOException{
+private void recursion(Directory taskDir,Directory baseDir, String equalpath) throws IOException{
 	//recursion
 	
-	for(Directory subDirectory : featureDir.getSubDirectories()){
+	for(Directory subDirectory : taskDir.getSubDirectories()){
 		String shortSubDirectoryName;
 		
 		try {
@@ -148,7 +148,7 @@ private void recursion(Directory featureDir,Directory baseDir, String equalpath)
 			if(shortSubDirectoryName.equals(shortSubBaseDirectoryName)){
 				contains = true;
 				ChangeSet sub = new ChangeSet();
-				sub.setFeature(this.feature);
+				sub.setTaskCommit(this.taskCommit);
 				sub.loadChangeSet(subDirectory, subBaseDirectory);
 				this.subChangeSets.add(sub);
 			}
@@ -156,7 +156,7 @@ private void recursion(Directory featureDir,Directory baseDir, String equalpath)
 			//remove directory
 			boolean removed = true;
 			
-			for(Directory fDirectory : featureDir.getSubDirectories()){
+			for(Directory fDirectory : taskDir.getSubDirectories()){
 				String shortFDirectoryName;
 				
 				try {
@@ -257,31 +257,18 @@ private void recursion(Directory featureDir,Directory baseDir, String equalpath)
 	}
 	
 
-	public FeatureCommit getFeature() {
-		return feature;
+	public TaskCommit getTaskCommit() {
+		return taskCommit;
 	}
 
-	public void setFeature(FeatureCommit feature) {
-		this.feature = feature;
+	public void setTaskCommit(TaskCommit task) {
+		this.taskCommit = task;
 	}
 
 	public String getDirectoryName() {
 		return directoryName;
 	}
 
-/*	public void setDirectoryName(Directory featureDir, String equalpath) {
-		
-		//checks if there is at least one file in the directory
-		if(featureDir.getFilesNames().size() >= 1){
-			String file = featureDir.getFilesNames().get(0);
-			File f = new File(file);
-			this.directoryName = f.getParent().split(equalpath)[1];
-			
-		}else{
-			this.directoryName = "no file";
-		}
-		
-	}*/
 	
 	public void setDirectoryName(String directoryName){
 		this.directoryName = directoryName;

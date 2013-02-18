@@ -53,20 +53,20 @@ public class FileHandler {
 		String sha = baseLine[1];
 		result.setBase(new BaseCommit(name, sha));
 		
-		//set GitMiner features commits
-		List<FeatureCommit> features = new ArrayList<FeatureCommit>();
-		int featuresIndex = 3;
-		while(featuresIndex < entries.size()){
+		//set GitMiner tasks commits
+		List<TaskCommit> tasks = new ArrayList<TaskCommit>();
+		int tasksIndex = 3;
+		while(tasksIndex < entries.size()){
 			
-			String featureLine[] = entries.get(featuresIndex);
-			name = featureLine[0];
-			sha = featureLine[1];
-			features.add(new FeatureCommit(name, sha));
+			String taskLine[] = entries.get(tasksIndex);
+			name = taskLine[0];
+			sha = taskLine[1];
+			tasks.add(new TaskCommit(name, sha));
 			
-			featuresIndex++;
+			tasksIndex++;
 			
 		}
-		result.setFeatures(features);
+		result.setTasksCommits(tasks);
 		
 		return result;
 		
@@ -82,9 +82,9 @@ public class FileHandler {
 		
 		this.auxiliarDownload(url, repo.getBase().getName());
 		System.out.println("end of " + repo.getBase().getName() + " download.");
-		//download feature commits
+		//download tasks commits
 		
-		for(FeatureCommit f : repo.getFeatures()){
+		for(TaskCommit f : repo.getTasksCommits()){
 			String fUrl = gitUrl + f.getSHAKey() + ".zip";
 			this.auxiliarDownload(fUrl, f.getName());
 			System.out.println("end of " + f.getName() + " download.");
@@ -124,13 +124,13 @@ public class FileHandler {
 		File newName = new File (repo.getBase().getName() + File.separator +"sourcecode");
 		oldName.renameTo(newName);
 		
-		//unzip other features
-		for(FeatureCommit f : repo.getFeatures()){
+		//unzip other tasks
+		for(TaskCommit f : repo.getTasksCommits()){
 			
 			String fZipFile =  f.getName() + ".zip";
 			String fOutputFolder =  f.getName();
 			this.auxiliarUnzip(fZipFile, fOutputFolder);
-			System.out.println("done unzipping feature " + f.getName() + " commit.");
+			System.out.println("done unzipping task " + f.getName() + " commit.");
 			
 			//renames the root directory from rgms-shaKey to "soucecode"
 			oldName = new File (f.getName() + File.separator + "rgms-" + f.getSHAKey());
@@ -213,7 +213,7 @@ public class FileHandler {
 	       
 	}
 	
-	public boolean compareTwoFiles(String baseFile , String featureFile) throws IOException{
+	public boolean compareTwoFiles(String baseFile , String taskFile) throws IOException{
 		boolean result;
 
 	    String s1 = "";
@@ -221,7 +221,7 @@ public class FileHandler {
 	    String y = "", z = "";
 
 	    BufferedReader bfr = new BufferedReader(new FileReader(baseFile));
-	    BufferedReader bfr1 = new BufferedReader(new FileReader(featureFile));
+	    BufferedReader bfr1 = new BufferedReader(new FileReader(taskFile));
 
 	    while ((z = bfr1.readLine()) != null)
 	      s2 += z;

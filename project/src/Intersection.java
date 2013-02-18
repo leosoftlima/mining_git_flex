@@ -63,8 +63,6 @@ public class Intersection {
 
 	public String toString(){
 		String result = "";
-		/*result = "Changesets intersection between the following features:\n" + 
-		this.changeSetA.getFeature().getName() + " and " + this.changeSetB.getFeature().getName() + "\n";*/
 		
 		for(String fileName : this.filesWithPotentialConflicts){
 			result = result + fileName + "\n";
