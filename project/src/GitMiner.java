@@ -22,7 +22,7 @@ import java.util.List;
  * step 7: write changesets and intersections reports --ok
  * improvements:
  * 1-rename FeatureCommit to TaskCommit --ok
- * 2-add reference two both commits on a changeset instance
+ * 2-add reference two both commits on a changeset instance --ok
  * */
 
 
@@ -98,6 +98,7 @@ public class GitMiner {
 			
 			ChangeSet changeSet = new ChangeSet(); 
 			changeSet.setTaskCommit(f);
+			changeSet.setBaseCommit(this.base);
 			changeSet.loadChangeSet(f.getDirectory(), this.base.getDirectory());
 			
 			this.changeSets.add(changeSet);

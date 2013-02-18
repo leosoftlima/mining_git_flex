@@ -24,6 +24,8 @@ public class ChangeSet {
 	
 	private TaskCommit taskCommit;
 	
+	private BaseCommit baseCommit;
+	
 	private String directoryName;
 	
 
@@ -263,6 +265,16 @@ private void recursion(Directory taskDir,Directory baseDir, String equalpath) th
 
 	public void setTaskCommit(TaskCommit task) {
 		this.taskCommit = task;
+	}
+	
+	
+	
+	public BaseCommit getBaseCommit() {
+		return baseCommit;
+	}
+
+	public void setBaseCommit(BaseCommit baseCommit) {
+		this.baseCommit = baseCommit;
 	}
 
 	public String getDirectoryName() {
