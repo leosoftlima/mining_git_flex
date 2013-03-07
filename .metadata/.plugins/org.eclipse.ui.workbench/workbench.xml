@@ -18,11 +18,12 @@
 <coolItem id="org.eclipse.wst.server.ui.internal.webbrowser.actionSet" itemType="typeToolBarContribution" x="38" y="22"/>
 <coolItem id="org.eclipse.wst.ws.explorer.explorer" itemType="typeToolBarContribution" x="38" y="22"/>
 <coolItem id="org.eclipse.wst.xml.ui.perspective.NewFileToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
-<coolItem id="org.eclipse.wst.xml.ui.design.DesignToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
+<coolItem id="org.eclipse.wst.xml.ui.design.DesignToolBar" itemType="typeToolBarContribution" x="61" y="22"/>
 <coolItem id="PDFViewer.toolbar" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="190" y="22"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.jdt.ui.CompilationUnitEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
@@ -42,41 +43,55 @@
 <part id="5"/>
 <part id="6"/>
 <part id="7"/>
+<part id="8"/>
+<part id="9"/>
+<part id="10"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BaseCommit.java" partName="BaseCommit.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/BaseCommit.java" title="BaseCommit.java" tooltip="project/src/BaseCommit.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/BaseCommit.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="716" selectionTopPixel="465"/>
-</editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FeatureCommit.java" partName="FeatureCommit.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/FeatureCommit.java" title="FeatureCommit.java" tooltip="project/src/FeatureCommit.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/FeatureCommit.java"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TaskCommit.java" partName="TaskCommit.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/TaskCommit.java" title="TaskCommit.java" tooltip="project/src/TaskCommit.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/TaskCommit.java"/>
 <editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
 </editor>
 <editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Directory.java" partName="Directory.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/Directory.java" title="Directory.java" tooltip="project/src/Directory.java" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/Directory.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="31" selectionOffset="496" selectionTopPixel="405"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="343" selectionTopPixel="0"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ChangeSet.java" partName="ChangeSet.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/ChangeSet.java" title="ChangeSet.java" tooltip="project/src/ChangeSet.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/ChangeSet.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5990" selectionTopPixel="3615"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ChangeSet.java" partName="ChangeSet.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/ChangeSet.java" title="ChangeSet.java" tooltip="project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/ChangeSet.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/ChangeSet.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="1033" selectionTopPixel="0"/>
 </editor>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GitMiner.java" partName="GitMiner.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/GitMiner.java" title="GitMiner.java" tooltip="project/src/GitMiner.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/GitMiner.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="5016" selectionTopPixel="3132"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GitMinerPotentialConflicts.java" partName="GitMinerPotentialConflicts.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/br/ufpe/cin/GitMiner/PotentialConflicts/GitMinerPotentialConflicts.java" title="GitMinerPotentialConflicts.java" tooltip="project/src/br/ufpe/cin/GitMiner/PotentialConflicts/GitMinerPotentialConflicts.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/br/ufpe/cin/GitMiner/PotentialConflicts/GitMinerPotentialConflicts.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="2244" selectionTopPixel="1230"/>
 </editor>
 <editor id="org.eclipse.ui.DefaultTextEditor" name="input.csv" partName="input.csv" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/input.csv" title="input.csv" tooltip="project/input.csv" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/input.csv"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="231" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="139" selectionTopPixel="0"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FileHandler.java" partName="FileHandler.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/FileHandler.java" title="FileHandler.java" tooltip="project/src/FileHandler.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/FileHandler.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="8" selectionOffset="3011" selectionTopPixel="1755"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="FileHandler.java" partName="FileHandler.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/br/ufpe/cin/GitMiner/io/FileHandler.java" title="FileHandler.java" tooltip="project/src/br/ufpe/cin/GitMiner/io/FileHandler.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/br/ufpe/cin/GitMiner/io/FileHandler.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="7" selectionOffset="2198" selectionTopPixel="1155"/>
 </editor>
-<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Intersection.java" partName="Intersection.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/Intersection.java" title="Intersection.java" tooltip="project/src/Intersection.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/Intersection.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="16" selectionOffset="330" selectionTopPixel="537"/>
+<editor id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="input.xml" partName="input.xml" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/input.xml" title="input.xml" tooltip="project/input.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/input.xml"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GitMinerRealHistory.java" partName="GitMinerRealHistory.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/br/ufpe/cin/GitMiner/RealHistory/GitMinerRealHistory.java" title="GitMinerRealHistory.java" tooltip="project/src/br/ufpe/cin/GitMiner/RealHistory/GitMinerRealHistory.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/br/ufpe/cin/GitMiner/RealHistory/GitMinerRealHistory.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="901" selectionTopPixel="400"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BaseCommit.java" partName="BaseCommit.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/BaseCommit.java" title="BaseCommit.java" tooltip="project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/BaseCommit.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/BaseCommit.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="619" selectionTopPixel="45"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TaskCommit.java" partName="TaskCommit.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/TaskCommit.java" title="TaskCommit.java" tooltip="project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/TaskCommit.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/TaskCommit.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="187" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Intersection.java" partName="Intersection.java" path="C:/Users/Paola2/Documents/GitHub/mining_git/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/Intersection.java" title="Intersection.java" tooltip="project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/Intersection.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/Intersection.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="425" selectionTopPixel="0"/>
 </editor>
 </editors>
 <views>
@@ -111,6 +126,11 @@
 <view id="org.eclipse.datatools.connectivity.DataSourceExplorerNavigator" partName="Data Source Explorer"/>
 <view id="org.eclipse.ui.views.ProblemView" partName="Problems">
 <viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.severityAndDescriptionField" categoryGroup="org.eclipse.ui.ide.severity" markerContentGenerator="org.eclipse.ui.ide.problemsGenerator" partName="Problems">
+<expanded>
+<category IMemento.internal.id="Errors (79 items)"/>
+<category IMemento.internal.id="Warnings"/>
+<category IMemento.internal.id="Errors"/>
+</expanded>
 <columnWidths org.eclipse.ui.ide.locationField="90" org.eclipse.ui.ide.markerType="90" org.eclipse.ui.ide.pathField="120" org.eclipse.ui.ide.resourceField="90" org.eclipse.ui.ide.severityAndDescriptionField="463"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.severityAndDescriptionField"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.resourceField"/>
@@ -118,6 +138,9 @@
 <visible IMemento.internal.id="org.eclipse.ui.ide.locationField"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.markerType"/>
 </viewState>
+</view>
+<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
+<viewState/>
 </view>
 <view id="org.eclipse.jdt.ui.PackageExplorer" partName="Package Explorer">
 <viewState group_libraries="1" layout="2" linkWithEditor="0" rootMode="1" workingSetName="">
@@ -151,9 +174,6 @@
 </customFilters>
 </viewState>
 </view>
-<view id="org.eclipse.ui.console.ConsoleView" partName="Console">
-<viewState/>
-</view>
 <view id="org.eclipse.mylyn.tasks.ui.views.tasks" partName="Task List">
 <viewState linkWithEditor="true" presentation="org.eclipse.mylyn.tasks.ui.categorized">
 <sorter groupBy="CATEGORY_QUERY">&#x0A;<sorter>&#x0A;<sort0 sortDirection="1" sortKey="PRIORITY"/>
@@ -169,7 +189,9 @@
 <filteredTreeFindHistory/>
 </viewState>
 </view>
-<view id="org.eclipse.jdt.ui.SourceView" partName="Declaration"/>
+<view id="org.eclipse.jdt.ui.SourceView" partName="Declaration">
+<viewState/>
+</view>
 <view id="org.eclipse.wst.server.ui.ServersView" partName="Servers"/>
 <view id="org.eclipse.jdt.ui.JavadocView" partName="Javadoc"/>
 </views>
@@ -377,7 +399,7 @@
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.18302584" ratioLeft="248" ratioRight="1107" relationship="2" relative="left"/>
+<info part="org.eclipse.ui.editorss" ratio="0.24354243" ratioLeft="330" ratioRight="1025" relationship="2" relative="left"/>
 <info folder="true" part="bottom" ratio="0.63870966" ratioLeft="396" ratioRight="224" relationship="4" relative="org.eclipse.ui.editorss">
 <folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ProblemView" label="Problems"/>
@@ -510,163 +532,163 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/ChangeSet.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/GitMiner.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/Intersection.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" path="/project/input.csv"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/br/ufpe/cin/GitMiner/io/FileHandler.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/br/ufpe/cin/GitMiner/RealHistory/GitMinerRealHistory.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/BaseCommit.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/Intersection.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/project/input.xml"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/BaseCommit.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/Directory.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/Intersection.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/TaskCommit.java"/>
 </editors>
-<item historyLabel="ChangeSet.java" index="0">
-<position info="not_deleted" x="1768" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1282" y="0"/>
 </item>
-<item historyLabel="ChangeSet.java" index="0">
-<position info="not_deleted" x="1284" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="6494" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="1934" y="16"/>
+<item historyLabel="Intersection.java" index="3">
+<position info="not_deleted" x="425" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="4983" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1282" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="5028" y="62"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="7071" y="13"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="5119" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1282" y="0"/>
 </item>
-<item historyLabel="ChangeSet.java" index="0">
-<position info="not_deleted" x="1284" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="7071" y="13"/>
 </item>
-<item historyLabel="ChangeSet.java" index="0">
-<position info="not_deleted" x="1834" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1282" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="5119" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1690" y="0"/>
 </item>
-<item historyLabel="ChangeSet.java" index="0">
-<position info="not_deleted" x="1691" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1434" y="16"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="5119" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1585" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="4158" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="435" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="5185" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="1620" y="11"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="2628" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1467" y="0"/>
 </item>
-<item historyLabel="ChangeSet.java" index="0">
-<position info="not_deleted" x="1784" y="0"/>
+<item historyLabel="input.xml" index="4">
+<position info="not_deleted" x="78" y="84"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="2628" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="1735" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="5032" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1467" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="2642" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1659" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="2906" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1343" y="11"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="215" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1403" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="244" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1108" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="310" y="0"/>
+<item historyLabel="input.xml" index="4">
+<position info="not_deleted" x="78" y="84"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="2906" y="0"/>
+<item historyLabel="BaseCommit.java" index="5">
+<position info="not_deleted" x="0" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="2961" y="0"/>
+<item historyLabel="input.xml" index="4">
+<position info="not_deleted" x="448" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="379" y="0"/>
+<item historyLabel="BaseCommit.java" index="2">
+<position info="not_deleted" x="619" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="403" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1108" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="454" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1583" y="0"/>
 </item>
-<item historyLabel="ChangeSet.java" index="0">
-<position info="not_deleted" x="5803" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="431" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="454" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="1620" y="11"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="816" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="2278" y="0"/>
 </item>
-<item historyLabel="ChangeSet.java" index="0">
-<position info="not_deleted" x="5990" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="2290" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="816" y="0"/>
+<item historyLabel="input.xml" index="4">
+<position info="not_deleted" x="175" y="6"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="872" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="4155" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="903" y="0"/>
+<item historyLabel="BaseCommit.java" index="2">
+<position info="not_deleted" x="619" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="2">
-<position info="not_deleted" x="1286" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="4152" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="2961" y="0"/>
+<item historyLabel="BaseCommit.java" index="2">
+<position info="not_deleted" x="619" y="0"/>
 </item>
-<item historyLabel="input.csv" index="3">
-<position info="not_deleted" x="231" y="0"/>
+<item historyLabel="TaskCommit.java" index="6">
+<position info="not_deleted" x="187" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="4386" y="0"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="2685" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="4468" y="0"/>
+<item historyLabel="input.xml" index="4">
+<position info="not_deleted" x="175" y="6"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="1776" y="15"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="4455" y="0"/>
 </item>
-<item historyLabel="BaseCommit.java" index="4">
-<position info="not_deleted" x="48" y="4"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="431" y="0"/>
 </item>
-<item historyLabel="BaseCommit.java" index="4">
-<position info="not_deleted" x="668" y="13"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1581" y="0"/>
 </item>
-<item historyLabel="Directory.java" index="5">
-<position info="not_deleted" x="692" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="433" y="0"/>
 </item>
-<item historyLabel="Directory.java" index="5">
-<position info="not_deleted" x="496" y="31"/>
+<item historyLabel="FileHandler.java" index="0">
+<position info="not_deleted" x="2198" y="7"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="1817" y="0"/>
+<item historyLabel="input.xml" index="4">
+<position info="not_deleted" x="175" y="6"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="5007" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="433" y="0"/>
 </item>
-<item historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="2294" y="19"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1659" y="0"/>
 </item>
-<item historyLabel="Intersection.java" index="6">
-<position info="not_deleted" x="1286" y="0"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1343" y="11"/>
 </item>
-<item historyLabel="Intersection.java" index="6">
-<position info="not_deleted" x="330" y="16"/>
+<item historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="1378" y="0"/>
 </item>
-<item active="true" historyLabel="GitMiner.java" index="1">
-<position info="not_deleted" x="5246" y="0"/>
+<item active="true" historyLabel="GitMinerRealHistory.java" index="1">
+<position info="not_deleted" x="478" y="15"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -693,6 +715,27 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Intersection.java" tooltip="project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/Intersection.java">
+<persistable path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/Intersection.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="TaskCommit.java" tooltip="project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/TaskCommit.java">
+<persistable path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/TaskCommit.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="BaseCommit.java" tooltip="project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/BaseCommit.java">
+<persistable path="/project/src/br/ufpe/cin/GitMiner/ComputeChangeSet/BaseCommit.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="ReadXMLFile.java" tooltip="project/src/br/ufpe/cin/GitMiner/io/ReadXMLFile.java">
+<persistable path="/project/src/br/ufpe/cin/GitMiner/io/ReadXMLFile.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="input.xml" tooltip="project/input.xml">
+<persistable path="/project/input.xml"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="GitMinerRealHistory.java" tooltip="project/src/br/ufpe/cin/GitMiner/RealHistory/GitMinerRealHistory.java">
+<persistable path="/project/src/br/ufpe/cin/GitMiner/RealHistory/GitMinerRealHistory.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="input_real_history.csv" tooltip="project/input_real_history.csv">
+<persistable path="/project/input_real_history.csv"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Test.java" tooltip="project/src/Test.java">
 <persistable path="/project/src/Test.java"/>
 </file>

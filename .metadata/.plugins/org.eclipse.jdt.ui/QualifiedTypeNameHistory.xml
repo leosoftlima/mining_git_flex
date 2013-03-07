@@ -9,7 +9,6 @@
 <fullyQualifiedTypeName name="java.io.FileInputStream"/>
 <fullyQualifiedTypeName name="java.util.zip.ZipEntry"/>
 <fullyQualifiedTypeName name="GitMiner"/>
-<fullyQualifiedTypeName name="BaseCommit"/>
 <fullyQualifiedTypeName name="Directory"/>
 <fullyQualifiedTypeName name="FileHandler"/>
 <fullyQualifiedTypeName name="java.util.Scanner"/>
@@ -17,8 +16,22 @@
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="FeatureCommit"/>
+<fullyQualifiedTypeName name="java.io.BufferedWriter"/>
+<fullyQualifiedTypeName name="java.io.FileWriter"/>
+<fullyQualifiedTypeName name="au.com.bytecode.opencsv.CSVWriter"/>
 <fullyQualifiedTypeName name="ChangeSet"/>
 <fullyQualifiedTypeName name="Intersection"/>
+<fullyQualifiedTypeName name="BaseCommit"/>
+<fullyQualifiedTypeName name="br.ufpe.cin.GitMiner.PotentialConflicts.GitMinerPotentialConflicts"/>
+<fullyQualifiedTypeName name="br.ufpe.cin.GitMiner.io.ReadXMLFile"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="org.w3c.dom.Element"/>
+<fullyQualifiedTypeName name="org.w3c.dom.NodeList"/>
+<fullyQualifiedTypeName name="br.ufpe.cin.GitMiner.ComputeChangeSet.ChangeSet"/>
+<fullyQualifiedTypeName name="br.ufpe.cin.GitMiner.ComputeChangeSet.Intersection"/>
+<fullyQualifiedTypeName name="br.ufpe.cin.GitMiner.RealHistory.GitMinerRealHistory"/>
+<fullyQualifiedTypeName name="br.ufpe.cin.GitMiner.io.FileHandler"/>
+<fullyQualifiedTypeName name="br.ufpe.cin.GitMiner.ComputeChangeSet.BaseCommit"/>
+<fullyQualifiedTypeName name="br.ufpe.cin.GitMiner.ComputeChangeSet.TaskCommit"/>
 </qualifiedTypeNameHistroy>
