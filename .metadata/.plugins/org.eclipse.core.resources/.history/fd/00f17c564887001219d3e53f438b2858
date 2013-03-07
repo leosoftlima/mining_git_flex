@@ -1,0 +1,21 @@
+package br.ufpe.cin.GitMiner.ComputeChangeSet;
+
+public class SingleChangeset {
+	
+	private ChangeSet singleChangeSet;
+	
+	public SingleChangeset(){
+		
+		this.singleChangeSet = new ChangeSet();
+	}
+
+	public ChangeSet getSingleChangeSet() {
+		return singleChangeSet;
+	}
+
+	public void setSingleChangeSet(ChangeSet singleChangeSet) {
+		this.singleChangeSet = singleChangeSet;
+	}
+	
+	
+}

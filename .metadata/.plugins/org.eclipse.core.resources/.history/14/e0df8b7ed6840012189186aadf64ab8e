@@ -1,0 +1,29 @@
+package br.ufpe.cin.GitMiner.RealHistory;
+
+public class GitMinerRealHistory {
+
+	public void readInputXML(){
+		
+	}
+	
+	public void downloadCommits(){
+		
+	}
+	
+	public void unzipCommits(){
+		
+	}
+	
+	public void loadCommits(){
+		
+	}
+	
+	public void computeChangeSet(){
+		
+	}
+	
+	public void computeIntersections(){
+		
+	}
+	
+}

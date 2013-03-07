@@ -1,0 +1,70 @@
+package br.ufpe.cin.GitMiner.ComputeChangeSet;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class SingleChangeset {
+	
+	private ChangeSet singleChangeSet;
+	
+	public SingleChangeset(){
+		
+		this.singleChangeSet = new ChangeSet();
+	}
+
+	public ChangeSet getSingleChangeSet() {
+		
+		return singleChangeSet;
+	}
+
+	public void setSingleChangeSet(ChangeSet singleChangeSet) {
+		this.singleChangeSet = singleChangeSet;
+	}
+	
+	public void loadSingleChangeSet(ChangeSet cs){
+		
+		this.auxiliarReturnSingleChangeset(this.singleChangeSet, cs);
+		
+		for(ChangeSet subChangeSet : cs.getSubChangeSets()){
+			
+			
+			this.loadSingleChangeSet(subChangeSet);
+		}
+		
+	}
+	
+	private void auxiliarReturnSingleChangeset(ChangeSet a, ChangeSet b){
+		
+		a.getModifiedFiles().addAll(b.getModifiedFiles());
+		a.getAddedFiles().addAll(b.getAddedFiles());
+		a.getAddedDirectories().addAll(b.getAddedDirectories());
+		a.getRemovedDirectories().addAll(b.getRemovedDirectories());
+		
+		HashMap<String, String> removedB = b.removedFiles;
+		
+		//for()
+		
+		
+	}
+	
+	public void removeDuplicated(){
+		
+		//this.singleChangeSet.getModifiedFiles().r
+	}
+	
+	 public static void main(String[] a) {
+		    Map map = new HashMap();
+		    map.put("key1", "value1");
+		    map.put("key2", "value2");
+		    map.put("key3", "value3");
+		    map.put(null, null);
+
+		    Map map2 = new HashMap();
+		    map2.put("key4", "value4");
+		    map2.put("key5", "value5");
+		    map2.put("key6", "value6");
+		    map.putAll(map2);
+
+		    System.out.println(map);
+		  }
+}

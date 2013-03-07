@@ -1,0 +1,62 @@
+package br.ufpe.cin.GitMiner.RealHistory;
+
+
+import br.ufpe.cin.GitMiner.ComputeChangeSet.ChangeSet;
+import br.ufpe.cin.GitMiner.io.FileHandler;
+
+
+public class GitMinerRealHistory {
+	
+	private ChangeSet changeSet;
+	
+	private FileHandler fileHandler;
+
+	public GitMinerRealHistory(){
+		this.fileHandler = new FileHandler();
+	}
+	public void readInputXML(String filePath){
+		
+		
+		this.changeSet = this.fileHandler.readXmlFile(filePath);
+		
+	}
+	
+	private void downloadCommits(){
+		this.fileHandler.auxiliarDownload(this.changeSet.getBaseCommit().getUrlZip(), this.changeSet.getBaseCommit().getName());
+		System.out.println("Done downloading first commit");
+		this.fileHandler.auxiliarDownload(this.changeSet.getTaskCommit().getUrlZip(), this.changeSet.getTaskCommit().getName());
+		System.out.println("Done downloading second commit");
+	}
+	
+	private void unzipCommits(){
+		
+		String directoryName = this.changeSet.getBaseCommit().getName();
+
+		this.fileHandler.auxiliarUnzip((directoryName + ".zip"), directoryName);
+		
+		String directoryTaskName = this.changeSet.getTaskCommit().getName();
+	
+		this.fileHandler.auxiliarUnzip((directoryTaskName + ".zip") , directoryTaskName);
+	}
+	
+	public void loadCommits(){
+		
+		this.downloadCommits();
+		this.unzipCommits();
+	}
+	
+	public void computeChangeSet(){
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		GitMinerRealHistory repo = new GitMinerRealHistory();
+		repo.readInputXML("input.xml");
+		System.out.println("done reading input");
+		repo.loadCommits();
+		repo.computeChangeSet();
+		
+	}
+	
+}

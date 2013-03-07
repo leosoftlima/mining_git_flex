@@ -1,0 +1,55 @@
+package br.ufpe.cin.GitMiner.ComputeChangeSet;
+
+public class BaseCommit {
+	
+	private String name;
+	
+	private String urlSHAKey;
+	
+
+	private Directory directory;
+	
+	
+	
+	public BaseCommit(String name, String sha){
+	
+		this.name = name;
+		this.urlSHAKey = sha;
+		this.directory = new Directory(this.name);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSHAKey() {
+		return urlSHAKey;
+	}
+
+	public void setSHAKey(String sHAKey) {
+		urlSHAKey = sHAKey;
+	}
+
+	public Directory getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(Directory dir) {
+		
+		this.directory = dir;
+		
+	}
+
+
+	public void loadDirectory(){
+		this.directory.listFilesAndFilesSubDirectories(this.name);
+	}
+	
+
+
+
+}

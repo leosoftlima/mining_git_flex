@@ -1,0 +1,37 @@
+package br.ufpe.cin.GitMiner.RealHistory;
+
+import java.util.ArrayList;
+
+import br.ufpe.cin.GitMiner.ComputeChangeSet.ChangeSet;
+
+public class GitMinerRealHistory {
+	
+	private ArrayList<ChangeSet> changeSets;
+	
+	
+
+	public void readInputXML(){
+		
+	}
+	
+	public void downloadCommits(){
+		
+	}
+	
+	public void unzipCommits(){
+		
+	}
+	
+	public void loadCommits(){
+		
+	}
+	
+	public void computeChangeSet(){
+		
+	}
+	
+	public void computeIntersections(){
+		
+	}
+	
+}
