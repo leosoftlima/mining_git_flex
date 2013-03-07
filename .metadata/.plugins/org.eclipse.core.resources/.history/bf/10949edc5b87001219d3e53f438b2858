@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 import br.ufpe.cin.GitMiner.Commits.BaseCommit;
-import br.ufpe.cin.GitMiner.Commits.Directory;
 import br.ufpe.cin.GitMiner.Commits.TaskCommit;
 import br.ufpe.cin.GitMiner.io.FileHandler;
 
@@ -220,7 +219,6 @@ private void loadFilesFromAddedDirectories(Directory dir){
 	
 	for(Directory sub : dir.getSubDirectories()){
 		
-		this.addedDirectories.add(sub.getName());
 		this.loadFilesFromAddedDirectories(sub);
 	}
 }

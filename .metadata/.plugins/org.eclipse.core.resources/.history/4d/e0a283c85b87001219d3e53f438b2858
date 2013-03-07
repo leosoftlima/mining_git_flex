@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import br.ufpe.cin.GitMiner.Commits.BaseCommit;
-import br.ufpe.cin.GitMiner.Commits.TaskCommit;
+import br.ufpe.cin.GitMiner.ComputeChangeSet.BaseCommit;
 import br.ufpe.cin.GitMiner.ComputeChangeSet.ChangeSet;
+import br.ufpe.cin.GitMiner.ComputeChangeSet.TaskCommit;
 import br.ufpe.cin.GitMiner.PotentialConflicts.GitMinerPotentialConflicts;
 
 import javax.xml.parsers.DocumentBuilder;

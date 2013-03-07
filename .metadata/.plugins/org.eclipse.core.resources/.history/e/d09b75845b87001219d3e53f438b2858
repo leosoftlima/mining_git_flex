@@ -43,5 +43,9 @@ public class SingleChangeset {
 		
 	}
 	
-
+	public void loadFilesFromAddedDirectories(){
+		
+		
+		
+	}
 }
