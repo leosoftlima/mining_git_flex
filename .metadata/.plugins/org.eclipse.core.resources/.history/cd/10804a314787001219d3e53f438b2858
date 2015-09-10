@@ -1,5 +1,0 @@
-package br.ufpe.cin.GitMiner.ComputeChangeSet;
-
-public class SingleChangeset {
-
-}
