@@ -10,10 +10,10 @@ public class Main {
         try {
             repository.downloadCommits();
             repository.unzipCommits();
-            if (!repository.usesCucumber()) {
-                System.out.println("The project does not use Cucumber!");
+            if (!repository.hasFeatureFile()) {
+                System.out.println("The project does not contain feature file!");
                 repository.delete();
-            } else System.out.println("The project does use Cucumber!");
+            } else System.out.println("The project does contain feature file!");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,8 +37,8 @@ public class Main {
     }
 
     public static void main(String[] args){
-        //Downloading and unzipping a project
-        //checkProject("https://github.com/spgroup/rgms", "master");
+        //Downloading and unzipping a project (example)
+        checkProject("https://github.com/spgroup/rgms", "master");
 
         // Downloading and unzipping projects from csv file
         searchCucumberProjects();

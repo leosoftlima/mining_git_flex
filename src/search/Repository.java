@@ -55,7 +55,7 @@ public class Repository {
         fileHandler.unzipper(this);
     }
 
-    public boolean usesCucumber(){
+    public boolean hasFeatureFile(){
         String folder = Util.UNZIPPED_FILES_DIR +getName();
         return fileHandler.hasFileType(Util.FEATURE_FILE_EXTENSION, folder);
     }
