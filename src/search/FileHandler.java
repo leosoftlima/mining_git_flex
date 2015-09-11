@@ -28,7 +28,7 @@ public class FileHandler {
         if(entries.size()>0) entries.remove(0); //ignore sheet header
 
         for(String[] line: entries){
-            repos.add(new Repository(line[0], line[3])); //url, branch
+            repos.add(new Repository(line[0], line[1])); //url, branch
         }
         return repos;
     }
