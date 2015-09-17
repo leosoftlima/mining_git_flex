@@ -1,0 +1,1 @@
+The unzipped projects are stored here. At the end of the program, the ones that do not satisfy the search criteria are removed.
