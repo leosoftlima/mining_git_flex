@@ -29,6 +29,18 @@ public class Main {
         check(repo);
     }
 
+    public static void searchCucumberProjectsDefaultBranch(){
+        ArrayList<Repository> repositories = new ArrayList<>();
+        try {
+            repositories = FileHandler.extractProjectsDefaultBranch();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for(Repository repository: repositories){
+            check(repository);
+        }
+    }
+
     public static void searchCucumberProjects(){
         ArrayList<Repository> repositories = new ArrayList<>();
         try {

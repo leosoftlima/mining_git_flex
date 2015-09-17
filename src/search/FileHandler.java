@@ -20,6 +20,19 @@ public class FileHandler {
         }
     }
 
+    public static ArrayList<Repository> extractProjectsDefaultBranch() throws IOException {
+        ArrayList<Repository> repos = new ArrayList<>();
+        CSVReader reader = new CSVReader(new FileReader(Util.PROJECTS_FILE));
+        List<String[]> entries = reader.readAll();
+
+        if(entries.size()>0) entries.remove(0); //ignore sheet header
+
+        for(String[] line: entries){
+            repos.add(new Repository(line[0], "master")); //url, branch
+        }
+        return repos;
+    }
+
     public static ArrayList<Repository> extractProjects() throws IOException {
         ArrayList<Repository> repos = new ArrayList<>();
         CSVReader reader = new CSVReader(new FileReader(Util.PROJECTS_FILE));
