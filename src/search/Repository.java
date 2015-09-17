@@ -47,11 +47,11 @@ public class Repository {
         return name+ Util.FILE_EXTENSION;
     }
 
-    public void downloadCommits() throws IOException {
+    public void downloadZip() throws IOException {
         fileHandler.downloadZipFile(this);
     }
 
-    public void unzipCommits() throws IOException {
+    public void unzip() throws IOException {
         fileHandler.unzipper(this);
     }
 
@@ -62,7 +62,7 @@ public class Repository {
 
     public void delete(){
         fileHandler.deleteFolder(Util.UNZIPPED_FILES_DIR + name);
-        fileHandler.deleteZipFile(this);
+        fileHandler.deleteZipFile(name);
     }
 
 }

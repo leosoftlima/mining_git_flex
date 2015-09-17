@@ -50,7 +50,7 @@ public class FileHandler {
             in.close();
             System.out.println("Done downloading!");
         } catch (IOException e) {
-            System.out.println("Problem during download!");
+            System.out.println("Problem during download: "+e.getMessage());
             registryDownloadProblem(gitUrl);
             throw e;
         }
@@ -121,8 +121,8 @@ public class FileHandler {
         dir.delete();
     }
 
-    public void deleteZipFile(Repository repo) {
-        File file = new File(Util.ZIPPED_FILES_DIR+"/"+repo.getName()+ Util.FILE_EXTENSION);
+    public void deleteZipFile(String name) {
+        File file = new File(Util.ZIPPED_FILES_DIR+"/"+name+ Util.FILE_EXTENSION);
         file.delete();
     }
 

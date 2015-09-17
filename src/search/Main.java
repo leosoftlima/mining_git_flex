@@ -8,8 +8,8 @@ public class Main {
 
     private static void check(Repository repository) {
         try {
-            repository.downloadCommits();
-            repository.unzipCommits();
+            repository.downloadZip();
+            repository.unzip();
             if (!repository.hasFeatureFile()) {
                 System.out.println("The project does not contain feature file!");
                 repository.delete();
