@@ -17,6 +17,13 @@ public class Repository {
         this.fileHandler = new FileHandler();
     }
 
+    public Repository(String gitUrl) {
+        this.url = gitUrl.substring(0,gitUrl.indexOf("/archive/"));
+        this.branch = gitUrl.substring(gitUrl.lastIndexOf("/")+1, gitUrl.length()-Util.FILE_EXTENSION.length());
+        this.name = configureName(url);
+        this.fileHandler = new FileHandler();
+    }
+
     public String getUrl() {
         return url;
     }

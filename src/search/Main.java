@@ -19,6 +19,11 @@ public class Main {
         }
     }
 
+    public static void checkProject(String url){
+        Repository repo = new Repository(url);
+        check(repo);
+    }
+
     public static void checkProject(String url, String branch){
         Repository repo = new Repository(url, branch);
         check(repo);
@@ -38,7 +43,7 @@ public class Main {
 
     public static void main(String[] args){
         //Downloading and unzipping a project (example)
-        checkProject("https://github.com/spgroup/rgms", "master");
+        checkProject("https://github.com/spgroup/rgms/archive/master.zip");
 
         // Downloading and unzipping projects from csv file
         searchCucumberProjects();
