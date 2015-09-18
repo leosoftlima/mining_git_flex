@@ -1,10 +1,29 @@
 package search;
 
+import au.com.bytecode.opencsv.CSVWriter;
+
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
 
 public class Main {
+
+    private static void check(Repository repository, CSVWriter writer, int index) {
+        try {
+            repository.downloadZip();
+            repository.unzip();
+            if (!repository.hasFeatureFile()) {
+                System.out.println("The project does not contain feature file!");
+                repository.delete();
+            } else{
+                System.out.println("The project does contain feature file!");
+                writer.writeNext(new String[]{String.valueOf(index), repository.getUrl()});
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static void check(Repository repository) {
         try {
@@ -13,7 +32,9 @@ public class Main {
             if (!repository.hasFeatureFile()) {
                 System.out.println("The project does not contain feature file!");
                 repository.delete();
-            } else System.out.println("The project does contain feature file!");
+            } else{
+                System.out.println("The project does contain feature file!");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,14 +63,18 @@ public class Main {
     }
 
     public static void searchCucumberProjects(){
-        ArrayList<Repository> repositories = new ArrayList<>();
+        CSVWriter writer;
+        ArrayList<Repository> repositories;
         try {
             repositories = FileHandler.extractProjects();
+            writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE));
+            writer.writeNext(new String[]{"index", "repository_url"});
+            for(int i=0; i<repositories.size(); i++){
+                check(repositories.get(i), writer, i+2);
+            }
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        for(Repository repository: repositories){
-            check(repository);
         }
     }
 
