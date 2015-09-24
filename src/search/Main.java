@@ -1,13 +1,20 @@
 package search;
 
 import au.com.bytecode.opencsv.CSVWriter;
-
+import util.Util;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 
 public class Main {
+
+    private static int counter = 0;
+    private static int selectedCounter = 0;
+
+    private static void resetCounters(){
+        counter = 0;
+        selectedCounter = 0;
+    }
 
     private static void check(Repository repository, CSVWriter writer, int index) {
         try {
@@ -15,12 +22,14 @@ public class Main {
             repository.unzip();
             if (!repository.hasFeatureFile()) {
                 System.out.println("The project does not contain feature file!");
-                repository.delete();
+                repository.deleteAll();
             } else{
                 System.out.println("The project does contain feature file!");
+                selectedCounter++;
+                repository.deleteUnzipedDir();
                 writer.writeNext(new String[]{String.valueOf(index), repository.getUrl()});
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -31,11 +40,13 @@ public class Main {
             repository.unzip();
             if (!repository.hasFeatureFile()) {
                 System.out.println("The project does not contain feature file!");
-                repository.delete();
+                repository.deleteAll();
             } else{
                 System.out.println("The project does contain feature file!");
+                selectedCounter++;
+                repository.deleteUnzipedDir();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -51,20 +62,24 @@ public class Main {
     }
 
     public static void searchCucumberProjectsDefaultBranch(){
-        ArrayList<Repository> repositories = new ArrayList<>();
+        ArrayList<Repository> repositories;
+        resetCounters();
+
         try {
             repositories = FileHandler.extractProjectsDefaultBranch();
-        } catch (IOException e) {
+            for(Repository repository: repositories){
+                check(repository);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        for(Repository repository: repositories){
-            check(repository);
         }
     }
 
     public static void searchCucumberProjects(){
         CSVWriter writer;
         ArrayList<Repository> repositories;
+        resetCounters();
+
         try {
             repositories = FileHandler.extractProjects();
             writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE));
@@ -73,7 +88,7 @@ public class Main {
                 check(repositories.get(i), writer, i+2);
             }
             writer.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -84,6 +99,8 @@ public class Main {
 
         // Downloading and unzipping projects from csv file
         searchCucumberProjects();
+        System.out.printf("Number of analyzed projects: %d%n", counter);
+        System.out.printf("Number of selected projects: %d (%.2f%%)%n", selectedCounter, ((double)selectedCounter/counter)*100);
     }
 
 }

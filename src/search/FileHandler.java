@@ -1,7 +1,8 @@
 package search;
 
 import au.com.bytecode.opencsv.CSVReader;
-
+import input.InputManager;
+import util.Util;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,11 @@ public class FileHandler {
 
     public static ArrayList<Repository> extractProjectsDefaultBranch() throws IOException {
         ArrayList<Repository> repos = new ArrayList<>();
-        CSVReader reader = new CSVReader(new FileReader(Util.PROJECTS_FILE));
+
+        InputManager.prepareInput();
+        CSVReader reader = new CSVReader(new FileReader(Util.PREPARED_PROJECTS_FILE));
         List<String[]> entries = reader.readAll();
+        reader.close();
 
         if(entries.size()>0) entries.remove(0); //ignore sheet header
 
@@ -35,8 +39,11 @@ public class FileHandler {
 
     public static ArrayList<Repository> extractProjects() throws IOException {
         ArrayList<Repository> repos = new ArrayList<>();
-        CSVReader reader = new CSVReader(new FileReader(Util.PROJECTS_FILE));
+
+        InputManager.prepareInput();
+        CSVReader reader = new CSVReader(new FileReader(Util.PREPARED_PROJECTS_FILE));
         List<String[]> entries = reader.readAll();
+        reader.close();
 
         if(entries.size()>0) entries.remove(0); //ignore sheet header
 
@@ -62,45 +69,50 @@ public class FileHandler {
             bout.close();
             in.close();
             System.out.println("Done downloading!");
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Problem during download: "+e.getMessage());
             registryDownloadProblem(gitUrl);
             throw e;
         }
     }
 
-    public void unzipper(Repository repo) throws IOException {
+    public void unzipper(Repository repo) {
         String zipFile = Util.ZIPPED_FILES_DIR+repo.getZipfileName();
         String outputFolder = Util.UNZIPPED_FILES_DIR +repo.getName();
         byte[] buffer = new byte[1024];
         File folder = new File(outputFolder); //create output directory is not exists
 
         System.out.printf("Unzipping zipfile: %s\n", zipFile);
-        if (!folder.exists()) {
-            folder.mkdir();
-            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile)); //get the zip file content
-            ZipEntry ze = zis.getNextEntry(); //get the zipped file list entry
+        try{
+            if (!folder.exists()) {
+                folder.mkdir();
+                ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile)); //get the zip file content
+                ZipEntry ze = zis.getNextEntry(); //get the zipped file list entry
 
-            while (ze != null) {
-                String fileName = ze.getName();
-                File newFile = new File(outputFolder + File.separator + fileName);
-                if (ze.isDirectory()) {
-                    new File(newFile.getParent()).mkdirs();
-                } else {
-                    FileOutputStream fos;
-                    new File(newFile.getParent()).mkdirs();
-                    fos = new FileOutputStream(newFile);
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
+                while (ze != null) {
+                    String fileName = ze.getName();
+                    File newFile = new File(outputFolder + File.separator + fileName);
+                    if (ze.isDirectory()) {
+                        new File(newFile.getParent()).mkdirs();
+                    } else {
+                        FileOutputStream fos;
+                        new File(newFile.getParent()).mkdirs();
+                        fos = new FileOutputStream(newFile);
+                        int len;
+                        while ((len = zis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, len);
+                        }
+                        fos.close();
                     }
-                    fos.close();
+                    ze = zis.getNextEntry();
                 }
-                ze = zis.getNextEntry();
+                zis.closeEntry();
+                zis.close();
+                System.out.println("Done unzipping!");
             }
-            zis.closeEntry();
-            zis.close();
-            System.out.println("Done unzipping!");
+        } catch(Exception e){
+            System.out.println("Problem during unzipping: "+e.getMessage());
+            repo.deleteAll();
         }
     }
 

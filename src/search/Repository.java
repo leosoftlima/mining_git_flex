@@ -1,5 +1,6 @@
 package search;
 
+import util.Util;
 import java.io.IOException;
 
 
@@ -19,7 +20,7 @@ public class Repository {
 
     public Repository(String gitUrl) {
         this.url = gitUrl.substring(0,gitUrl.indexOf("/archive/"));
-        this.branch = gitUrl.substring(gitUrl.lastIndexOf("/")+1, gitUrl.length()-Util.FILE_EXTENSION.length());
+        this.branch = gitUrl.substring(gitUrl.lastIndexOf("/")+1, gitUrl.length()- Util.FILE_EXTENSION.length());
         this.name = configureName(url);
         this.fileHandler = new FileHandler();
     }
@@ -58,7 +59,7 @@ public class Repository {
         fileHandler.downloadZipFile(this);
     }
 
-    public void unzip() throws IOException {
+    public void unzip() {
         fileHandler.unzipper(this);
     }
 
@@ -67,9 +68,16 @@ public class Repository {
         return fileHandler.hasFileType(Util.FEATURE_FILE_EXTENSION, folder);
     }
 
-    public void delete(){
+    public void deleteAll(){
         fileHandler.deleteFolder(Util.UNZIPPED_FILES_DIR + name);
         fileHandler.deleteZipFile(name);
     }
 
+    public void deleteUnzipedDir(){
+        fileHandler.deleteFolder(Util.UNZIPPED_FILES_DIR + name);
+    }
+
+    public void deleteZipFile(){
+        fileHandler.deleteZipFile(name);
+    }
 }
