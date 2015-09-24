@@ -127,7 +127,10 @@ public class FileHandler {
             if(result) return true;
             else if(f.isDirectory()) result = hasFileType(type, f.getAbsolutePath());
             else {
-                if(f.getName().contains(type)) result = true;
+                if(f.getName().endsWith(type)) {
+                    result = true;
+                    System.out.printf("Founded feature file: %s%n", f.getAbsolutePath());
+                }
             }
         }
         return result;
