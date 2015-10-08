@@ -7,7 +7,7 @@ public class Main {
         SearchManager searcher = new SearchManager();
 
         //Downloading and unzipping a project (example)
-        searcher.checkProject("https://github.com/spgroup/rgms/archive/master.zip");
+        searcher.checkProjectFromUrl("https://github.com/spgroup/rgms/archive/master.zip");
 
         // Downloading and unzipping projects from csv file
         searcher.searchCucumberProjects();
