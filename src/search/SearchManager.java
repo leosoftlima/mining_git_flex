@@ -62,21 +62,21 @@ public class SearchManager {
     }
 
     /* The input is the zip file url. */
-    public void checkProject(String url){
+    public void checkProjectFromUrl(String url){
         Repository repo = new Repository(url);
         check(repo);
     }
 
-    public void checkProjectFromUrlFile(String file) throws FileNotFoundException {
+    public void checkProjectsFromUrlFile(String file) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(file));
         while (scanner.hasNextLine()){
             String url = scanner.nextLine();
             System.out.println(url);
-            checkProject(url);
+            checkProjectFromUrl(url);
         }
     }
 
-    public void checkProject(String url, String branch){
+    public void checkProjectFromUrl(String url, String branch){
         Repository repo = new Repository(url, branch);
         check(repo);
     }
