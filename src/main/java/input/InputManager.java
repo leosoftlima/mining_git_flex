@@ -11,8 +11,15 @@ import java.util.*;
 
 public class InputManager {
 
-    public static void prepareInput(String csvName) throws IOException {
-        CSVReader reader = new CSVReader(new FileReader(csvName));
+    /**
+     * Generates a new csv file (input/projects-input.csv) based on the one that contains the result of BigQuery engine,
+     * excluding duplicated lines and unnecessary columns.
+     *
+     * @param csvPath csv file that contains the result of BigQuery engine (project url and master branch)
+     * @throws IOException if there's an error reading or writting csv files
+     */
+    public static void prepareInput(String csvPath) throws IOException {
+        CSVReader reader = new CSVReader(new FileReader(csvPath));
         List<String[]> entries = reader.readAll();
         reader.close();
 
@@ -24,6 +31,12 @@ public class InputManager {
         writer.close();
     }
 
+    /**
+     * Generates a new csv file (input/projects-input.csv) based on the one (input/projects.csv) that contains the
+     * result of BigQuery engine, excluding duplicated lines and unnecessary columns.
+     *
+     * @throws IOException if there's an error reading or writting csv files.
+     */
     public static void prepareInput() throws IOException {
         CSVReader reader = new CSVReader(new FileReader(Util.PROJECTS_FILE));
         List<String[]> entries = reader.readAll();

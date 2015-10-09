@@ -1,11 +1,9 @@
 package search;
 
-import au.com.bytecode.opencsv.CSVReader;
-import input.InputManager;
+import search.exception.DownloadException;
+import search.exception.UnzipException;
 import util.Util;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -21,45 +19,19 @@ public class FileHandler {
         }
     }
 
-    public static ArrayList<Repository> extractProjectsDefaultBranch() throws IOException {
-        ArrayList<Repository> repos = new ArrayList<>();
-
-        InputManager.prepareInput();
-        CSVReader reader = new CSVReader(new FileReader(Util.PREPARED_PROJECTS_FILE));
-        List<String[]> entries = reader.readAll();
-        reader.close();
-
-        if(entries.size()>0) entries.remove(0); //ignore sheet header
-
-        for(String[] line: entries){
-            repos.add(new Repository(line[0], "master")); //url, branch
-        }
-        return repos;
-    }
-
-    public static ArrayList<Repository> extractProjects() throws IOException {
-        ArrayList<Repository> repos = new ArrayList<>();
-
-        InputManager.prepareInput();
-        CSVReader reader = new CSVReader(new FileReader(Util.PREPARED_PROJECTS_FILE));
-        List<String[]> entries = reader.readAll();
-        reader.close();
-
-        if(entries.size()>0) entries.remove(0); //ignore sheet header
-
-        for(String[] line: entries){
-            repos.add(new Repository(line[0], line[1])); //url, branch
-        }
-        return repos;
-    }
-
-    public void downloadZipFile(Repository repo) throws IOException {
-        String gitUrl = repo.getUrl() + Util.ZIP_FILE_URL + repo.getBranch()+Util.FILE_EXTENSION;
-        System.out.printf("Downloading zipfile: %s\n", gitUrl);
+    /**
+     * Downloads a zip file.
+     *
+     * @param zipUrl url for the download.
+     * @param zipPath path to save downloaded zip file.
+     * @throws DownloadException if there's an error during downloading.
+     */
+    public static void downloadZipFile(String zipUrl, String zipPath) throws DownloadException {
+        System.out.printf("Downloading zipfile: %s\n", zipUrl);
         BufferedInputStream in;
         try {
-            in = new BufferedInputStream(new java.net.URL(gitUrl).openStream());
-            FileOutputStream fos = new FileOutputStream(Util.ZIPPED_FILES_DIR+"/"+repo.getName()+ Util.FILE_EXTENSION);
+            in = new BufferedInputStream(new java.net.URL(zipUrl).openStream());
+            FileOutputStream fos = new FileOutputStream(zipPath);
             BufferedOutputStream bout = new BufferedOutputStream(fos, 8192);
             byte[] data = new byte[8192];
             int x;
@@ -69,24 +41,27 @@ public class FileHandler {
             bout.close();
             in.close();
             System.out.println("Done downloading!");
-        } catch (Exception e) {
-            System.out.println("Problem during download: "+e.getMessage());
-            registryDownloadProblem(gitUrl);
-            throw e;
+        } catch (IOException e) {
+            registryDownloadProblem(zipUrl);
+            throw new DownloadException(e.getMessage());
         }
     }
 
-    public void unzipper(Repository repo) {
-        String zipFile = Util.ZIPPED_FILES_DIR+repo.getZipfileName();
-        String outputFolder = Util.UNZIPPED_FILES_DIR +repo.getName();
+    /**
+     * Unzips repository's zip file and saves it at "unzipped" folder.
+     * @param zipPath path of zip file.
+     * @param outputFolder place to save zip file content.
+     * @throws UnzipException if there's an error during unzipping.
+     */
+    public static void unzip(String zipPath, String outputFolder) throws UnzipException {
         byte[] buffer = new byte[1024];
         File folder = new File(outputFolder); //create output directory is not exists
 
-        System.out.printf("Unzipping zipfile: %s\n", zipFile);
+        System.out.printf("Unzipping zipfile: %s\n", zipPath);
         try{
             if (!folder.exists()) {
                 folder.mkdir();
-                ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile)); //get the zip file content
+                ZipInputStream zis = new ZipInputStream(new FileInputStream(zipPath)); //get the zip file content
                 ZipEntry ze = zis.getNextEntry(); //get the zipped file list entry
 
                 while (ze != null) {
@@ -110,13 +85,17 @@ public class FileHandler {
                 zis.close();
                 System.out.println("Done unzipping!");
             }
-        } catch(Exception e){
-            System.out.println("Problem during unzipping: "+e.getMessage());
-            repo.deleteAll();
+        } catch(IOException e){
+            throw new UnzipException(e.getMessage());
         }
     }
 
-    public boolean hasFileType(String type, String folder){
+    /**
+     * Verifies if a folder contains file for a specific type.
+     * @param type file type to search.
+     * @param folder place to search.
+     */
+    public static boolean hasFileType(String type, String folder){
         boolean result = false;
         File dir = new File(folder);
         File[] files = dir.listFiles();
@@ -129,14 +108,19 @@ public class FileHandler {
             else {
                 if(f.getName().endsWith(type)) {
                     result = true;
-                    System.out.printf("Founded feature file: %s%n", f.getAbsolutePath());
+                    //System.out.printf("Founded feature file: %s%n", f.getAbsolutePath());
                 }
             }
         }
         return result;
     }
 
-    public void deleteFolder(String folder) {
+    /**
+     * Deletes a folder and its files.
+     *
+     * @param folder folder's path.
+     */
+    public static void deleteFolder(String folder) {
         File dir = new File(folder);
         File[] files = dir.listFiles();
         if(files != null) {
@@ -149,8 +133,13 @@ public class FileHandler {
         dir.delete();
     }
 
-    public void deleteZipFile(String name) {
-        File file = new File(Util.ZIPPED_FILES_DIR+"/"+name+ Util.FILE_EXTENSION);
+    /**
+     * Deletes a zip file if it does exist.
+     *
+     * @param path zip file path.
+     */
+    public static void deleteZipFile(String path) {
+        File file = new File(path);
         file.delete();
     }
 
