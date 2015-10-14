@@ -1,7 +1,5 @@
 package search;
 
-import input.BigQueryServiceManager;
-
 import java.io.IOException;
 
 public class Main {
