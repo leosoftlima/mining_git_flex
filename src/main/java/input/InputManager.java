@@ -53,9 +53,10 @@ public class InputManager {
     private static List<String[]> removeDuplicatedValues(List<String[]> input){
         List<String[]> output = new ArrayList<>();
         for (String[] line : input) {
-            if(line[1].equals("null")) line[1] = "master";
-            if (!contains(output, line)){
-                output.add(line);
+            if(line[1].equals("null") || line[1].contains("java.lang.Object@")) line[1] = "master";
+            String[] shortLine = Arrays.copyOf(line,2);
+            if ( !contains(output,shortLine) ){
+                output.add(shortLine);
             }
         }
         return output;
