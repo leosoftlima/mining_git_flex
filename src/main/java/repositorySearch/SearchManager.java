@@ -1,4 +1,4 @@
-package search;
+package repositorySearch;
 
 
 import au.com.bytecode.opencsv.CSVReader;

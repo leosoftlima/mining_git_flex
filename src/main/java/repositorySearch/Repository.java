@@ -1,7 +1,7 @@
-package search;
+package repositorySearch;
 
-import search.exception.DownloadException;
-import search.exception.UnzipException;
+import repositorySearch.exception.DownloadException;
+import repositorySearch.exception.UnzipException;
 import util.Util;
 
 

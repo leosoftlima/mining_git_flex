@@ -1,4 +1,4 @@
-package search.exception;
+package repositorySearch.exception;
 
 
 public class DownloadException extends Exception {

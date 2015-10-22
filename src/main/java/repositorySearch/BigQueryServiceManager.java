@@ -1,4 +1,4 @@
-package search;
+package repositorySearch;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;

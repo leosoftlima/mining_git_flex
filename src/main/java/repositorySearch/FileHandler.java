@@ -1,7 +1,7 @@
-package search;
+package repositorySearch;
 
-import search.exception.DownloadException;
-import search.exception.UnzipException;
+import repositorySearch.exception.DownloadException;
+import repositorySearch.exception.UnzipException;
 import util.Util;
 import java.io.*;
 import java.util.zip.ZipEntry;
@@ -92,8 +92,8 @@ public class FileHandler {
 
     /**
      * Verifies if a folder contains file for a specific type.
-     * @param type file type to search.
-     * @param folder place to search.
+     * @param type file type to repositorySearch.
+     * @param folder place to repositorySearch.
      */
     public static boolean hasFileType(String type, String folder){
         boolean result = false;
