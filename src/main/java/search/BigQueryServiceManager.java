@@ -46,7 +46,7 @@ public class BigQueryServiceManager {
      *
      * @param querySql the query to execute.
      * @param bigquery the Bigquery service object.
-     * @param projectId the id of the project under which to run the query.
+     * @param projectId the id of the repository under which to run the query.
      * @return a list of the results of the query.
      * @throws IOException if there's an error communicating with the API.
      */
@@ -92,15 +92,15 @@ public class BigQueryServiceManager {
      *
      * Searches for GitHub projects according to the
      *
-     * @param projectId the id of the project to run the search under. If no valid value is given, it will prompt for it.
+     * @param projectId the id of the repository to run the search under. If no valid value is given, it will prompt for it.
      * @param query the query to guide the searching.
      * @throws IOException if there's an error communicating with the API.
      */
     public static void searchProjects(String projectId, String query) throws IOException {
         Scanner sc;
         if (projectId==null || projectId.isEmpty()) {
-            // Prompt the user to enter the id of the project to run the queries under
-            System.out.print("Enter the project ID: ");
+            // Prompt the user to enter the id of the repository to run the queries under
+            System.out.print("Enter the repository ID: ");
             sc = new Scanner(System.in);
         } else {
             sc = new Scanner(projectId);

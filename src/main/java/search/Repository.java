@@ -6,7 +6,7 @@ import util.Util;
 
 
 /**
- * Represents a GitHub project's repository and provides method to download de project zip file, unzip it and check it has
+ * Represents a GitHub repository and provides mechanism to download de repository zip file, unzip it and check it has
  * Gherkin files (extension .feature).
  */
 public class Repository {

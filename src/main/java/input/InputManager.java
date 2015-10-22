@@ -15,7 +15,7 @@ public class InputManager {
      * Generates a new csv file (input/projects-input.csv) based on the one that contains the result of BigQuery engine,
      * excluding duplicated lines and unnecessary columns.
      *
-     * @param csvPath csv file that contains the result of BigQuery engine (project url and master branch)
+     * @param csvPath csv file that contains the result of BigQuery engine (repository url and master branch)
      * @throws IOException if there's an error reading or writting csv files
      */
     public static void prepareInput(String csvPath) throws IOException {

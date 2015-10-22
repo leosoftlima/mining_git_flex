@@ -4,7 +4,6 @@ package search;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import input.InputManager;
-import search.exception.DownloadException;
 import util.Util;
 
 import java.io.*;
@@ -87,12 +86,12 @@ public class SearchManager {
     private void searchGherkinFile(Repository repository, CSVWriter writer, int index) {
         counter++;
         if (repository.hasGherkinFile()) {
-            System.out.println("The project does contain feature file!");
+            System.out.println("The repository does contain feature file!");
             selected.add(repository);
             repository.deleteUnzipedDir();
             writer.writeNext(new String[]{String.valueOf(index), repository.getUrl()});
         } else{
-            System.out.println("The project does not contain feature file!");
+            System.out.println("The repository does not contain feature file!");
             repository.deleteAll();
         }
     }
@@ -104,11 +103,11 @@ public class SearchManager {
      */
     private void searchGherkinFile(Repository repository) {
         if (repository.hasGherkinFile()) {
-            System.out.println("The project does contain feature file!");
+            System.out.println("The repository does contain feature file!");
             selected.add(repository);
             repository.deleteUnzipedDir();
         } else{
-            System.out.println("The project does not contain feature file!");
+            System.out.println("The repository does not contain feature file!");
             repository.deleteAll();
         }
     }
