@@ -1,10 +1,17 @@
-package search;
+package demo;
+
+
+import repositorySearch.BigQueryServiceManager;
+import repositorySearch.SearchManager;
 
 import java.io.IOException;
 
-public class Main {
+public class Demo {
 
-    public static void main(String[] args){
+    /***
+     * Searchs groovy projects from the last 5 years that contain Gherkin files and commit message with ID information.
+     */
+    public static void searchGherkinProjects (){
         String query = "SELECT repository_url, repository_master_branch, payload_commit_msg, "
                 + "(repository_url + '/commit/' + payload_commit_id) AS commit_link, payload_commit_id, created_at, repository_watchers "
                 + "FROM [githubarchive:github.timeline] "
@@ -30,11 +37,14 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Problem during projects searching: "+e.getMessage());
         }
+    }
 
-        //Downloading and unzipping a project (example)
+    /***
+     * Downloads and unzips https://github.com/spgroup/rgms/archive/master.zip
+     */
+    public static void downloadRepository(){
         SearchManager searcher = new SearchManager();
         searcher.analyseRepository("https://github.com/spgroup/rgms/archive/master.zip");
-
     }
 
 }
