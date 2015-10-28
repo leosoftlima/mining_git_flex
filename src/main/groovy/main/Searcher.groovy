@@ -1,15 +1,21 @@
 package main
 
+import au.com.bytecode.opencsv.CSVReader
 import commitSearch.Commit
 import commitSearch.CommitSearchManager
 import edu.unl.cse.git.App
 import groovy.time.TimeCategory
 import net.wagstrom.research.github.Github
+import net.wagstrom.research.github.GithubProperties
+import net.wagstrom.research.github.PropNames
 import repositorySearch.BigQueryServiceManager
 import repositorySearch.SearchManager
+import util.Util
 
 
 class Searcher {
+
+    private static final String TASK_ID_REGEX = /([#.*] | [fix.* #.*] | [complet.* #.*] | [finish.* #.*]).*/
 
     private static void downloadRepository(String[] args){
         Github g = new Github()
@@ -47,6 +53,21 @@ class Searcher {
         return query
     }
 
+    /***
+     *
+     * @param repositoryName
+     */
+    private static void updatePropertiesFile(String repositoryName){
+        Properties props = GithubProperties.props()
+        props.setProperty(PropNames.GITHUB_PROJECT_NAMES, repositoryName)
+        props.setProperty("edu.unl.cse.git.repositories", repositoryName)
+        ClassLoader loader = Thread.currentThread().getContextClassLoader()
+        URL url = loader.getResource("configuration.properties");
+        FileOutputStream fos = new FileOutputStream(new File(url.toURI()))
+        props.store(fos, null)
+        fos.close()
+    }
+
     /**
      * Searches for GitHub projects from the last 5 years that contains Gherkin files.
      * Gherkin is the language used by some BDD (Behavior Driven Development) tools as Cucumber.
@@ -66,33 +87,45 @@ class Searcher {
         searcher.searchGherkinProjects();
     }
 
-    public static void searchProjectWithLinkAmongTaskAndChangesAndTest(String[] args, String gitRepository){
-        //Download the repository specified at gitminer/configuration.properties
-        downloadRepository(args)
-
-        def regex = /([#.*] | [fix.* #.*] | [complet.* #.*] | [finish.* #.*]).*/
-        //def regex = /merge pull request #.*/
-        CommitSearchManager manager = new CommitSearchManager(gitRepository)
-        List<Commit> commits = manager.searchByComment(regex)
-
+    /***
+     * Checks if a GitHub repository enables to link development tasks, code changes in production files and code
+     * changes in test files. Such a link is needed to compute task interfaces.
+     * @param args command-line arguments required by GitMiner
+     * @param repository short name of the GitHub repository to analyse
+     * */
+    public static void findLinkAmongTaskAndChangesAndTest(String[] args, String repository){
+        downloadRepository(args) //Download the repository specified in configuration.properties
+        CommitSearchManager manager = new CommitSearchManager(repository)
+        List<Commit> commits = manager.searchByComment(TASK_ID_REGEX)
         commits.eachWithIndex{ commit, index ->
             println "($index): ${commit.message}"
         }
-
-        //Checar se existem vários commits usando o mesmo ID
-        //Para cada ID, checar tipo dos arquivos alterados. queremos arquivos de teste e arquivo de produção
-        //distinguir tipo de arquivo por caminho de diretório
+        //nesse ponto, o arraylist commits contém a lista de commits cuja mensagem possui ID
+        //Ainda falta:
+        //1 - Checar se existem vários commits usando o mesmo ID
+        //2 - Para cada ID, checar tipo dos arquivos alterados. queremos arquivos de teste e arquivo de produção. Lembrar
+        // de distinguir tipo de arquivo por caminho de diretório
     }
 
-    public static void searchProjectsWithLinkAmongTaskAndChangesAndTest(String[] args){
+    /***
+     * Checks if the previous selected GitHub projects (content of file "output/selected-projects.csv") enable to link
+     * development tasks, code changes in production files and code changes in test files. Such a link is needed to
+     * compute task interfaces.
+     * @param args command-line arguments required by GitMiner
+     */
+    public static void findProjectsWithLinkAmongTaskAndChangesAndTest(String[] args){
+        CSVReader reader = new CSVReader(new FileReader(Util.SELECTED_PROJECTS_FILE))
+        List<String[]> entries = reader.readAll()
+        reader.close()
 
-        //para cada projeto pre-selecionado, identificado no arquivo csv de saída (output/selected-projects.csv)
-        String gitRepository
+        if(entries.size()>0) entries.remove(0) //ignore sheet header
 
-        //configurar net.wagstrom.research.github.projects em configuration.properties
-        //configurar edu.unl.cse.git.repositories em configuration.properties
-        searchProjectWithLinkAmongTaskAndChangesAndTest(args, "LicenseFinder")
+        for(String[] entry: entries){
+            String repositoryName = entry[1] - Util.GITHUB_URL
+            updatePropertiesFile(repositoryName)
+            String repositoryShortName = repositoryName.substring(repositoryName.lastIndexOf("/")+1)
+            findLinkAmongTaskAndChangesAndTest(args, repositoryShortName)
+        }
     }
-
 
 }
