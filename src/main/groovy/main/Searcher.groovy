@@ -3,6 +3,7 @@ package main
 import au.com.bytecode.opencsv.CSVReader
 import commitSearch.Commit
 import commitSearch.CommitSearchManager
+import commitSearch.Task
 import edu.unl.cse.git.App
 import groovy.time.TimeCategory
 import net.wagstrom.research.github.Github
@@ -15,7 +16,7 @@ import util.Util
 
 class Searcher {
 
-    private static final String TASK_ID_REGEX = /([#.*] | [fix.* #.*] | [complet.* #.*] | [finish.* #.*]).*/
+    static final String MESSAGE_ID_REGEX = /([#.*] | [fix.* #.*] | [complet.* #.*] | [finish.* #.*]).*/ //Other possibility: /.*#\d+.*/
 
     private static void downloadRepository(String[] args){
         Github g = new Github()
@@ -54,18 +55,42 @@ class Searcher {
     }
 
     /***
-     *
-     * @param repositoryName
+     * Updates the configuration properties file required by GitMiner to download a GitHub repository.
+     * @param repository short path of the repository to download. For example, if the repository URL is
+     * https://github.com/spgroup/rgms, the value of this parameter should be spgroup/rgms.
      */
-    private static void updatePropertiesFile(String repositoryName){
+    private static void updatePropertiesFile(String repository){
         Properties props = GithubProperties.props()
-        props.setProperty(PropNames.GITHUB_PROJECT_NAMES, repositoryName)
-        props.setProperty("edu.unl.cse.git.repositories", repositoryName)
+        props.setProperty(PropNames.GITHUB_PROJECT_NAMES, repository)
+        props.setProperty("edu.unl.cse.git.repositories", repository)
         ClassLoader loader = Thread.currentThread().getContextClassLoader()
         URL url = loader.getResource("configuration.properties");
         FileOutputStream fos = new FileOutputStream(new File(url.toURI()))
         props.store(fos, null)
         fos.close()
+    }
+
+    /***
+     *
+     * @return
+     */
+    private static List<Task> organizeCommitsByTaskId(List<Commit> commits) {
+        List<Task> tasks = []
+        def organizedCommits = []
+
+        commits.each{ commit ->
+            def idsFromCommit = commit.message.findAll(/#\d+/).unique().collect{it - "#"}
+            organizedCommits += [commit:commit, code:idsFromCommit]
+        }
+
+        def ids = (organizedCommits*.code)?.unique()?.flatten()
+        ids.each{ id ->
+            def commitsWithId = organizedCommits.findAll{ id in it.code }
+            Task task = new Task(id, commitsWithId*.commit)
+            tasks += task
+        }
+
+        return tasks
     }
 
     /**
@@ -93,18 +118,11 @@ class Searcher {
      * @param args command-line arguments required by GitMiner
      * @param repository short name of the GitHub repository to analyse
      * */
-    public static void findLinkAmongTaskAndChangesAndTest(String[] args, String repository){
+    public static List<Task> findLinkAmongTaskAndChangesAndTest(String[] args, String repository){
         downloadRepository(args) //Download the repository specified in configuration.properties
         CommitSearchManager manager = new CommitSearchManager(repository)
-        List<Commit> commits = manager.searchByComment(TASK_ID_REGEX)
-        commits.eachWithIndex{ commit, index ->
-            println "($index): ${commit.message}"
-        }
-        //nesse ponto, o arraylist commits contém a lista de commits cuja mensagem possui ID
-        //Ainda falta:
-        //1 - Checar se existem vários commits usando o mesmo ID
-        //2 - Para cada ID, checar tipo dos arquivos alterados. queremos arquivos de teste e arquivo de produção. Lembrar
-        // de distinguir tipo de arquivo por caminho de diretório
+        List<Commit> commits = manager.searchByComment(MESSAGE_ID_REGEX)
+        return organizeCommitsByTaskId(commits)
     }
 
     /***
@@ -124,7 +142,17 @@ class Searcher {
             String repositoryName = entry[1] - Util.GITHUB_URL
             updatePropertiesFile(repositoryName)
             String repositoryShortName = repositoryName.substring(repositoryName.lastIndexOf("/")+1)
-            findLinkAmongTaskAndChangesAndTest(args, repositoryShortName)
+            List<Task> tasks = findLinkAmongTaskAndChangesAndTest(args, repositoryShortName)
+
+            println "Repository: ${entry[1]}"
+            tasks.eachWithIndex{ task, index ->
+                println "Task $index"
+                println "id: ${task.id}"
+                println "commits: ${task.commits}"
+                println "production files: ${task.productionFiles}"
+                println "test files: ${task.testFiles}"
+                println "-------------------------------------------------------------------------------"
+            }
         }
     }
 
