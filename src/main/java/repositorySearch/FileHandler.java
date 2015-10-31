@@ -27,6 +27,7 @@ public class FileHandler {
      * @throws DownloadException if there's an error during downloading.
      */
     public static void downloadZipFile(String zipUrl, String zipPath) throws DownloadException {
+        zipUrl = zipUrl.replaceAll(" ","");
         System.out.printf("Downloading zipfile: %s\n", zipUrl);
         BufferedInputStream in;
         try {
