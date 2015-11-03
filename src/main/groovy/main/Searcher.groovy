@@ -96,12 +96,15 @@ class Searcher {
     /**
      * Searches for GitHub projects from the last 5 years that contains Gherkin files.
      * Gherkin is the language used by some BDD (Behavior Driven Development) tools as Cucumber.
-     * The searching uses Google BigQuery service.
-     * @param projectId BigQuery repository id
-     * @param language repository's programming language
+     * The searching uses Google BigQuery service that requires a BigQuery repository id (spgroup.bigquery.project.id at
+     * configuration.properties). It is also necessary to identify the repository's programming language
+     * (spgroup.language at configuration.properties).
      * @throws IOException if there's an error during the remote repositorySearch.
      */
-    public static void searchGithubProjects(String projectId, String language) throws IOException {
+    public static void searchGithubProjects() throws IOException {
+        Properties props = GithubProperties.props()
+        String projectId = props.getProperty("spgroup.bigquery.project.id")
+        String language = props.getProperty("spgroup.language")
         String query = configureQuery(language)
 
         /* Searches GitHub projects and saves the result in a csv file. If the file already exists, this step is not required. */
