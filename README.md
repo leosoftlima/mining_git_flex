@@ -25,8 +25,8 @@ The environment variable GOOGLE_APPLICATION_CREDENTIALS is checked. If this vari
 
 https://developers.google.com/identity/protocols/application-default-credentials
 
-It is also necessary to provide searching criteria data (project id and language) by configuring the properties file at src/resources path (spgroup.bigquery.project.id and properties spgroup.language). 
+It is also necessary to provide searching criteria data (project id and language) by configuring the properties file at src/resources path (properties spgroup.bigquery.project.id and spgroup.language). 
 
 Requirement to use GitMiner
 -
-It is necessary to provide GitHub user data (login, password, e-mail and security token) by configuring the properties file at src/resources path (net.wagstrom.research.github.login, net.wagstrom.research.github.password, net.wagstrom.research.github.email and net.wagstrom.research.github.token).
+It is necessary to provide GitHub user data (login, password, e-mail and security token) by configuring the properties file at src/resources path (properties net.wagstrom.research.github.login, net.wagstrom.research.github.password, net.wagstrom.research.github.email and net.wagstrom.research.github.token).
