@@ -11,7 +11,7 @@ import net.wagstrom.research.github.Github
 import net.wagstrom.research.github.GithubProperties
 import net.wagstrom.research.github.PropNames
 import repositorySearch.BigQueryServiceManager
-import repositorySearch.SearchManager
+import repositorySearch.RepositorySearchManager
 import util.Util
 
 
@@ -123,8 +123,8 @@ class Searcher {
         BigQueryServiceManager.searchProjects(projectId, query); //projectd id, query
 
         /* Downloading and unzipping projects from csv file*/
-        SearchManager searcher = new SearchManager();
-        searcher.searchGherkinProjects();
+        RepositorySearchManager searcher = new RepositorySearchManager()
+        searcher.searchGherkinProjects()
     }
 
     /***

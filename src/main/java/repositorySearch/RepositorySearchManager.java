@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class SearchManager {
+public class RepositorySearchManager {
 
     private int counter;
     private final ArrayList<Repository> candidates;
 
-    public SearchManager(){
+    public RepositorySearchManager(){
         candidates = new ArrayList<>();
     }
 

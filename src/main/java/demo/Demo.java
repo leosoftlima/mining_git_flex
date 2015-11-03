@@ -2,7 +2,7 @@ package demo;
 
 
 import repositorySearch.BigQueryServiceManager;
-import repositorySearch.SearchManager;
+import repositorySearch.RepositorySearchManager;
 
 import java.io.IOException;
 
@@ -32,7 +32,7 @@ public class Demo {
             BigQueryServiceManager.searchProjects("pivotaltracker-1072", query); //projectd id, query
 
             // Downloading and unzipping projects from csv file
-            SearchManager searcher = new SearchManager();
+            RepositorySearchManager searcher = new RepositorySearchManager();
             searcher.searchGherkinProjects();
         } catch (IOException e) {
             System.out.println("Problem during projects searching: "+e.getMessage());
@@ -43,7 +43,7 @@ public class Demo {
      * Downloads and unzips https://github.com/spgroup/rgms/archive/master.zip
      */
     public static void downloadRepository(){
-        SearchManager searcher = new SearchManager();
+        RepositorySearchManager searcher = new RepositorySearchManager();
         searcher.analyseRepository("https://github.com/spgroup/rgms/archive/master.zip");
     }
 
