@@ -14,19 +14,19 @@ import java.util.Scanner;
 public class SearchManager {
 
     private int counter;
-    private final ArrayList<Repository> selected;
+    private final ArrayList<Repository> candidates;
 
     public SearchManager(){
-        selected = new ArrayList<>();
+        candidates = new ArrayList<>();
     }
 
     private void resetCounters(){
         counter = 0;
-        selected.clear();
+        candidates.clear();
     }
 
-    private void listSelectedRepositories(){
-        for(Repository r: selected){
+    private void listCandidateRepositories(){
+        for(Repository r: candidates){
             System.out.printf("url: %s, branch: %s, zip: %s%n", r.getUrl(), r.getBranch(), r.getLocalZipName());
         }
     }
@@ -87,7 +87,7 @@ public class SearchManager {
         counter++;
         if (repository.hasGherkinFile()) {
             System.out.println("The repository does contain feature file!");
-            selected.add(repository);
+            candidates.add(repository);
             repository.deleteUnzipedDir();
             writer.writeNext(new String[]{String.valueOf(index), repository.getUrl()});
         } else{
@@ -104,7 +104,7 @@ public class SearchManager {
     private void searchGherkinFile(Repository repository) {
         if (repository.hasGherkinFile()) {
             System.out.println("The repository does contain feature file!");
-            selected.add(repository);
+            candidates.add(repository);
             repository.deleteUnzipedDir();
         } else{
             System.out.println("The repository does not contain feature file!");
@@ -149,8 +149,8 @@ public class SearchManager {
             analyseRepository(url);
         }
         System.out.printf("Number of analyzed projects: %d%n", counter);
-        System.out.printf("Number of selected projects: %d (%.2f%%)%n", selected.size(),((double)selected.size()/counter)*100);
-        listSelectedRepositories();
+        System.out.printf("Number of candidates projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100);
+        listCandidateRepositories();
     }
 
     /**
@@ -166,7 +166,7 @@ public class SearchManager {
         try {
             repositories = extractRepositories();
 
-            writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE));
+            writer = new CSVWriter(new FileWriter(Util.CANDIDATE_PROJECTS_FILE));
             writer.writeNext(new String[]{"index", "repository_url"});
 
             for(int i=0; i<repositories.size(); i++){
@@ -176,8 +176,8 @@ public class SearchManager {
             writer.close();
 
             System.out.printf("Number of analyzed projects: %d%n", counter);
-            System.out.printf("Number of selected projects: %d (%.2f%%)%n", selected.size(),((double)selected.size()/counter)*100);
-            listSelectedRepositories();
+            System.out.printf("Number of candidates projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100);
+            listCandidateRepositories();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -196,7 +196,7 @@ public class SearchManager {
         try {
             repositories = extractRepositoriesDefaultBranch();
 
-            writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE));
+            writer = new CSVWriter(new FileWriter(Util.CANDIDATE_PROJECTS_FILE));
             writer.writeNext(new String[]{"index", "repository_url"});
 
             for(int i=0; i<repositories.size(); i++){
@@ -206,8 +206,8 @@ public class SearchManager {
             writer.close();
 
             System.out.printf("Number of analyzed projects: %d%n", counter);
-            System.out.printf("Number of selected projects: %d (%.2f%%)%n", selected.size(),((double)selected.size()/counter)*100);
-            listSelectedRepositories();
+            System.out.printf("Number of candidate projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100);
+            listCandidateRepositories();
         } catch (IOException e) {
             e.printStackTrace();
         }
