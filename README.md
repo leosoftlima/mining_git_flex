@@ -7,10 +7,12 @@ Search mechanism
 -
 The search mechanism is very simple. The program takes as input the search criteria: project id (id of the repository to run the queries under Google BigQuery service) and programming language.
 As result, the program outputs a csv file (/input/projects.csv) containing the URL (column repository_url) and master branch (column repository_master_branch) of found repositories.
-Then, the program downloads each repository's source code (a zip file) and verifies if it contains feature files (extension .feature). If a repository does contain feature files, the program downloads all repository data and searches for commit messages containing task ID.
-Finally, for each found commit, the program identifies the changed code (production and test code) by GitMiner and Gremlin. 
+Then, the program downloads each repository's source code (a zip file) and verifies if it contains Gherkin files (extension .feature). If a repository does contain Gherkin files, the program downloads all repository data and searches for commit messages containing task ID.
+Finally, for each found commit, the program identifies the changed code (production and test code) by using GitMiner and Gremlin. 
 
 The output could be accessed in /output folder.
+candidate-projects.csv provides data about repositories containing Gherkin files.
+selected-projects.csv provides data about repositories containing Gherkin files and commit messages with task ID. 
 
 More about Gherkin and Cucumber: https://github.com/cucumber/cucumber/wiki/Gherkin.
 More about Google BigQuery: https://cloud.google.com/bigquery/what-is-bigquery.
@@ -23,5 +25,8 @@ The environment variable GOOGLE_APPLICATION_CREDENTIALS is checked. If this vari
 
 https://developers.google.com/identity/protocols/application-default-credentials
 
+It is also necessary to provide searching criteria data (project id and language) by configuring the properties file at src/resources path (spgroup.bigquery.project.id and properties spgroup.language). 
+
 Requirement to use GitMiner
 -
+It is necessary to provide GitHub user data (login, password, e-mail and security token) by configuring the properties file at src/resources path (net.wagstrom.research.github.login, net.wagstrom.research.github.password, net.wagstrom.research.github.email and net.wagstrom.research.github.token).
