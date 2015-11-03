@@ -31,16 +31,16 @@ Requirement to use GitMiner
 -
 It is necessary to provide GitHub user data (login, password, e-mail and security token) by configuring the properties file at src/resources path (properties net.wagstrom.research.github.login, net.wagstrom.research.github.password, net.wagstrom.research.github.email and net.wagstrom.research.github.token).
 
-
 Compilation
+-
 This project uses Apache Maven to manage all dependencies and versioning. 
 More about Maven: https://maven.apache.org/
 
 Execution
 -
-(1) Generate the jar file (MiningGit-1.0-jar-with-dependencies.jar)by using Maven;
-(2) Locate the jar and the configuration.properties file at target folder;
-(3) Configure the properties file;
-(4) Run the jar by command line: java -jar MiningGit-1.0-jar-with-dependencies.jar.
+(1) Generate the jar file (MiningGit-1.0-jar-with-dependencies.jar)by using Maven
+(2) Locate the jar and the configuration.properties file at target folder
+(3) Configure the properties file
+(4) Run the jar by command line: java -jar MiningGit-1.0-jar-with-dependencies.jar
 
 To remember: The jar and the properties file must be at the same folder.
