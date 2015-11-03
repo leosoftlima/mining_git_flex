@@ -1,6 +1,7 @@
 package main
 
 import au.com.bytecode.opencsv.CSVReader
+import au.com.bytecode.opencsv.CSVWriter
 import commitSearch.Commit
 import commitSearch.CommitSearchManager
 import commitSearch.Task
@@ -93,6 +94,17 @@ class Searcher {
         return tasks
     }
 
+    private static void exportSearchResult(String repoUrl, List<Task> tasks){
+        CSVWriter writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE))
+        String[] text = ["repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files"]
+        writer.writeNext(text);
+        for (Task task : tasks) {
+            text = [repoUrl, task.id, (task.commits*.hash).toString(), task.productionFiles.toString(), task.testFiles.toString()]
+            writer.writeNext(text);
+        }
+        writer.close();
+    }
+
     /**
      * Searches for GitHub projects from the last 5 years that contains Gherkin files.
      * Gherkin is the language used by some BDD (Behavior Driven Development) tools as Cucumber.
@@ -129,13 +141,13 @@ class Searcher {
     }
 
     /***
-     * Checks if the previous selected GitHub projects (content of file "output/selected-projects.csv") enable to link
+     * Checks if the previous candidates GitHub projects (content of file "output/candidate-projects.csv") enable to link
      * development tasks, code changes in production files and code changes in test files. Such a link is needed to
      * compute task interfaces.
      * @param args command-line arguments required by GitMiner
      */
     public static void findProjectsWithLinkAmongTaskAndChangesAndTest(String[] args){
-        CSVReader reader = new CSVReader(new FileReader(Util.SELECTED_PROJECTS_FILE))
+        CSVReader reader = new CSVReader(new FileReader(Util.CANDIDATE_PROJECTS_FILE))
         List<String[]> entries = reader.readAll()
         reader.close()
 
@@ -146,16 +158,7 @@ class Searcher {
             updatePropertiesFile(repositoryName)
             String repositoryShortName = repositoryName.substring(repositoryName.lastIndexOf("/")+1)
             List<Task> tasks = findLinkAmongTaskAndChangesAndTest(args, repositoryShortName)
-
-            println "Repository: ${entry[1]}"
-            tasks.eachWithIndex{ task, index ->
-                println "Task $index"
-                println "id: ${task.id}"
-                println "commits: ${task.commits}"
-                println "production files: ${task.productionFiles}"
-                println "test files: ${task.testFiles}"
-                println "-------------------------------------------------------------------------------"
-            }
+            exportSearchResult(entry[1], tasks)
         }
     }
 
