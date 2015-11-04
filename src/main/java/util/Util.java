@@ -8,7 +8,7 @@ public class Util {
     public static final String FILE_EXTENSION = ".zip";
     public static final String FEATURE_FILE_EXTENSION = ".feature";
     public static final String PROJECTS_FILE = "input"+File.separator+"projects.csv";
-    public static final String SELECTED_PROJECTS_FILE = "output"+File.separator+"selected-projects.csv";
+    public static final String COMMITS_FILE = "output"+File.separator+"commits.csv";
     public static final String CANDIDATE_PROJECTS_FILE = "output"+File.separator+"candidate-projects.csv";
     public static final String PREPARED_PROJECTS_FILE = "input"+File.separator+"projects-input.csv";
     public static final String ZIP_FILE_URL = File.separator+"archive"+File.separator;
