@@ -7,20 +7,22 @@ import java.util.regex.Matcher
 
 class Task {
 
+    String repositoryUrl
     String id
     List<Commit> commits
     List<String> productionFiles
     List<String> testFiles
 
-    public Task(String id){
+    public Task(String url, String id){
+        repositoryUrl = url
         this.id = id
         commits = new ArrayList<>()
         productionFiles = new ArrayList<>()
         testFiles = new ArrayList<>()
     }
 
-    public Task(String id, List<Commit> commits){
-        this(id)
+    public Task(String url, String id, List<Commit> commits){
+        this(url, id)
         this.commits = commits
         commits*.files?.flatten()?.each{ file ->
             if(isTestCode(file)) testFiles += file

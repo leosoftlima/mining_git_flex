@@ -62,6 +62,8 @@ class Searcher {
      */
     private static void updatePropertiesFile(String repository){
         Properties props = GithubProperties.props()
+        props.setProperty(PropNames.DBURL, "tmp-"+repository+"/graph.db")
+        props.setProperty("edu.unl.cse.git.dburl", "tmp-"+repository+"/graph.db")
         props.setProperty(PropNames.GITHUB_PROJECT_NAMES, repository)
         props.setProperty("edu.unl.cse.git.repositories", repository)
         ClassLoader loader = Thread.currentThread().getContextClassLoader()
@@ -71,11 +73,7 @@ class Searcher {
         fos.close()
     }
 
-    /***
-     *
-     * @return
-     */
-    private static List<Task> organizeCommitsByTaskId(List<Commit> commits) {
+    private static List<Task> organizeCommitsByTaskId(List<Commit> commits, String url) {
         List<Task> tasks = []
         def organizedCommits = []
 
@@ -87,22 +85,22 @@ class Searcher {
         def ids = (organizedCommits*.code)?.unique()?.flatten()
         ids.each{ id ->
             def commitsWithId = organizedCommits.findAll{ id in it.code }
-            Task task = new Task(id, commitsWithId*.commit)
+            Task task = new Task(url, id, commitsWithId*.commit)
             tasks += task
         }
 
         return tasks
     }
 
-    private static void exportSearchResult(String repoUrl, List<Task> tasks){
+    private static void exportSearchResult(List<Task> tasks){
         CSVWriter writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE))
         String[] text = ["repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files"]
-        writer.writeNext(text);
+        writer.writeNext(text)
         for (Task task : tasks) {
-            text = [repoUrl, task.id, (task.commits*.hash).toString(), task.productionFiles.toString(), task.testFiles.toString()]
-            writer.writeNext(text);
+            text = [task.repositoryUrl, task.id, (task.commits*.hash).toString(), task.productionFiles.toString(), task.testFiles.toString()]
+            writer.writeNext(text)
         }
-        writer.close();
+        writer.close()
     }
 
     /**
@@ -131,13 +129,14 @@ class Searcher {
      * Checks if a GitHub repository enables to link development tasks, code changes in production files and code
      * changes in test files. Such a link is needed to compute task interfaces.
      * @param args command-line arguments required by GitMiner
+     * @param url repository url
      * @param repository short name of the GitHub repository to analyse
      * */
-    public static List<Task> findLinkAmongTaskAndChangesAndTest(String[] args, String repository){
+    public static List<Task> findLinkAmongTaskAndChangesAndTest(String[] args, String url, String repository){
         downloadRepository(args) //Download the repository specified in configuration.properties
         CommitSearchManager manager = new CommitSearchManager(repository)
         List<Commit> commits = manager.searchByComment(MESSAGE_ID_REGEX)
-        return organizeCommitsByTaskId(commits)
+        return organizeCommitsByTaskId(commits, url)
     }
 
     /***
@@ -152,14 +151,16 @@ class Searcher {
         reader.close()
 
         if(entries.size()>0) entries.remove(0) //ignore sheet header
-
+        List<Task> tasks = []
         for(String[] entry: entries){
+            entry[1] = entry[1].trim()
             String repositoryName = entry[1] - Util.GITHUB_URL
-            updatePropertiesFile(repositoryName)
             String repositoryShortName = repositoryName.substring(repositoryName.lastIndexOf("/")+1)
-            List<Task> tasks = findLinkAmongTaskAndChangesAndTest(args, repositoryShortName)
-            exportSearchResult(entry[1], tasks)
+            updatePropertiesFile(repositoryName)
+            tasks += findLinkAmongTaskAndChangesAndTest(args, entry[1], repositoryShortName)
         }
+
+        exportSearchResult(tasks)
     }
 
 }
