@@ -7,13 +7,15 @@ import java.util.regex.Matcher
 
 class Task {
 
+    String repositoryIndex
     String repositoryUrl
     String id
     List<Commit> commits
     List<String> productionFiles
     List<String> testFiles
 
-    public Task(String url, String id){
+    public Task(String index, String url, String id){
+        repositoryIndex = index
         repositoryUrl = url
         this.id = id
         commits = new ArrayList<>()
@@ -21,8 +23,8 @@ class Task {
         testFiles = new ArrayList<>()
     }
 
-    public Task(String url, String id, List<Commit> commits){
-        this(url, id)
+    public Task(String index, String url, String id, List<Commit> commits){
+        this(index, url, id)
         this.commits = commits
         commits*.files?.flatten()?.each{ file ->
             if(isTestCode(file)) testFiles += file
