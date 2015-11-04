@@ -17,7 +17,7 @@ import util.Util
 
 class Searcher {
 
-    static final String MESSAGE_ID_REGEX = /([#.*] | [fix.* #.*] | [complet.* #.*] | [finish.* #.*]).*/ //Other possibility: /.*#\d+.*/
+    static final String MESSAGE_ID_REGEX = /(\[#.*\] | \[fix.* #.*\] | \[complet.* #.*\] | \[finish.* #.*\]).*/ //Other possibility: /.*#\d+.*/
 
     private static void downloadRepository(String[] args){
         Github g = new Github()
@@ -94,7 +94,7 @@ class Searcher {
     }
 
     private static void exportSearchResult(List<Task> tasks){
-        CSVWriter writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE))
+        CSVWriter writer = new CSVWriter(new FileWriter(Util.COMMITS_FILE))
         String[] text = ["index","repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files"]
         writer.writeNext(text)
         for (Task task : tasks) {
@@ -102,6 +102,14 @@ class Searcher {
                     task.productionFiles.toString(), task.testFiles.toString()]
             writer.writeNext(text)
         }
+        writer.close()
+    }
+
+    private static def exportSelectedProjects(List<String[]> projects) {
+        CSVWriter writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE))
+        String[] text = ["index","repository_url"]
+        writer.writeNext(text)
+        writer.writeAll(projects)
         writer.close()
     }
 
@@ -145,7 +153,7 @@ class Searcher {
     /***
      * Checks if the previous candidates GitHub projects (content of file "output/candidate-projects.csv") enable to link
      * development tasks, code changes in production files and code changes in test files. Such a link is needed to
-     * compute task interfaces.
+     * compute task interfaces. The result is saved in two csv files (output/commits.csv and output/selected-projects.csv).
      * @param args command-line arguments required by GitMiner
      */
     public static void findProjectsWithLinkAmongTaskAndChangesAndTest(String[] args){
@@ -154,16 +162,24 @@ class Searcher {
         reader.close()
 
         if(entries.size()>0) entries.remove(0) //ignore sheet header
-        List<Task> tasks = []
+
+        List<String[]> selectedRepositories = []
+        List<Task> alltasks = []
         for(String[] entry: entries){
             entry[1] = entry[1].trim()
             String repositoryName = entry[1] - Util.GITHUB_URL
             String repositoryShortName = repositoryName.substring(repositoryName.lastIndexOf("/")+1)
             updatePropertiesFile(repositoryName)
-            tasks += findLinkAmongTaskAndChangesAndTest(args, entry[0], entry[1], repositoryShortName)
+            List<Task> tasks = findLinkAmongTaskAndChangesAndTest(args, entry[0], entry[1], repositoryShortName)
+            if(tasks.isEmpty()) println "No link was found among tasks and code changes!"
+            else{
+                selectedRepositories += entry
+                alltasks += tasks
+            }
         }
 
-        exportSearchResult(tasks)
+        exportSearchResult(alltasks)
+        exportSelectedProjects(selectedRepositories)
     }
 
 }
