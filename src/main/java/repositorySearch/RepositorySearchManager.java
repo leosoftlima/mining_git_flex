@@ -5,7 +5,6 @@ import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import input.InputManager;
 import util.Util;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

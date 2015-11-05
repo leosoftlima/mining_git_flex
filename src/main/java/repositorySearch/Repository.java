@@ -4,8 +4,6 @@ import repositorySearch.exception.DownloadException;
 import repositorySearch.exception.UnzipException;
 import util.Util;
 
-import java.io.File;
-
 
 /**
  * Represents a GitHub repository and provides mechanism to download de repository zip file, unzip it and check it has
@@ -42,6 +40,14 @@ public class Repository {
         this.zipUrl = url + Util.ZIP_FILE_URL + branch + Util.FILE_EXTENSION;
     }
 
+    public String getZipFolderName() {
+        return Util.UNZIPPED_FILES_DIR +name;
+    }
+
+    public String getLocalZipName(){
+        return Util.ZIPPED_FILES_DIR + name+ Util.FILE_EXTENSION;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -64,10 +70,6 @@ public class Repository {
         return name;
     }
 
-    public String getLocalZipName(){
-        return Util.ZIPPED_FILES_DIR + name+ Util.FILE_EXTENSION;
-    }
-
     public String getZipUrl(){
         return zipUrl;
     }
@@ -87,9 +89,7 @@ public class Repository {
      * @throws UnzipException if there's an error during unzipping.
      */
     public void unzip() throws UnzipException {
-        String outputFolder = Util.UNZIPPED_FILES_DIR +name;
-        String zipname = getLocalZipName();
-        FileHandler.unzip(zipname, outputFolder);
+        FileHandler.unzip(getLocalZipName(), getZipFolderName());
     }
 
     /**
@@ -99,12 +99,11 @@ public class Repository {
      * @return true if the repository does contain Gherkin file, false otherwise.
      */
     public boolean hasGherkinFile(){
-        String folder = Util.UNZIPPED_FILES_DIR +getName();
         boolean result = false;
         try {
             downloadZip();
             unzip();
-            result = FileHandler.hasFileType(Util.FEATURE_FILE_EXTENSION, folder);
+            result = FileHandler.hasFileType(Util.FEATURE_FILE_EXTENSION, getZipFolderName());
         } catch (DownloadException e) {
             System.out.println(e.getMessage());
         } catch (UnzipException e) {
@@ -118,7 +117,7 @@ public class Repository {
      * Deletes unzipped content (folder and files) of the repository, if it does exist.
      */
     public void deleteUnzipedDir(){
-        FileHandler.deleteFolder(Util.UNZIPPED_FILES_DIR + name);
+        FileHandler.deleteFolder(getZipFolderName());
     }
 
     /**
@@ -132,8 +131,7 @@ public class Repository {
      * Deletes the zip file and the unzipped content (folder and files) of the repository, if it does exist.
      */
     public void deleteAll(){
-        String path = Util.UNZIPPED_FILES_DIR + name;
-        FileHandler.deleteFolder(path);
+        FileHandler.deleteFolder(getZipFolderName());
         FileHandler.deleteZipFile(getLocalZipName());
     }
 }
