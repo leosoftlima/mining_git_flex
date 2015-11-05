@@ -17,7 +17,7 @@ import util.Util
 
 class Searcher {
 
-    static final String MESSAGE_ID_REGEX = /(\[#.*\] | \[fix.* #.*\] | \[complet.* #.*\] | \[finish.* #.*\]).*/ //Other possibility: /.*#\d+.*/
+    static final String MESSAGE_ID_REGEX = /[\[#.*\] | \[fix.* #.*\] | \[complet.* #.*\] | \[finish.* #.*\]].*/ //Other possibility: /.*#\d+.*/
 
     private static void downloadRepository(String[] args){
         Github g = new Github()
