@@ -34,7 +34,7 @@ class CommitSearchManager {
         project = project+"--"
         def files = []
         node.out('CHANGED').token.fill(files)
-        files = files.collect { (it-project).replaceAll(FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator)) }
+        files = files.collect { (it-project)?.replaceAll(FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator)) }
         return files
     }
 
@@ -54,7 +54,7 @@ class CommitSearchManager {
         result?.each{ r ->
             def files = getFilesFromCommit(r, repository)
             def author = getAuthorsFromCommit(r)
-            commits += new Commit(hash:r.hash, message:r.message.replaceAll(NEW_LINE_REGEX," "), files:files, author:author, date:r.date)
+            commits += new Commit(hash:r.hash, message:r.message?.replaceAll(NEW_LINE_REGEX," "), files:files, author:author, date:r.date)
         }
         return commits.sort{ it.date }
     }
@@ -69,7 +69,7 @@ class CommitSearchManager {
         println "Total commits: ${commits.size()}"
 
         def result = commits.findAll{ commit ->
-            words?.any{commit.message.toLowerCase().contains(it)} && !commit.files.empty
+            words?.any{commit.message?.toLowerCase()?.contains(it)} && !commit.files.empty
         }
         def finalResult = result.unique{ a,b -> a.hash <=> b.hash }
         println "Total commits by comment: ${finalResult.size()}"
@@ -87,7 +87,7 @@ class CommitSearchManager {
         println "Total commits: ${commits.size()}"
 
         def result = commits.findAll{ commit ->
-            (commit.message.toLowerCase() ==~ regex) && !commit.files.empty
+            (commit.message?.toLowerCase() ==~ regex) && !commit.files.empty
         }
         def finalResult = result.unique{ a,b -> a.hash <=> b.hash }
         println "Total commits by comment: ${finalResult.size()}"
