@@ -4,6 +4,8 @@ import repositorySearch.exception.DownloadException;
 import repositorySearch.exception.UnzipException;
 import util.Util;
 
+import java.io.File;
+
 
 /**
  * Represents a GitHub repository and provides mechanism to download de repository zip file, unzip it and check it has
@@ -24,7 +26,7 @@ public class Repository {
     }
 
     public Repository(String zipFileUrl) {
-        this.url = zipFileUrl.substring(0,zipFileUrl.indexOf("/archive/"));
+        this.url = zipFileUrl.substring(0,zipFileUrl.indexOf(Util.ZIP_FILE_URL));
         this.branch = zipFileUrl.substring(zipFileUrl.lastIndexOf("/") + 1, zipFileUrl.length() - Util.FILE_EXTENSION.length());
         this.name = configureName(url);
         configureZipUrl();
@@ -123,8 +125,7 @@ public class Repository {
      * Deletes the zip file of the repository, if it does exist.
      */
     public void deleteZipFile(){
-        String path = Util.ZIPPED_FILES_DIR+"/"+name+ Util.FILE_EXTENSION;
-        FileHandler.deleteZipFile(path);
+        FileHandler.deleteZipFile(getLocalZipName());
     }
 
     /**
@@ -133,7 +134,6 @@ public class Repository {
     public void deleteAll(){
         String path = Util.UNZIPPED_FILES_DIR + name;
         FileHandler.deleteFolder(path);
-        path = Util.ZIPPED_FILES_DIR+"/"+name+ Util.FILE_EXTENSION;
-        FileHandler.deleteZipFile(path);
+        FileHandler.deleteZipFile(getLocalZipName());
     }
 }

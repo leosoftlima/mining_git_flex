@@ -12,7 +12,7 @@ public class Util {
     public static final String SELECTED_PROJECTS_FILE = "output"+File.separator+"selected-projects.csv";
     public static final String CANDIDATE_PROJECTS_FILE = "output"+File.separator+"candidate-projects.csv";
     public static final String PREPARED_PROJECTS_FILE = "input"+File.separator+"projects-input.csv";
-    public static final String ZIP_FILE_URL = File.separator+"archive"+File.separator;
+    public static final String ZIP_FILE_URL = "/archive/";
     public static final String ZIPPED_FILES_DIR = "zipped"+File.separator;
     public static final String UNZIPPED_FILES_DIR = "unzipped"+File.separator;
     public static final String PROBLEMS_FILE = "output"+File.separator+"problems.txt";
