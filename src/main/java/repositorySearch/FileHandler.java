@@ -2,7 +2,7 @@ package repositorySearch;
 
 import repositorySearch.exception.DownloadException;
 import repositorySearch.exception.UnzipException;
-import util.Util;
+import util.SearchProperties;
 import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -11,7 +11,7 @@ import java.util.zip.ZipInputStream;
 public class FileHandler {
 
     private static void registryDownloadProblem(String text) {
-        try(FileWriter writer = new FileWriter(Util.PROBLEMS_FILE, true)){
+        try(FileWriter writer = new FileWriter(SearchProperties.DOWNLOAD_PROBLEMS_FILE, true)){
             writer.append(text).append("\n");
         }
         catch(IOException e){

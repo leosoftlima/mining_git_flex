@@ -4,19 +4,25 @@ package repositorySearch;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import input.InputManager;
-import util.Util;
+import net.wagstrom.research.github.GithubProperties;
+import util.SearchProperties;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class RepositorySearchManager {
 
     private int counter;
     private final ArrayList<Repository> candidates;
+    private String fileType;
 
     public RepositorySearchManager(){
         candidates = new ArrayList<>();
+        Properties props = GithubProperties.props();
+        fileType = "."+props.getProperty("spgroup.search.file.extension");
+        if(fileType.length() == 1) fileType = "";
     }
 
     private void resetCounters(){
@@ -31,7 +37,7 @@ public class RepositorySearchManager {
     }
 
     /**
-     * Generates a list of repositories extracted from a csv file (/input/projects.csv). The first column must identify
+     * Generates a list of repositories extracted from a csv file (/input/commits.csv). The first column must identify
      * the repository's url. It considers the default name for master branch (master).
      *
      * @throws IOException if there's an error reading the csv file.
@@ -40,7 +46,7 @@ public class RepositorySearchManager {
         ArrayList<Repository> repos = new ArrayList<>();
 
         InputManager.prepareInput();
-        CSVReader reader = new CSVReader(new FileReader(Util.PREPARED_PROJECTS_FILE));
+        CSVReader reader = new CSVReader(new FileReader(SearchProperties.REPOSITORIES_TO_DOWNLOAD_FILE));
         List<String[]> entries = reader.readAll();
         reader.close();
 
@@ -53,7 +59,7 @@ public class RepositorySearchManager {
     }
 
     /**
-     * Generates a list of repositories extracted from a csv file (/input/projects.csv). The first column must identify
+     * Generates a list of repositories extracted from a csv file (/input/commits.csv). The first column must identify
      * the repository's url and the second column must identify its master branch.
      *
      * @throws IOException if there's an error reading the csv file.
@@ -62,7 +68,7 @@ public class RepositorySearchManager {
         ArrayList<Repository> repos = new ArrayList<>();
 
         InputManager.prepareInput();
-        CSVReader reader = new CSVReader(new FileReader(Util.PREPARED_PROJECTS_FILE));
+        CSVReader reader = new CSVReader(new FileReader(SearchProperties.REPOSITORIES_TO_DOWNLOAD_FILE));
         List<String[]> entries = reader.readAll();
         reader.close();
 
@@ -82,59 +88,55 @@ public class RepositorySearchManager {
      * @param writer cvs file to update.
      * @param index original index of the analysed repository.
      */
-    private void searchGherkinFile(Repository repository, CSVWriter writer, int index) {
+    private void searchFileType(Repository repository, CSVWriter writer, int index) {
         counter++;
-        if (repository.hasGherkinFile()) {
-            System.out.println("The repository does contain feature file!");
+        if (repository.hasFileType(fileType)) {
             candidates.add(repository);
             repository.deleteUnzipedDir();
             writer.writeNext(new String[]{String.valueOf(index), repository.getUrl()});
         } else{
-            System.out.println("The repository does not contain feature file!");
             repository.deleteAll();
         }
     }
 
     /**
-     * Verifies if the repository does contain Gherkin files.
+     * Verifies if the repository does contain files of a specific type (spgroup.search.file.extension at configuration.properties).
      *
      * @param repository the repository to analyse.
      */
-    private void searchGherkinFile(Repository repository) {
-        if (repository.hasGherkinFile()) {
-            System.out.println("The repository does contain feature file!");
+    private void searchFileType(Repository repository) {
+        if (repository.hasFileType(fileType)) {
             candidates.add(repository);
             repository.deleteUnzipedDir();
         } else{
-            System.out.println("The repository does not contain feature file!");
             repository.deleteAll();
         }
     }
 
     /**
-     * Verifies if a zip file contains Gherkin files.
+     * Verifies if a zip file contains files of a specific type (spgroup.search.file.extension at configuration.properties).
      *
      * @param zipUrl the url from GitHub repository's zip file.
      */
     public void analyseRepository(String zipUrl){
         Repository repository = new Repository(zipUrl);
-        searchGherkinFile(repository);
+        searchFileType(repository);
     }
 
     /**
-     * Verifies if a GitHub repository contains Gherkin files.
+     * Verifies if a GitHub repository contains files of a specific type (spgroup.search.file.extension at configuration.properties).
      *
      * @param url the url from GitHub repository.
      * @param branch the repository's main branch.
      */
     public void analyseRepository(String url, String branch){
         Repository repository = new Repository(url, branch);
-        searchGherkinFile(repository);
+        searchFileType(repository);
     }
 
     /**
-     * Verifies if the GitHub repositories does contain Gherkin files. The repositories are identified at a text file by
-     * the url of its zip file.
+     * Verifies if the GitHub repositories does contain files of a specific type (spgroup.search.file.extension at configuration.properties).
+     * The repositories are identified at a text file by the url of its zip file.
      *
      * @param file text file that contains the url of zip files from GitHub projects.
      *
@@ -153,60 +155,78 @@ public class RepositorySearchManager {
     }
 
     /**
-     * Verifies if the GitHub repositories identified at a csv file (/input/projects.csv) does contain Gherkin files.
+     * Verifies if the GitHub repositories identified at a csv file (/input/commits.csv) does contain files of a specific type.
      * The first column must identify the repository's url and the second column must identify its master branch.
      *
      */
-    public void searchGherkinProjects(){
+    public void searchRepositoriesByFileType(){
         CSVWriter writer;
         ArrayList<Repository> repositories;
         resetCounters();
 
         try {
             repositories = extractRepositories();
+            System.out.printf("The repositories to search for are saved in %s%n", SearchProperties.REPOSITORIES_TO_DOWNLOAD_FILE);
 
-            writer = new CSVWriter(new FileWriter(Util.CANDIDATE_PROJECTS_FILE));
+            writer = new CSVWriter(new FileWriter(SearchProperties.CANDIDATE_REPOSITORIES_FILE));
             writer.writeNext(new String[]{"index", "repository_url"});
 
-            for(int i=0; i<repositories.size(); i++){
-                searchGherkinFile(repositories.get(i), writer, i + 2);
+            if(fileType.isEmpty()){
+                for (int i = 0; i < repositories.size(); i++) {
+                    candidates.add(repositories.get(i));
+                    writer.writeNext(new String[]{String.valueOf(i + 2), repositories.get(i).getUrl()});
+                }
+            }
+            else {
+                for (int i = 0; i < repositories.size(); i++) {
+                    searchFileType(repositories.get(i), writer, i + 2);
+                }
+                System.out.printf("Number of analyzed projects: %d%n", counter);
+                System.out.printf("Number of candidates projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100);
             }
 
             writer.close();
-
-            System.out.printf("Number of analyzed projects: %d%n", counter);
-            System.out.printf("Number of candidates projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100);
             listCandidateRepositories();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Verifies if the GitHub repositories identified at a csv file (/input/projects.csv) does contain Gherkin files.
+     * Verifies if the GitHub repositories identified at a csv file (/input/commits.csv) does contain Gherkin files.
      * The first column must identify the repository's url. It considers the default name for master branch (master)
      *
      */
-    public void searchGherkinProjectsDefaultBranch(){
+    public void searchRepositoriesByFileTypeDefaultBranch(){
         CSVWriter writer;
         ArrayList<Repository> repositories;
         resetCounters();
 
         try {
             repositories = extractRepositoriesDefaultBranch();
+            System.out.printf("The repositories to search for are saved in %s%n", SearchProperties.REPOSITORIES_TO_DOWNLOAD_FILE);
 
-            writer = new CSVWriter(new FileWriter(Util.CANDIDATE_PROJECTS_FILE));
+            writer = new CSVWriter(new FileWriter(SearchProperties.CANDIDATE_REPOSITORIES_FILE));
             writer.writeNext(new String[]{"index", "repository_url"});
 
-            for(int i=0; i<repositories.size(); i++){
-                searchGherkinFile(repositories.get(i), writer, i + 2);
+            if(fileType.isEmpty()){
+                for (int i = 0; i < repositories.size(); i++) {
+                    candidates.add(repositories.get(i));
+                    writer.writeNext(new String[]{String.valueOf(i + 2), repositories.get(i).getUrl()});
+                }
+            }
+            else {
+                for (int i = 0; i < repositories.size(); i++) {
+                    searchFileType(repositories.get(i), writer, i + 2);
+                }
+                System.out.printf("Number of analyzed projects: %d%n", counter);
+                System.out.printf("Number of candidate projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100);
             }
 
             writer.close();
-
-            System.out.printf("Number of analyzed projects: %d%n", counter);
-            System.out.printf("Number of candidate projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100);
             listCandidateRepositories();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,7 +2,7 @@ package input;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import util.Util;
+import util.SearchProperties;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class InputManager {
         reader.close();
 
         List<String[]> unique = removeDuplicatedValues(entries);
-        CSVWriter writer = new CSVWriter(new FileWriter(Util.PREPARED_PROJECTS_FILE));
+        CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.REPOSITORIES_TO_DOWNLOAD_FILE));
         for (String[] line : unique) {
             writer.writeNext(new String[]{line[0], line[1]}); //url, branch
         }
@@ -38,12 +38,12 @@ public class InputManager {
      * @throws IOException if there's an error reading or writting csv files.
      */
     public static void prepareInput() throws IOException {
-        CSVReader reader = new CSVReader(new FileReader(Util.PROJECTS_FILE));
+        CSVReader reader = new CSVReader(new FileReader(SearchProperties.BIGQUERY_COMMITS_FILE));
         List<String[]> entries = reader.readAll();
         reader.close();
 
         List<String[]> unique = removeDuplicatedValues(entries);
-        CSVWriter writer = new CSVWriter(new FileWriter(Util.PREPARED_PROJECTS_FILE));
+        CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.REPOSITORIES_TO_DOWNLOAD_FILE));
         for (String[] line : unique) {
             writer.writeNext(new String[]{line[0], line[1]}); //url, branch
         }

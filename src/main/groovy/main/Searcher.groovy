@@ -12,7 +12,7 @@ import net.wagstrom.research.github.GithubProperties
 import net.wagstrom.research.github.PropNames
 import repositorySearch.BigQueryServiceManager
 import repositorySearch.RepositorySearchManager
-import util.Util
+import util.SearchProperties
 
 
 class Searcher {
@@ -29,6 +29,7 @@ class Searcher {
 
     /**
      * Searches for GitHub projects from the last 5 years.
+     *
      * @param language repository's programming language
      * */
     private static String configureQuery(String language){
@@ -57,6 +58,7 @@ class Searcher {
 
     /***
      * Updates the configuration properties file required by GitMiner to download a GitHub repository.
+     *
      * @param repository short path of the repository to download. For example, if the repository URL is
      * https://github.com/spgroup/rgms, the value of this parameter should be spgroup/rgms.
      */
@@ -94,7 +96,7 @@ class Searcher {
     }
 
     private static void exportSearchResult(List<Task> tasks){
-        CSVWriter writer = new CSVWriter(new FileWriter(Util.COMMITS_FILE))
+        CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.TASKS_FILE))
         String[] text = ["index","repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files"]
         writer.writeNext(text)
         for (Task task : tasks) {
@@ -106,7 +108,7 @@ class Searcher {
     }
 
     private static def exportSelectedProjects(List<String[]> projects) {
-        CSVWriter writer = new CSVWriter(new FileWriter(Util.SELECTED_PROJECTS_FILE))
+        CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.SELECTED_REPOSITORIES_FILE))
         String[] text = ["index","repository_url"]
         writer.writeNext(text)
         writer.writeAll(projects)
@@ -114,11 +116,12 @@ class Searcher {
     }
 
     /**
-     * Searches for GitHub projects from the last 5 years that contains Gherkin files.
-     * Gherkin is the language used by some BDD (Behavior Driven Development) tools as Cucumber.
+     * Searches for GitHub projects from the last 5 years that contains files of a specific type.
      * The searching uses Google BigQuery service that requires a BigQuery repository id (spgroup.bigquery.project.id at
      * configuration.properties). It is also necessary to identify the repository's programming language
-     * (spgroup.language at configuration.properties).
+     * (spgroup.language at configuration.properties). If no file type is specified (spgroup.search.file.extension at
+     * configuration.properties), such a criteria is not used.
+     *
      * @throws IOException if there's an error during the remote repositorySearch.
      */
     public static void searchGithubProjects() throws IOException {
@@ -127,21 +130,28 @@ class Searcher {
         String language = props.getProperty("spgroup.language")
         String query = configureQuery(language)
 
-        /* Searches GitHub projects and saves the result in a csv file. If the file already exists, this step is not required. */
-        BigQueryServiceManager.searchProjects(projectId, query); //projectd id, query
+        /* Searches GitHub projects and saves the result in a csv file. */
+        BigQueryServiceManager.searchProjects(projectId, query);
+        System.out.printf("The repositories found by BigQuery service are saved in %s%n", SearchProperties.BIGQUERY_COMMITS_FILE)
 
-        /* Downloading and unzipping projects from csv file*/
+        /* Downloading and unzipping projects from csv file. If this is step is not necessary, leave the
+        spgroup.search.file.extension at configuration.properties empty.*/
         RepositorySearchManager searcher = new RepositorySearchManager()
-        searcher.searchGherkinProjects()
+        searcher.searchRepositoriesByFileType()
+
+        System.out.printf("The final result of search for GitHub projects is saved in %s%n", SearchProperties.CANDIDATE_REPOSITORIES_FILE)
     }
 
     /***
      * Checks if a GitHub repository enables to link development tasks, code changes in production files and code
      * changes in test files. Such a link is needed to compute task interfaces.
+     *
      * @param args command-line arguments required by GitMiner
      * @param index repository index in candidate-projects.csv
      * @param url repository url
      * @param repository short name of the GitHub repository to analyse
+     *
+     * @return list of found tasks
      * */
     public static List<Task> findLinkAmongTaskAndChangesAndTest(String[] args, String index, String url, String repository){
         downloadRepository(args) //Download the repository specified in configuration.properties
@@ -153,11 +163,11 @@ class Searcher {
     /***
      * Checks if the previous candidates GitHub projects (content of file "output/candidate-projects.csv") enable to link
      * development tasks, code changes in production files and code changes in test files. Such a link is needed to
-     * compute task interfaces. The result is saved in two csv files (output/commits.csv and output/selected-projects.csv).
+     * compute task interfaces. The result is saved in two csv files (output/tasks.csv and output/selected-projects.csv).
      * @param args command-line arguments required by GitMiner
      */
     public static void findProjectsWithLinkAmongTaskAndChangesAndTest(String[] args){
-        CSVReader reader = new CSVReader(new FileReader(Util.CANDIDATE_PROJECTS_FILE))
+        CSVReader reader = new CSVReader(new FileReader(SearchProperties.CANDIDATE_REPOSITORIES_FILE))
         List<String[]> entries = reader.readAll()
         reader.close()
 
@@ -167,19 +177,22 @@ class Searcher {
         List<Task> alltasks = []
         for(String[] entry: entries){
             entry[1] = entry[1].trim()
-            String repositoryName = entry[1] - Util.GITHUB_URL
+            String repositoryName = entry[1] - SearchProperties.GITHUB_URL
             String repositoryShortName = repositoryName.substring(repositoryName.lastIndexOf("/")+1)
             updatePropertiesFile(repositoryName)
             List<Task> tasks = findLinkAmongTaskAndChangesAndTest(args, entry[0], entry[1], repositoryShortName)
-            if(tasks.isEmpty()) println "No link was found among tasks and code changes!"
-            else{
+            if(!tasks.isEmpty()) {
                 selectedRepositories += entry
                 alltasks += tasks
             }
         }
 
         exportSearchResult(alltasks)
+        System.out.printf("The tasks of GitHub projects are saved in %s%n", SearchProperties.TASKS_FILE)
+
         exportSelectedProjects(selectedRepositories)
+        System.out.printf("The repositories that contains link amog tasks and code changes are saved in %s%n",
+                SearchProperties.SELECTED_REPOSITORIES_FILE)
     }
 
 }

@@ -2,7 +2,7 @@ package repositorySearch;
 
 import repositorySearch.exception.DownloadException;
 import repositorySearch.exception.UnzipException;
-import util.Util;
+import util.SearchProperties;
 
 
 /**
@@ -24,28 +24,28 @@ public class Repository {
     }
 
     public Repository(String zipFileUrl) {
-        this.url = zipFileUrl.substring(0,zipFileUrl.indexOf(Util.ZIP_FILE_URL));
-        this.branch = zipFileUrl.substring(zipFileUrl.lastIndexOf("/") + 1, zipFileUrl.length() - Util.FILE_EXTENSION.length());
+        this.url = zipFileUrl.substring(0,zipFileUrl.indexOf(SearchProperties.ZIP_FILE_URL));
+        this.branch = zipFileUrl.substring(zipFileUrl.lastIndexOf("/") + 1, zipFileUrl.length() - SearchProperties.FILE_EXTENSION.length());
         this.name = configureName(url);
         configureZipUrl();
     }
 
     private String configureName(String url){
-        String name = url.substring(Util.GITHUB_URL.length());
+        String name = url.substring(SearchProperties.GITHUB_URL.length());
         name = name.replaceAll("/", "_");
         return name;
     }
 
     private void configureZipUrl(){
-        this.zipUrl = url + Util.ZIP_FILE_URL + branch + Util.FILE_EXTENSION;
+        this.zipUrl = url + SearchProperties.ZIP_FILE_URL + branch + SearchProperties.FILE_EXTENSION;
     }
 
     public String getZipFolderName() {
-        return Util.UNZIPPED_FILES_DIR +name;
+        return SearchProperties.UNZIPPED_FILES_DIR +name;
     }
 
     public String getLocalZipName(){
-        return Util.ZIPPED_FILES_DIR + name+ Util.FILE_EXTENSION;
+        return SearchProperties.ZIPPED_FILES_DIR + name+ SearchProperties.FILE_EXTENSION;
     }
 
     public String getUrl() {
@@ -93,17 +93,19 @@ public class Repository {
     }
 
     /**
-     * Verifies if the repository main branch contains Gherkin file. It's necessary to download the repository
-     * as zip file first and unzip it.
+     * Verifies if the repository main branch contains file of specific type that is specified at the configuration
+     * properties file. It's necessary to download the repository as zip file first and unzip it.
      *
-     * @return true if the repository does contain Gherkin file, false otherwise.
+     * @param fileType the type of file to search for.
+     * @return true if the repository does contain Gherkin file, false otherwise. If no file type is defined, the search
+     * is also true.
      */
-    public boolean hasGherkinFile(){
+    public boolean hasFileType(String fileType){
         boolean result = false;
         try {
             downloadZip();
             unzip();
-            result = FileHandler.hasFileType(Util.FEATURE_FILE_EXTENSION, getZipFolderName());
+            result = FileHandler.hasFileType(fileType, getZipFolderName());
         } catch (DownloadException e) {
             System.out.println(e.getMessage());
         } catch (UnzipException e) {

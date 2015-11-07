@@ -33,7 +33,7 @@ public class Demo {
 
             // Downloading and unzipping projects from csv file
             RepositorySearchManager searcher = new RepositorySearchManager();
-            searcher.searchGherkinProjects();
+            searcher.searchRepositoriesByFileType();
         } catch (IOException e) {
             System.out.println("Problem during projects searching: "+e.getMessage());
         }

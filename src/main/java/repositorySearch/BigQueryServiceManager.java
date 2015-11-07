@@ -9,7 +9,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.bigquery.Bigquery;
 import com.google.api.services.bigquery.BigqueryScopes;
 import com.google.api.services.bigquery.model.*;
-import util.Util;
+import util.SearchProperties;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -73,24 +73,30 @@ public class BigQueryServiceManager {
      *             "payload_commit_msg", "commit_link", "payload_commit_id", "created_at" e "repository_watchers"
      */
     private static void exportResults(List<TableRow> rows) throws IOException {
-        CSVWriter writer = new CSVWriter(new FileWriter(Util.PROJECTS_FILE));
+        CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.BIGQUERY_COMMITS_FILE));
         writer.writeNext(new String[]{"repository_url", "repository_master_branch", "payload_commit_msg", "commit_link",
                 "payload_commit_id", "created_at", "repository_watchers"});
 
-        for (TableRow row : rows) {
-            List<TableCell> fields = row.getF();
-            String[] entry = new String[fields.size()]; //url, branch, msg, commit link, commit id, date, watchers
-            for(int i=0; i<entry.length; i++) {
-                entry[i] = fields.get(i).getV().toString();
+        if(rows != null) {
+            for (TableRow row : rows) {
+                List<TableCell> fields = row.getF();
+                String[] entry = new String[fields.size()]; //url, branch, msg, commit link, commit id, date, watchers
+                for (int i = 0; i < entry.length; i++) {
+                    entry[i] = fields.get(i).getV().toString();
+                }
+                writer.writeNext(entry);
             }
-            writer.writeNext(entry);
         }
+        else{
+            System.out.println("No repository was found!");
+        }
+
         writer.close();
     }
 
     /**
      *
-     * Searches for GitHub projects according to the
+     * Searches for GitHub projects according to the query.
      *
      * @param projectId the id of the repository to run the search under. If no valid value is given, it will prompt for it.
      * @param query the query to guide the searching.
@@ -114,15 +120,7 @@ public class BigQueryServiceManager {
         if(query!=null && !query.isEmpty()) {
             // Run query
             List<TableRow> rows = executeQuery(query, bigquery, projectId);
-            if(rows != null){
-                System.out.println("Result size: "+rows.size());
-
-                // Save result
-                exportResults(rows);
-                System.out.printf("The search result is saved at %s%n", Util.PROJECTS_FILE);
-            }
-            else
-                System.out.println("Result size: 0");
+            exportResults(rows); // Save result
         }
     }
 
