@@ -17,7 +17,8 @@ import util.SearchProperties
 
 class Searcher {
 
-    static final String MESSAGE_ID_REGEX = /[\[#.*\] | \[fix.* #.*\] | \[complet.* #.*\] | \[finish.* #.*\]].*/ //Other possibility: /.*#\d+.*/
+    static final String PIVOTAL_TRACKER_ID_REGEX = /\[(#|fix.* #|complet.* #|finish.* #)\d+\].*/
+    static final String GENERAL_ID_REGEX = /.*#\d+.*/
 
     private static void downloadRepository(String[] args){
         Github g = new Github()
@@ -97,11 +98,11 @@ class Searcher {
 
     private static void exportSearchResult(List<Task> tasks){
         CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.TASKS_FILE))
-        String[] text = ["index","repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files"]
+        String[] text = ["index","repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files", "commits_message"]
         writer.writeNext(text)
         for (Task task : tasks) {
             text = [task.repositoryIndex, task.repositoryUrl, task.id, (task.commits*.hash).toString(),
-                    task.productionFiles.toString(), task.testFiles.toString()]
+                    task.productionFiles.toString(), task.testFiles.toString(), task.commits*.message?.flatten()]
             writer.writeNext(text)
         }
         writer.close()
@@ -154,9 +155,17 @@ class Searcher {
      * @return list of found tasks
      * */
     public static List<Task> findLinkAmongTaskAndChangesAndTest(String[] args, String index, String url, String repository){
+        Properties props = GithubProperties.props()
+        String pivotalTrackerRegex = props.getProperty("spgroup.task.query.pivotaltracker")
+        if(pivotalTrackerRegex==null | pivotalTrackerRegex=="") pivotalTrackerRegex = "false"
+
         downloadRepository(args) //Download the repository specified in configuration.properties
         CommitSearchManager manager = new CommitSearchManager(repository)
-        List<Commit> commits = manager.searchByComment(MESSAGE_ID_REGEX)
+
+        List<Commit> commits = []
+        if(pivotalTrackerRegex.equals("true")) commits = manager.searchByComment(PIVOTAL_TRACKER_ID_REGEX)
+        else commits = manager.searchByComment(GENERAL_ID_REGEX)
+
         return organizeCommitsByTaskId(commits, index, url)
     }
 
