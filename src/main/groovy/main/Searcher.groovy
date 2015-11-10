@@ -93,6 +93,8 @@ class Searcher {
             tasks += task
         }
 
+        println "Total tasks: ${tasks.size()}"
+
         return tasks
     }
 
