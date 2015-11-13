@@ -17,7 +17,7 @@ import util.SearchProperties
 
 class Searcher {
 
-    static final String PIVOTAL_TRACKER_ID_REGEX = /\[(#|fix.* #|complet.* #|finish.* #)\d+\].*/
+    static final String PIVOTAL_TRACKER_ID_REGEX = /.*\[(#|fix.* #|complet.* #|finish.* #)\d+\].*/
     static final String GENERAL_ID_REGEX = /.*#\d+.*/
 
     private static void downloadRepository(String[] args){
