@@ -112,7 +112,7 @@ class Searcher {
 
     private static def exportSelectedProjects(List<String[]> projects) {
         CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.SELECTED_REPOSITORIES_FILE))
-        String[] text = ["index","repository_url"]
+        String[] text = ["index","repository_url", "tasks", "tasks_production_test"]
         writer.writeNext(text)
         writer.writeAll(projects)
         writer.close()
@@ -193,7 +193,9 @@ class Searcher {
             updatePropertiesFile(repositoryName)
             List<Task> tasks = findLinkAmongTaskAndChangesAndTest(args, entry[0], entry[1], repositoryShortName)
             if(!tasks.isEmpty()) {
-                selectedRepositories += entry
+                def tasksPT = tasks.findAll{ !it.productionFiles.isEmpty() && !it.testFiles.isEmpty()}
+                String[] cell = [entry[0], entry[1], tasks.size(), tasksPT.size()]
+                selectedRepositories += cell
                 alltasks += tasks
             }
         }
