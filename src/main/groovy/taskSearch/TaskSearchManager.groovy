@@ -1,10 +1,9 @@
-package main
+package taskSearch
 
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
 import commitSearch.Commit
 import commitSearch.CommitSearchManager
-import commitSearch.Task
 import edu.unl.cse.git.App
 import groovy.time.TimeCategory
 import net.wagstrom.research.github.Github
@@ -15,7 +14,7 @@ import repositorySearch.RepositorySearchManager
 import util.SearchProperties
 
 
-class Searcher {
+class TaskSearchManager {
 
     static final String PIVOTAL_TRACKER_ID_REGEX = /.*\[(#|fix.* #|complet.* #|finish.* #)\d+\].*/
     static final String GENERAL_ID_REGEX = /.*#\d+.*/

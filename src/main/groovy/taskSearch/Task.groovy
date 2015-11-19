@@ -1,5 +1,6 @@
-package commitSearch
+package taskSearch
 
+import commitSearch.Commit
 import net.wagstrom.research.github.GithubProperties
 
 import java.util.regex.Matcher
@@ -14,13 +15,17 @@ class Task {
     List<String> productionFiles
     List<String> testFiles
 
+    public Task(){
+
+    }
+
     public Task(String index, String url, String id){
         repositoryIndex = index
         repositoryUrl = url
         this.id = id
-        commits = new ArrayList<>()
-        productionFiles = new ArrayList<>()
-        testFiles = new ArrayList<>()
+        commits = []
+        productionFiles = []
+        testFiles = []
     }
 
     public Task(String index, String url, String id, List<Commit> commits){
