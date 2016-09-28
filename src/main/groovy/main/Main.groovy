@@ -1,16 +1,16 @@
 package main
 
-import taskSearch.TaskSearchManager
-
+import static taskSearch.TaskSearchManager.searchGithubProjects
+import static taskSearch.TaskSearchManager.findProjectsWithLinkAmongTaskAndChangesAndTest
 
 class Main {
 
     public static void main(String[] args){
         try {
-            TaskSearchManager.searchGithubProjects()
-            TaskSearchManager.findProjectsWithLinkAmongTaskAndChangesAndTest(args)
-        } catch (IOException e) {
-            System.out.println("Problem during projects searching: "+e.getMessage());
+            searchGithubProjects()
+            findProjectsWithLinkAmongTaskAndChangesAndTest(args)
+        } catch (Exception e) {
+            println "Problem during projects searching: "+e.getMessage()
         }
     }
 

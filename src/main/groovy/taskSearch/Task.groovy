@@ -15,11 +15,11 @@ class Task {
     List<String> productionFiles
     List<String> testFiles
 
-    public Task(){
+    Task(){
 
     }
 
-    public Task(String index, String url, String id){
+    Task(String index, String url, String id){
         repositoryIndex = index
         repositoryUrl = url
         this.id = id
@@ -28,7 +28,7 @@ class Task {
         testFiles = []
     }
 
-    public Task(String index, String url, String id, List<Commit> commits){
+    Task(String index, String url, String id, List<Commit> commits){
         this(index, url, id)
         this.commits = commits
         commits*.files?.flatten()?.each{ file ->

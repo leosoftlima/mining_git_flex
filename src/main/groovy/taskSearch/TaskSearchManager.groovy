@@ -9,9 +9,9 @@ import groovy.time.TimeCategory
 import net.wagstrom.research.github.Github
 import net.wagstrom.research.github.GithubProperties
 import net.wagstrom.research.github.PropNames
-import repositorySearch.BigQueryServiceManager
-import repositorySearch.RepositorySearchManager
-import util.SearchProperties
+import zipSearch.DowloadManager
+import zipSearch.QueryService
+import util.DataProperties
 
 
 class TaskSearchManager {
@@ -47,10 +47,7 @@ class TaskSearchManager {
         AND PARSE_UTC_USEC(repository_created_at) >= PARSE_UTC_USEC ('"""+new java.sql.Date(initialDate.getTime())+"""')
         AND type = 'PushEvent'
         AND repository_language = '""" + language + """'
-        AND ( (LOWER(payload_commit_msg) LIKE '[#%]%')
-        OR (LOWER(payload_commit_msg) LIKE '[fix% #%]%')
-        OR (LOWER(payload_commit_msg) LIKE '[complet% #%]%')
-        OR (LOWER(payload_commit_msg) LIKE '[finish% #%]%') )
+        AND ( (LOWER(payload_commit_msg) LIKE '%#%') )
         GROUP BY repository_url, repository_master_branch, payload_commit_msg, commit_link, payload_commit_id, created_at, repository_watchers
         ORDER BY repository_url"""
         return query
@@ -98,7 +95,7 @@ class TaskSearchManager {
     }
 
     private static void exportSearchResult(List<Task> tasks){
-        CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.TASKS_FILE))
+        CSVWriter writer = new CSVWriter(new FileWriter(DataProperties.TASKS_FILE))
         String[] text = ["index","repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files", "commits_message"]
         writer.writeNext(text)
         for (Task task : tasks) {
@@ -110,7 +107,7 @@ class TaskSearchManager {
     }
 
     private static def exportSelectedProjects(List<String[]> projects) {
-        CSVWriter writer = new CSVWriter(new FileWriter(SearchProperties.SELECTED_REPOSITORIES_FILE))
+        CSVWriter writer = new CSVWriter(new FileWriter(DataProperties.SELECTED_REPOSITORIES_FILE))
         String[] text = ["index","repository_url", "tasks", "tasks_production_test"]
         writer.writeNext(text)
         writer.writeAll(projects)
@@ -133,15 +130,15 @@ class TaskSearchManager {
         String query = configureQuery(language)
 
         /* Searches GitHub projects and saves the result in a csv file. */
-        BigQueryServiceManager.searchProjects(projectId, query);
-        System.out.printf("The repositories found by BigQuery service are saved in %s%n", SearchProperties.BIGQUERY_COMMITS_FILE)
+        QueryService.searchProjects(projectId, query)
+        println "The repositories found by BigQuery service are saved in ${DataProperties.BIGQUERY_COMMITS_FILE}"
 
         /* Downloading and unzipping projects from csv file. If this is step is not necessary, leave the
         spgroup.search.file.extension at configuration.properties empty.*/
-        RepositorySearchManager searcher = new RepositorySearchManager()
+        DowloadManager searcher = new DowloadManager()
         searcher.searchRepositoriesByFileType()
 
-        System.out.printf("The final result of search for GitHub projects is saved in %s%n", SearchProperties.CANDIDATE_REPOSITORIES_FILE)
+       println "The final result of search for GitHub projects is saved in ${DataProperties.CANDIDATE_REPOSITORIES_FILE}"
     }
 
     /***
@@ -163,7 +160,7 @@ class TaskSearchManager {
         downloadRepository(args) //Download the repository specified in configuration.properties
         CommitSearchManager manager = new CommitSearchManager(repository)
 
-        List<Commit> commits = []
+        List<Commit> commits
         if(pivotalTrackerRegex.equals("true")) commits = manager.searchByComment(PIVOTAL_TRACKER_ID_REGEX)
         else commits = manager.searchByComment(GENERAL_ID_REGEX)
 
@@ -177,7 +174,7 @@ class TaskSearchManager {
      * @param args command-line arguments required by GitMiner
      */
     public static void findProjectsWithLinkAmongTaskAndChangesAndTest(String[] args){
-        CSVReader reader = new CSVReader(new FileReader(SearchProperties.CANDIDATE_REPOSITORIES_FILE))
+        CSVReader reader = new CSVReader(new FileReader(DataProperties.CANDIDATE_REPOSITORIES_FILE))
         List<String[]> entries = reader.readAll()
         reader.close()
 
@@ -187,7 +184,7 @@ class TaskSearchManager {
         List<Task> alltasks = []
         for(String[] entry: entries){
             entry[1] = entry[1].trim()
-            String repositoryName = entry[1] - SearchProperties.GITHUB_URL
+            String repositoryName = entry[1] - DataProperties.GITHUB_URL
             String repositoryShortName = repositoryName.substring(repositoryName.lastIndexOf("/")+1)
             updatePropertiesFile(repositoryName)
             List<Task> tasks = findLinkAmongTaskAndChangesAndTest(args, entry[0], entry[1], repositoryShortName)
@@ -200,11 +197,11 @@ class TaskSearchManager {
         }
 
         exportSearchResult(alltasks)
-        System.out.printf("The tasks of GitHub projects are saved in %s%n", SearchProperties.TASKS_FILE)
+        System.out.printf("The tasks of GitHub projects are saved in %s%n", DataProperties.TASKS_FILE)
 
         exportSelectedProjects(selectedRepositories)
         System.out.printf("The repositories that contains link amog tasks and code changes are saved in %s%n",
-                SearchProperties.SELECTED_REPOSITORIES_FILE)
+                DataProperties.SELECTED_REPOSITORIES_FILE)
     }
 
 }

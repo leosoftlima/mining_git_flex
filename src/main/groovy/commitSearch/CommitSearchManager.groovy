@@ -23,7 +23,7 @@ class CommitSearchManager {
      * Creates a object to repositorySearch for commits of a git repository.
      * @param gitRepository name of the git repository
      */
-    public CommitSearchManager(String gitRepository){
+    CommitSearchManager(String gitRepository){
         Gremlin.load()
         Properties props = GithubProperties.props()
         graph = new Neo4jGraph(props.getProperty(PropNames.DBURL))
@@ -48,7 +48,7 @@ class CommitSearchManager {
      * Retrieves all commits from a git repository.
      * @return all commits
      */
-    public List<Commit> searchAllCommits(){
+    List<Commit> searchAllCommits(){
         def result = graph.V.filter{it._type == "COMMIT"}
         def commits = []
         result?.each{ r ->
@@ -64,7 +64,7 @@ class CommitSearchManager {
      * @param words keywords for the searching
      * @return commits that satisfies the searching criteria
      */
-    public List<Commit> searchByComment(List<String> words){
+    List<Commit> searchByComment(List<String> words){
         def commits = searchAllCommits()
         println "Total commits: ${commits.size()}"
 
@@ -82,7 +82,7 @@ class CommitSearchManager {
      * @param regex regular expression that defines the expected format of the commit message
      * @return commits that satisfies the searching criteria
      */
-    public List<Commit> searchByComment(String regex){
+    List<Commit> searchByComment(String regex){
         def commits = searchAllCommits()
         println "Total commits: ${commits.size()}"
 
