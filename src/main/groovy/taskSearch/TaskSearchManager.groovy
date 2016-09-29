@@ -7,8 +7,6 @@ import commitSearch.CommitSearchManager
 import edu.unl.cse.git.App
 import groovy.time.TimeCategory
 import net.wagstrom.research.github.Github
-import net.wagstrom.research.github.GithubProperties
-import net.wagstrom.research.github.PropNames
 import zipSearch.DowloadManager
 import zipSearch.QueryService
 import util.DataProperties
@@ -33,7 +31,7 @@ class TaskSearchManager {
      * @param language repository's programming language
      * */
     private static String configureQuery(String language){
-        language = language.charAt(0).toString().toUpperCase()+language.substring(1) //capitalizes the first letter
+        language = language?.charAt(0)?.toString()?.toUpperCase()+language?.substring(1) //capitalizes the first letter
         def endDate = new Date()
         def initialDate
         use(TimeCategory) {
@@ -42,7 +40,7 @@ class TaskSearchManager {
 
         String query = """SELECT repository_url, repository_master_branch, payload_commit_msg,
         (repository_url + '/commit/' + payload_commit_id) AS commit_link, payload_commit_id, created_at, repository_watchers
-        FROM [githubarchive:github.timeline]
+        FROM [bigquery-public-data:samples.github_timeline]
         WHERE PARSE_UTC_USEC(repository_created_at) <= PARSE_UTC_USEC ('"""+new java.sql.Date(endDate.getTime())+"""')
         AND PARSE_UTC_USEC(repository_created_at) >= PARSE_UTC_USEC ('"""+new java.sql.Date(initialDate.getTime())+"""')
         AND type = 'PushEvent'
@@ -50,6 +48,8 @@ class TaskSearchManager {
         AND ( (LOWER(payload_commit_msg) LIKE '%#%') )
         GROUP BY repository_url, repository_master_branch, payload_commit_msg, commit_link, payload_commit_id, created_at, repository_watchers
         ORDER BY repository_url"""
+        return query
+
         return query
     }
 
@@ -61,15 +61,14 @@ class TaskSearchManager {
      */
     private static void updatePropertiesFile(String repository){
         def bdurlPath = "tmp-"+repository.replaceAll(CommitSearchManager.FILE_SEPARATOR_REGEX, "_")+"/graph.db"
-        Properties props = GithubProperties.props()
-        props.setProperty(PropNames.DBURL, bdurlPath)
-        props.setProperty("edu.unl.cse.git.dburl", bdurlPath)
-        props.setProperty(PropNames.GITHUB_PROJECT_NAMES, repository)
-        props.setProperty("edu.unl.cse.git.repositories", repository)
+        DataProperties.props.setProperty("net.wagstrom.research.github.dburl", bdurlPath)
+        DataProperties.props.setProperty("edu.unl.cse.git.dburl", bdurlPath)
+        DataProperties.props.setProperty("net.wagstrom.research.github.projects", repository)
+        DataProperties.props.setProperty("edu.unl.cse.git.repositories", repository)
         ClassLoader loader = Thread.currentThread().getContextClassLoader()
-        URL url = loader.getResource("configuration.properties");
+        URL url = loader.getResource("configuration.properties")
         FileOutputStream fos = new FileOutputStream(new File(url.toURI()))
-        props.store(fos, null)
+        DataProperties.props.store(fos, null)
         fos.close()
     }
 
@@ -95,7 +94,8 @@ class TaskSearchManager {
     }
 
     private static void exportSearchResult(List<Task> tasks){
-        CSVWriter writer = new CSVWriter(new FileWriter(DataProperties.TASKS_FILE))
+        def file = new File(DataProperties.TASKS_FILE)
+        CSVWriter writer = new CSVWriter(new FileWriter(file))
         String[] text = ["index","repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files", "commits_message"]
         writer.writeNext(text)
         for (Task task : tasks) {
@@ -106,8 +106,9 @@ class TaskSearchManager {
         writer.close()
     }
 
-    private static def exportSelectedProjects(List<String[]> projects) {
-        CSVWriter writer = new CSVWriter(new FileWriter(DataProperties.SELECTED_REPOSITORIES_FILE))
+    private static void exportSelectedProjects(List<String[]> projects) {
+        def file = new File(DataProperties.SELECTED_REPOSITORIES_FILE)
+        CSVWriter writer = new CSVWriter(new FileWriter(file))
         String[] text = ["index","repository_url", "tasks", "tasks_production_test"]
         writer.writeNext(text)
         writer.writeAll(projects)
@@ -123,10 +124,9 @@ class TaskSearchManager {
      *
      * @throws IOException if there's an error during the remote repositorySearch.
      */
-    public static void searchGithubProjects() throws IOException {
-        Properties props = GithubProperties.props()
-        String projectId = props.getProperty("spgroup.bigquery.project.id")
-        String language = props.getProperty("spgroup.language")
+    static void searchGithubProjects() /*throws IOException*/ {
+        String projectId = DataProperties.props.getProperty("spgroup.bigquery.project.id")
+        String language = DataProperties.props.getProperty("spgroup.language")
         String query = configureQuery(language)
 
         /* Searches GitHub projects and saves the result in a csv file. */
@@ -152,9 +152,8 @@ class TaskSearchManager {
      *
      * @return list of found tasks
      * */
-    public static List<Task> findLinkAmongTaskAndChangesAndTest(String[] args, String index, String url, String repository){
-        Properties props = GithubProperties.props()
-        String pivotalTrackerRegex = props.getProperty("spgroup.task.query.pivotaltracker")
+    static List<Task> findLinkAmongTaskAndChangesAndTest(String[] args, String index, String url, String repository){
+        String pivotalTrackerRegex = DataProperties.props.getProperty("spgroup.task.query.pivotaltracker")
         if(pivotalTrackerRegex==null | pivotalTrackerRegex=="") pivotalTrackerRegex = "false"
 
         downloadRepository(args) //Download the repository specified in configuration.properties
@@ -173,8 +172,9 @@ class TaskSearchManager {
      * compute task interfaces. The result is saved in two csv files (output/tasks.csv and output/selected-projects.csv).
      * @param args command-line arguments required by GitMiner
      */
-    public static void findProjectsWithLinkAmongTaskAndChangesAndTest(String[] args){
-        CSVReader reader = new CSVReader(new FileReader(DataProperties.CANDIDATE_REPOSITORIES_FILE))
+    static void findProjectsWithLinkAmongTaskAndChangesAndTest(String[] args){
+        def file = new File(DataProperties.CANDIDATE_REPOSITORIES_FILE)
+        CSVReader reader = new CSVReader(new FileReader(file))
         List<String[]> entries = reader.readAll()
         reader.close()
 

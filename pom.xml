@@ -1,38 +1,4 @@
-<!DOCTYPE project [
-        <!ELEMENT project (modelVersion|groupId|artifactId|version|build|properties|dependencies)*>
-        <!ATTLIST project
-                xmlns CDATA #REQUIRED
-                xmlns:xsi CDATA #REQUIRED
-                xsi:schemaLocation CDATA #REQUIRED>
-        <!ELEMENT modelVersion (#PCDATA)>
-        <!ELEMENT groupId (#PCDATA)>
-        <!ELEMENT artifactId (#PCDATA)>
-        <!ELEMENT version (#PCDATA)>
-        <!ELEMENT build (plugins)*>
-        <!ELEMENT plugins (plugin)*>
-        <!ELEMENT plugin (groupId|artifactId|configuration)*>
-        <!ELEMENT configuration (compilerVersion|source|target)*>
-        <!ELEMENT compilerVersion (#PCDATA)>
-        <!ELEMENT source (#PCDATA)>
-        <!ELEMENT target (#PCDATA)>
-        <!ELEMENT properties (project.build.sourceEncoding|slf4j.version|junit.version|logback.version|logbackAddOns.version|args4j.version|govscigraph.version|blueprints.version|jgit.version|mylyn.github.version|findbugs.version)*>
-        <!ELEMENT project.build.sourceEncoding (#PCDATA)>
-        <!ELEMENT slf4j.version (#PCDATA)>
-        <!ELEMENT junit.version (#PCDATA)>
-        <!ELEMENT logback.version (#PCDATA)>
-        <!ELEMENT logbackAddOns.version (#PCDATA)>
-        <!ELEMENT args4j.version (#PCDATA)>
-        <!ELEMENT govscigraph.version (#PCDATA)>
-        <!ELEMENT blueprints.version (#PCDATA)>
-        <!ELEMENT jgit.version (#PCDATA)>
-        <!ELEMENT mylyn.github.version (#PCDATA)>
-        <!ELEMENT findbugs.version (#PCDATA)>
-        <!ELEMENT dependencies (dependency)*>
-        <!ELEMENT dependency (groupId|artifactId|version|scope|exclusions)*>
-        <!ELEMENT scope (#PCDATA)>
-        <!ELEMENT exclusions (exclusion)*>
-        <!ELEMENT exclusion (artifactId|groupId)*>
-        ]>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -46,40 +12,31 @@
     <packaging>jar</packaging>
 
     <properties>
-        <jdk.version>1.7</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.6.1</slf4j.version>
+        <jdk.version>1.8</jdk.version>
+        <groovy.version>2.9.2-01</groovy.version>
         <junit.version>4.10</junit.version>
-        <logback.version>0.9.29</logback.version>
-        <logbackAddOns.version>0.1-SNAPSHOT</logbackAddOns.version>
-        <args4j.version>2.0.16</args4j.version>
-        <govscigraph.version>2.1.0-SNAPSHOT</govscigraph.version>
-        <blueprints.version>2.1.0</blueprints.version>
-        <jgit.version>1.1.0.201109151100-r</jgit.version>
-        <mylyn.github.version>1.3.0-SNAPSHOT-WAGSTROM</mylyn.github.version>
-        <findbugs.version>2.4.0</findbugs.version>
-        <file>${basedir}/lib/gitminer-0.3-SNAPSHOT.jar</file>
+        <slf4j.version>1.7.12</slf4j.version>
+        <blueprints.version>2.6.0</blueprints.version>
     </properties>
 
     <name>mining_git</name>
 
-    <repositories>
-        <repository>
-            <id>wagstrom-net-external_free</id>
-            <url>http://patrick.wagstrom.net/maven/external_free</url>
-        </repository>
-        <repository>
-            <id>jgit-repository</id>
-            <url>http://download.eclipse.org/jgit/maven</url>
-        </repository>
-    </repositories>
-
     <build>
+        <!--location is relative to target/classes--> <resources>
+            <resource>
+                <directory>src\main\resources</directory>
+                <includes>
+                    <include>configuration.properties</include>
+                </includes>
+                <targetPath>..</targetPath>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.5.1</version>
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
                     <compilerVersion>${jdk.version}</compilerVersion>
@@ -90,14 +47,20 @@
                     <dependency>
                         <groupId>org.codehaus.groovy</groupId>
                         <artifactId>groovy-eclipse-compiler</artifactId>
-                        <version>2.8.0-01</version>
+                        <version>${groovy.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.codehaus.groovy</groupId>
                         <artifactId>groovy-eclipse-batch</artifactId>
-                        <version>2.1.5-03</version>
+                        <version>2.4.3-01</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-eclipse-compiler</artifactId>
+                <version>${groovy.version}</version>
+                <extensions>true</extensions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -126,19 +89,19 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <version>2.5.2</version>
-                <configuration>
-                    <groupId>net.wagstrom.research</groupId>
-                    <artifactId>gitminer</artifactId>
-                    <version>0.3-SNAPSHOT</version>
-                    <packaging>jar</packaging>
-                    <file>${basedir}/lib/gitminer-0.3-SNAPSHOT.jar</file>
-                </configuration>
                 <executions>
                     <execution>
-                        <phase>clean</phase>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>install-file</goal>
                         </goals>
+                        <configuration>
+                            <groupId>net.wagstrom.research</groupId>
+                            <artifactId>gitminer</artifactId>
+                            <version>0.3-SNAPSHOT</version>
+                            <packaging>jar</packaging>
+                            <file>${basedir}/lib/gitminer-0.3-SNAPSHOT.jar</file>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -154,23 +117,12 @@
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
-            <version>1.20.0</version>
+            <version>1.22.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-bigquery</artifactId>
             <version>v2-rev237-1.20.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>3.7.1.201504261725-r</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -179,82 +131,28 @@
         </dependency>
         <dependency>
             <groupId>com.tinkerpop.blueprints</groupId>
+            <artifactId>blueprints-core</artifactId>
+            <version>${blueprints.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tinkerpop.blueprints</groupId>
             <artifactId>blueprints-neo4j-graph</artifactId>
             <version>${blueprints.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>neo4j-ha</artifactId>
-                    <groupId>org.neo4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>neo4j-cypher</artifactId>
-                    <groupId>org.neo4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop</groupId>
-            <artifactId>pipes</artifactId>
-            <version>${blueprints.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop.gremlin</groupId>
-            <artifactId>gremlin-java</artifactId>
-            <version>${blueprints.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>net.wagstrom.logging.logbackAddOns</groupId>
-            <artifactId>logbackAddOns</artifactId>
-            <version>${logbackAddOns.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>args4j</groupId>
-            <artifactId>args4j</artifactId>
-            <version>${args4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.ibm.research.govsci.graph</groupId>
-            <artifactId>govscigraph</artifactId>
-            <version>${govscigraph.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>blueprints-orient-graph</artifactId>
-                    <groupId>com.tinkerpop.blueprints</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>blueprints-rexster-graph</artifactId>
-                    <groupId>com.tinkerpop.blueprints</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>blueprints-neo4jbatch-graph</artifactId>
-                    <groupId>com.tinkerpop.blueprints</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.mylyn.github</groupId>
-            <artifactId>org.eclipse.egit.github.core</artifactId>
-            <version>${mylyn.github.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>com.tinkerpop.gremlin</groupId>
             <artifactId>gremlin-groovy</artifactId>
             <version>${blueprints.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>args4j</groupId>
+            <artifactId>args4j</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.4.7</version>
         </dependency>
         <dependency>
             <groupId>net.wagstrom.research</groupId>

@@ -3,8 +3,7 @@ package commitSearch
 import com.tinkerpop.blueprints.Graph
 import com.tinkerpop.blueprints.impls.neo4j.Neo4jGraph
 import com.tinkerpop.gremlin.groovy.Gremlin
-import net.wagstrom.research.github.GithubProperties
-import net.wagstrom.research.github.PropNames
+import util.DataProperties
 
 import java.util.regex.Matcher
 
@@ -25,8 +24,7 @@ class CommitSearchManager {
      */
     CommitSearchManager(String gitRepository){
         Gremlin.load()
-        Properties props = GithubProperties.props()
-        graph = new Neo4jGraph(props.getProperty(PropNames.DBURL))
+        graph = new Neo4jGraph(DataProperties.props.getProperty("net.wagstrom.research.github.dburl"))
         this.repository = gitRepository
     }
 

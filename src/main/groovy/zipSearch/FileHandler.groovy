@@ -56,36 +56,33 @@ public class FileHandler {
      */
     static void unzip(String zipPath, String outputFolder) throws UnzipException {
         byte[] buffer = new byte[1024]
-        File folder = new File(outputFolder) //create output directory is not exists
-
         System.out.printf("Unzipping zipfile: %s\n", zipPath);
-        try{
-            if (!folder.exists()) {
-                folder.mkdir()
-                ZipInputStream zis = new ZipInputStream(new FileInputStream(zipPath)) //get the zip file content
-                ZipEntry ze = zis.getNextEntry() //get the zipped file list entry
 
-                while (ze != null) {
-                    String fileName = ze.getName()
-                    File newFile = new File(outputFolder + File.separator + fileName)
-                    if (ze.isDirectory()) {
-                        new File(newFile.getParent()).mkdirs()
-                    } else {
-                        FileOutputStream fos
-                        new File(newFile.getParent()).mkdirs()
-                        fos = new FileOutputStream(newFile)
-                        int len;
-                        while ((len = zis.read(buffer)) > 0) {
-                            fos.write(buffer, 0, len)
-                        }
-                        fos.close()
+        try{
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipPath)) //get the zip file content
+            ZipEntry ze = zis.getNextEntry() //get the zipped file list entry
+
+            while (ze != null) {
+                String fileName = ze.getName()
+                File newFile = new File(outputFolder + File.separator + fileName)
+                if (ze.isDirectory()) {
+                    new File(newFile.getParent()).mkdirs()
+                } else {
+                    FileOutputStream fos
+                    new File(newFile.getParent()).mkdirs()
+                    fos = new FileOutputStream(newFile)
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len)
                     }
-                    ze = zis.getNextEntry()
+                    fos.close()
                 }
-                zis.closeEntry()
-                zis.close()
-                println "Done unzipping!"
+                ze = zis.getNextEntry()
             }
+            zis.closeEntry()
+            zis.close()
+            println "Done unzipping!"
+
         } catch(IOException e){
             throw new UnzipException(e.getMessage())
         }

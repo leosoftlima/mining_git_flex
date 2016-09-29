@@ -44,8 +44,9 @@ public class QueryService {
      * @param rows the rows to save. Each row contains 7 columns: "repository_url", "repository_master_branch",
      *             "payload_commit_msg", "commit_link", "payload_commit_id", "created_at" e "repository_watchers"
      */
-    private static exportResults(List<TableRow> rows) throws IOException {
-        CSVWriter writer = new CSVWriter(new FileWriter(DataProperties.BIGQUERY_COMMITS_FILE));
+    private static exportGitHubSearchResult(List<TableRow> rows) throws IOException {
+        def file = new File(DataProperties.BIGQUERY_COMMITS_FILE)
+        CSVWriter writer = new CSVWriter(new FileWriter(file))
         String[] param = ["repository_url", "repository_master_branch", "payload_commit_msg", "commit_link",
             "payload_commit_id", "created_at", "repository_watchers"]
         writer.writeNext(param)
@@ -93,7 +94,7 @@ public class QueryService {
         if(query!=null && !query.isEmpty()) {
             // Run query
             List<TableRow> rows = executeQuery(query, bigquery, projectId)
-            exportResults(rows) // Save result
+            exportGitHubSearchResult(rows) // Save result
         }
     }
 

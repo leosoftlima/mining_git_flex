@@ -9,7 +9,7 @@ class Main {
         try {
             searchGithubProjects()
             findProjectsWithLinkAmongTaskAndChangesAndTest(args)
-        } catch (Exception e) {
+        } catch (IOException e) {
             println "Problem during projects searching: "+e.getMessage()
         }
     }

@@ -31,6 +31,7 @@ public class GitHubRepository {
     }
 
     private static String configureName(String url){
+        println url
         String name = url.substring(DataProperties.GITHUB_URL.length())
         name = name.replaceAll("/", "_")
         return name

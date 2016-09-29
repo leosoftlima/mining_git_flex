@@ -1,7 +1,7 @@
 package taskSearch
 
 import commitSearch.Commit
-import net.wagstrom.research.github.GithubProperties
+import util.DataProperties
 
 import java.util.regex.Matcher
 
@@ -38,8 +38,7 @@ class Task {
     }
 
     private static boolean isTestCode(String path){
-        Properties props = GithubProperties.props()
-        def testPath = props.getProperty("spgroup.task.interface.path.test").split(",")*.replaceAll(" ", "")
+        def testPath = DataProperties.props.getProperty("spgroup.task.interface.path.test").split(",")*.replaceAll(" ", "")
 
         def regex
         if(testPath.size() > 1){

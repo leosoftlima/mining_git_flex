@@ -2,7 +2,6 @@ package zipSearch
 
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
-import net.wagstrom.research.github.GithubProperties
 import util.DataProperties
 import java.io.*
 
@@ -14,8 +13,7 @@ class DowloadManager {
 
     DowloadManager(){
         candidates = new ArrayList<>()
-        Properties props = GithubProperties.props()
-        fileType = "."+props.getProperty("spgroup.search.file.extension")
+        fileType = "."+DataProperties.props.getProperty("spgroup.search.file.extension")
         if(fileType.length() == 1) fileType = ""
     }
 
@@ -141,7 +139,7 @@ class DowloadManager {
         Scanner scanner = new Scanner(new File(file))
         while (scanner.hasNextLine()){
             String url = scanner.nextLine()
-            System.out.println(url)
+            println(url)
             analyseRepository(url)
         }
         System.out.printf("Number of analyzed projects: %d%n", counter)
@@ -163,7 +161,8 @@ class DowloadManager {
             repositories = extractRepositories()
             System.out.printf("The repositories to search for are saved in %s%n", DataProperties.REPOSITORIES_TO_DOWNLOAD_FILE)
 
-            writer = new CSVWriter(new FileWriter(DataProperties.CANDIDATE_REPOSITORIES_FILE))
+            def file = new File(DataProperties.CANDIDATE_REPOSITORIES_FILE)
+            writer = new CSVWriter(new FileWriter(file))
             String[] args1 = ["index", "repository_url"]
             writer.writeNext(args1)
 
@@ -204,7 +203,8 @@ class DowloadManager {
             repositories = extractRepositoriesDefaultBranch()
             println "The repositories to search for are saved in ${DataProperties.REPOSITORIES_TO_DOWNLOAD_FILE}"
 
-            writer = new CSVWriter(new FileWriter(DataProperties.CANDIDATE_REPOSITORIES_FILE))
+            def file = new File(DataProperties.CANDIDATE_REPOSITORIES_FILE)
+            writer = new CSVWriter(new FileWriter(file))
             String[] args1 = ["index", "repository_url"]
             writer.writeNext(args1)
 
