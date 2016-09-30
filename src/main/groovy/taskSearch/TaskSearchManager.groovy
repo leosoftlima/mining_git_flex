@@ -30,7 +30,7 @@ class TaskSearchManager {
      *
      * @param language repository's programming language
      * */
-    private static String configureQuery(String language){
+    private static String configureQuery(String language, boolean filterMessage){
         language = language?.charAt(0)?.toString()?.toUpperCase()+language?.substring(1) //capitalizes the first letter
         def endDate = new Date()
         def initialDate
@@ -44,10 +44,11 @@ class TaskSearchManager {
         WHERE PARSE_UTC_USEC(repository_created_at) <= PARSE_UTC_USEC ('"""+new java.sql.Date(endDate.getTime())+"""')
         AND PARSE_UTC_USEC(repository_created_at) >= PARSE_UTC_USEC ('"""+new java.sql.Date(initialDate.getTime())+"""')
         AND type = 'PushEvent'
-        AND repository_language = '""" + language + """'
-        AND (REGEXP_MATCH(LOWER(payload_commit_msg), r'.*#[\\d]+.*'))
-        GROUP BY repository_url, repository_master_branch, payload_commit_msg, commit_link, payload_commit_id, created_at, repository_watchers
-        ORDER BY repository_url"""
+        AND repository_language = '""" + language +"' "
+        if(filterMessage) query += "AND (REGEXP_MATCH(LOWER(payload_commit_msg), r'.*#[\\d]+.*')) "
+        query += """GROUP BY repository_url, repository_master_branch, payload_commit_msg, commit_link,
+        payload_commit_id, created_at, repository_watchers ORDER BY repository_url
+        LIMIT 3"""
 
         return query
     }
@@ -123,10 +124,12 @@ class TaskSearchManager {
      *
      * @throws IOException if there's an error during the remote repositorySearch.
      */
-    static void searchGithubProjects() /*throws IOException*/ {
+    static void searchGithubProjects() {
         String projectId = DataProperties.props.getProperty("spgroup.bigquery.project.id")
         String language = DataProperties.props.getProperty("spgroup.language")
-        String query = configureQuery(language)
+        String filterMessage = DataProperties.props.getProperty("spgroup.search.commit.message")
+        if(filterMessage==null | filterMessage=="") filterMessage = "false"
+        String query = configureQuery(language, Boolean.parseBoolean(filterMessage))
 
         /* Searches GitHub projects and saves the result in a csv file. */
         QueryService.searchProjects(projectId, query)
@@ -159,7 +162,7 @@ class TaskSearchManager {
         CommitSearchManager manager = new CommitSearchManager(repository)
 
         List<Commit> commits
-        if(pivotalTrackerRegex.equals("true")) commits = manager.searchByComment(PIVOTAL_TRACKER_ID_REGEX)
+        if(Boolean.parseBoolean(pivotalTrackerRegex)) commits = manager.searchByComment(PIVOTAL_TRACKER_ID_REGEX)
         else commits = manager.searchByComment(GENERAL_ID_REGEX)
 
         return organizeCommitsByTaskId(commits, index, url)
@@ -196,11 +199,10 @@ class TaskSearchManager {
         }
 
         exportSearchResult(alltasks)
-        System.out.printf("The tasks of GitHub projects are saved in %s%n", DataProperties.TASKS_FILE)
+        println "The tasks of GitHub projects are saved in ${DataProperties.TASKS_FILE}"
 
         exportSelectedProjects(selectedRepositories)
-        System.out.printf("The repositories that contains link amog tasks and code changes are saved in %s%n",
-                DataProperties.SELECTED_REPOSITORIES_FILE)
+        println "The repositories that contains link amog tasks and code changes are saved in ${DataProperties.SELECTED_REPOSITORIES_FILE}"
     }
 
 }
