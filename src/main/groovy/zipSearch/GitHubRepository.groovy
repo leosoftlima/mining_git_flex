@@ -1,8 +1,6 @@
 package zipSearch
 
 import util.DataProperties
-import zipSearch.exception.DownloadException
-import zipSearch.exception.UnzipException
 
 
 /**
@@ -62,18 +60,18 @@ public class GitHubRepository {
     /**
      * Downloads repository's main branch as a zip file and saves it at "zipped" folder.
      *
-     * @throws zipSearch.exception.DownloadException if there's an error during downloading.
+     * @throws Exception if there's an error during downloading.
      */
-    void downloadZip() throws DownloadException {
+    void downloadZip() throws Exception {
         FileHandler.downloadZipFile(zipUrl, getLocalZipName())
     }
 
     /**
      * Unzips repository's zip file and saves it at "unzipped" folder.
      *
-     * @throws zipSearch.exception.UnzipException if there's an error during unzipping.
+     * @throws Exception if there's an error during unzipping.
      */
-    void unzip() throws UnzipException {
+    void unzip() throws Exception {
         FileHandler.unzip(getLocalZipName(), getZipFolderName())
     }
 
@@ -91,11 +89,8 @@ public class GitHubRepository {
             downloadZip()
             unzip()
             result = FileHandler.hasFileType(fileType, getZipFolderName())
-        } catch (DownloadException e) {
-            System.out.println(e.getMessage())
-        } catch (UnzipException e) {
-            System.out.println(e.getMessage())
-            deleteAll()
+        } catch (Exception e) {
+            println e.getMessage()
         }
         return result
     }

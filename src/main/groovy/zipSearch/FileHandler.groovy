@@ -1,8 +1,6 @@
 package zipSearch;
 
 import util.DataProperties
-import zipSearch.exception.DownloadException
-import zipSearch.exception.UnzipException
 
 import java.io.*
 import java.util.zip.ZipEntry
@@ -25,9 +23,9 @@ public class FileHandler {
      *
      * @param zipUrl url for the download.
      * @param zipPath path to save downloaded zip file.
-     * @throws zipSearch.exception.DownloadException if there's an error during downloading.
+     * @throws Exception if there's an error during downloading.
      */
-    static void downloadZipFile(String zipUrl, String zipPath) throws DownloadException {
+    static void downloadZipFile(String zipUrl, String zipPath) throws Exception {
         zipUrl = zipUrl.replaceAll(" ","")
         println "Downloading zipfile: ${zipUrl}"
         try {
@@ -44,7 +42,7 @@ public class FileHandler {
             println "Done downloading!"
         } catch (IOException e) {
             registryDownloadProblem(zipUrl)
-            throw new DownloadException(e.getMessage())
+            throw new Exception("Problem during download: "+e.getMessage())
         }
     }
 
@@ -52,9 +50,9 @@ public class FileHandler {
      * Unzips repository's zip file and saves it at "unzipped" folder.
      * @param zipPath path of zip file.
      * @param outputFolder place to save zip file content.
-     * @throws zipSearch.exception.UnzipException if there's an error during unzipping.
+     * @throws Exception if there's an error during unzipping.
      */
-    static void unzip(String zipPath, String outputFolder) throws UnzipException {
+    static void unzip(String zipPath, String outputFolder) throws Exception {
         byte[] buffer = new byte[1024]
         System.out.printf("Unzipping zipfile: %s\n", zipPath);
 
@@ -84,7 +82,9 @@ public class FileHandler {
             println "Done unzipping!"
 
         } catch(IOException e){
-            throw new UnzipException(e.getMessage())
+            deleteFolder(outputFolder)
+            deleteZipFile(zipPath)
+            throw new Exception("Problem during unzipping: "+e.getMessage())
         }
     }
 
