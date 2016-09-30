@@ -48,7 +48,6 @@ class TaskSearchManager {
         AND (REGEXP_MATCH(LOWER(payload_commit_msg), r'.*#[\\d]+.*'))
         GROUP BY repository_url, repository_master_branch, payload_commit_msg, commit_link, payload_commit_id, created_at, repository_watchers
         ORDER BY repository_url"""
-        return query
 
         return query
     }
