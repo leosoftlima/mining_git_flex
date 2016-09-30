@@ -13,7 +13,7 @@ class DowloadManager {
 
     DowloadManager(){
         candidates = new ArrayList<>()
-        fileType = "."+DataProperties.props.getProperty("spgroup.search.file.extension")
+        fileType = "."+DataProperties.configProperties.getProperty("spgroup.search.file.extension")
         if(fileType.length() == 1) fileType = ""
     }
 
@@ -22,9 +22,14 @@ class DowloadManager {
         candidates.clear()
     }
 
+    private void printCounter(){
+        println "Number of analyzed projects: ${counter}"
+        if(counter>0) println "Number of candidates projects: ${candidates.size()} (${((double) candidates.size()/counter)*100}%%)"
+    }
+
     private void listCandidateRepositories(){
         for(GitHubRepository r: candidates){
-            System.out.printf("url: %s, branch: %s, zip: %s%n", r.getUrl(), r.getBranch(), r.getLocalZipName())
+            println "url: ${r.getUrl()}, branch: ${r.getBranch()}, zip: ${r.getLocalZipName()}"
         }
     }
 
@@ -142,8 +147,7 @@ class DowloadManager {
             println(url)
             analyseRepository(url)
         }
-        System.out.printf("Number of analyzed projects: %d%n", counter)
-        System.out.printf("Number of candidates projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100)
+        printCounter()
         listCandidateRepositories()
     }
 
@@ -159,7 +163,7 @@ class DowloadManager {
 
         try {
             repositories = extractRepositories()
-            System.out.printf("The repositories to search for are saved in %s%n", DataProperties.REPOSITORIES_TO_DOWNLOAD_FILE)
+            println "The repositories to search for are saved in ${DataProperties.REPOSITORIES_TO_DOWNLOAD_FILE}"
 
             def file = new File(DataProperties.CANDIDATE_REPOSITORIES_FILE)
             writer = new CSVWriter(new FileWriter(file))
@@ -177,8 +181,7 @@ class DowloadManager {
                 for (int i = 0; i < repositories.size(); i++) {
                     searchFileType(repositories.get(i), writer, i + 2)
                 }
-                System.out.printf("Number of analyzed projects: %d%n", counter)
-                System.out.printf("Number of candidates projects: %d (%.2f%%)%n", candidates.size(),((double) candidates.size()/counter)*100)
+                printCounter()
             }
 
             writer.close()
@@ -219,8 +222,7 @@ class DowloadManager {
                 for (int i = 0; i < repositories.size(); i++) {
                     searchFileType(repositories.get(i), writer, i + 2)
                 }
-                println "Number of analyzed projects: ${counter}"
-                println "Number of candidate projects: ${candidates.size()} (${((double) candidates.size()/counter)*100}%)"
+                printCounter()
             }
 
             writer.close()

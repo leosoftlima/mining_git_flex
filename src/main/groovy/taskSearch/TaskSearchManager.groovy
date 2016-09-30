@@ -60,14 +60,15 @@ class TaskSearchManager {
      */
     private static void updatePropertiesFile(String repository){
         def bdurlPath = "tmp-"+repository.replaceAll(CommitSearchManager.FILE_SEPARATOR_REGEX, "_")+"/graph.db"
-        DataProperties.props.setProperty("net.wagstrom.research.github.dburl", bdurlPath)
-        DataProperties.props.setProperty("edu.unl.cse.git.dburl", bdurlPath)
-        DataProperties.props.setProperty("net.wagstrom.research.github.projects", repository)
-        DataProperties.props.setProperty("edu.unl.cse.git.repositories", repository)
-        ClassLoader loader = Thread.currentThread().getContextClassLoader()
-        URL url = loader.getResource("configuration.properties")
-        FileOutputStream fos = new FileOutputStream(new File(url.toURI()))
-        DataProperties.props.store(fos, null)
+        DataProperties.configProperties.setProperty("net.wagstrom.research.github.dburl", bdurlPath)
+        DataProperties.configProperties.setProperty("edu.unl.cse.git.dburl", bdurlPath)
+        DataProperties.configProperties.setProperty("net.wagstrom.research.github.projects", repository)
+        DataProperties.configProperties.setProperty("edu.unl.cse.git.repositories", repository)
+        //ClassLoader loader = Thread.currentThread().getContextClassLoader()
+        //URL url = loader.getResource("configuration.properties")
+        //FileOutputStream fos = new FileOutputStream(new File(url.toURI()))
+        FileOutputStream fos = new FileOutputStream(DataProperties.configFile)
+        DataProperties.configProperties.store(fos, null)
         fos.close()
     }
 
@@ -124,9 +125,9 @@ class TaskSearchManager {
      * @throws IOException if there's an error during the remote repositorySearch.
      */
     static void searchGithubProjects() {
-        String projectId = DataProperties.props.getProperty("spgroup.bigquery.project.id")
-        String language = DataProperties.props.getProperty("spgroup.language")
-        String filterMessage = DataProperties.props.getProperty("spgroup.search.commit.message")
+        String projectId = DataProperties.configProperties.getProperty("spgroup.bigquery.project.id")
+        String language = DataProperties.configProperties.getProperty("spgroup.language")
+        String filterMessage = DataProperties.configProperties.getProperty("spgroup.search.commit.message")
         if(filterMessage==null | filterMessage=="") filterMessage = "false"
         String query = configureQuery(language, Boolean.parseBoolean(filterMessage))
 
@@ -154,7 +155,7 @@ class TaskSearchManager {
      * @return list of found tasks
      * */
     static List<Task> findLinkAmongTaskAndChangesAndTest(String[] args, String index, String url, String repository){
-        String pivotalTrackerRegex = DataProperties.props.getProperty("spgroup.task.query.pivotaltracker")
+        String pivotalTrackerRegex = DataProperties.configProperties.getProperty("spgroup.task.query.pivotaltracker")
         if(pivotalTrackerRegex==null | pivotalTrackerRegex=="") pivotalTrackerRegex = "false"
 
         downloadRepository(args) //Download the repository specified in configuration.properties

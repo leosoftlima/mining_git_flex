@@ -20,17 +20,18 @@ class DataProperties {
 
     static final String GITHUB_URL = "https://github.com/"
 
-    static Properties props
+    static final File configFile
+    static Properties configProperties
 
     static {
         try {
             //if the file is in the classpath
             //ClassLoader loader = Thread.currentThread().getContextClassLoader()
             //InputStream resourceStream = loader.getResourceAsStream("configuration.properties")
-
-            FileInputStream resourceStream = new FileInputStream("configuration.properties")
-            props = new Properties()
-            props.load(resourceStream)
+            configFile = new File("configuration.properties")
+            FileInputStream resourceStream = new FileInputStream(configFile)
+            configProperties = new Properties()
+            configProperties.load(resourceStream)
 
             createFolder(INPUT_FOLDER)
             createFolder(OUTPUT_FOLDER)

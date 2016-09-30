@@ -38,7 +38,7 @@ class Task {
     }
 
     private static boolean isTestCode(String path){
-        def testPath = DataProperties.props.getProperty("spgroup.task.interface.path.test").split(",")*.replaceAll(" ", "")
+        def testPath = DataProperties.configProperties.getProperty("spgroup.task.interface.path.test").split(",")*.replaceAll(" ", "")
 
         def regex
         if(testPath.size() > 1){

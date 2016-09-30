@@ -24,7 +24,7 @@ class CommitSearchManager {
      */
     CommitSearchManager(String gitRepository){
         Gremlin.load()
-        graph = new Neo4jGraph(DataProperties.props.getProperty("net.wagstrom.research.github.dburl"))
+        graph = new Neo4jGraph(DataProperties.configProperties.getProperty("net.wagstrom.research.github.dburl"))
         this.repository = gitRepository
     }
 
