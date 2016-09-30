@@ -45,7 +45,7 @@ class TaskSearchManager {
         AND PARSE_UTC_USEC(repository_created_at) >= PARSE_UTC_USEC ('"""+new java.sql.Date(initialDate.getTime())+"""')
         AND type = 'PushEvent'
         AND repository_language = '""" + language + """'
-        AND ( (LOWER(payload_commit_msg) LIKE '%#%') )
+        AND (REGEXP_MATCH(LOWER(payload_commit_msg), r'.*#[\\d]+.*'))
         GROUP BY repository_url, repository_master_branch, payload_commit_msg, commit_link, payload_commit_id, created_at, repository_watchers
         ORDER BY repository_url"""
         return query
