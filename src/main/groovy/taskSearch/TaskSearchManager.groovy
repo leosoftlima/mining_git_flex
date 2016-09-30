@@ -47,8 +47,7 @@ class TaskSearchManager {
         AND repository_language = '""" + language +"' "
         if(filterMessage) query += "AND (REGEXP_MATCH(LOWER(payload_commit_msg), r'.*#[\\d]+.*')) "
         query += """GROUP BY repository_url, repository_master_branch, payload_commit_msg, commit_link,
-        payload_commit_id, created_at, repository_watchers ORDER BY repository_url
-        LIMIT 3"""
+        payload_commit_id, created_at, repository_watchers ORDER BY repository_url"""
 
         return query
     }
