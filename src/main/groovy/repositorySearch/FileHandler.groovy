@@ -1,21 +1,18 @@
-package zipSearch;
+package repositorySearch
 
+import groovy.util.logging.Slf4j
 import util.DataProperties
 
-import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-
-public class FileHandler {
+@Slf4j
+class FileHandler {
 
     private static void registryDownloadProblem(String text) {
-        try{
-            FileWriter writer = new FileWriter(DataProperties.DOWNLOAD_PROBLEMS_FILE, true)
-            writer.append(text).append("\n")
-        } catch(IOException e){
-            e.printStackTrace()
-        }
+        FileWriter writer = new FileWriter(DataProperties.DOWNLOAD_PROBLEMS_FILE, true)
+        writer.write(text+"\n")
+        writer.close()
     }
 
     /**
@@ -26,8 +23,8 @@ public class FileHandler {
      * @throws Exception if there's an error during downloading.
      */
     static void downloadZipFile(String zipUrl, String zipPath) throws Exception {
-        zipUrl = zipUrl.replaceAll(" ","")
-        println "Downloading zipfile: ${zipUrl}"
+        zipUrl = zipUrl.replaceAll(" ", "")
+        log.info "Downloading zipfile: ${zipUrl}"
         try {
             def inputStream = new BufferedInputStream(new URL(zipUrl).openStream())
             FileOutputStream fos = new FileOutputStream(zipPath)
@@ -39,10 +36,10 @@ public class FileHandler {
             }
             bout.close()
             inputStream.close()
-            println "Done downloading!"
+            log.info "Done downloading!"
         } catch (IOException e) {
             registryDownloadProblem(zipUrl)
-            throw new Exception("Problem during download: "+e.getMessage())
+            throw new Exception("Problem during download: " + e.getMessage())
         }
     }
 
@@ -54,9 +51,9 @@ public class FileHandler {
      */
     static void unzip(String zipPath, String outputFolder) throws Exception {
         byte[] buffer = new byte[1024]
-        System.out.printf("Unzipping zipfile: %s\n", zipPath);
+        log.info "Unzipping zipfile: $zipPath"
 
-        try{
+        try {
             ZipInputStream zis = new ZipInputStream(new FileInputStream(zipPath)) //get the zip file content
             ZipEntry ze = zis.getNextEntry() //get the zipped file list entry
 
@@ -79,12 +76,12 @@ public class FileHandler {
             }
             zis.closeEntry()
             zis.close()
-            println "Done unzipping!"
+            log.info "Done unzipping!"
 
-        } catch(IOException e){
+        } catch (IOException e) {
             deleteFolder(outputFolder)
             deleteZipFile(zipPath)
-            throw new Exception("Problem during unzipping: "+e.getMessage())
+            throw new Exception("Problem during unzipping: " + e.getMessage())
         }
     }
 
@@ -93,18 +90,18 @@ public class FileHandler {
      * @param type file type to repositorySearch.
      * @param folder place to repositorySearch.
      */
-    static boolean hasFileType(String type, String folder){
+    static boolean hasFileType(String type, String folder) {
         boolean result = false
         File dir = new File(folder)
         File[] files = dir.listFiles()
 
-        if(files == null) return false
+        if (files == null) return false
 
-        for(File f: files){
-            if(result) return true
-            else if(f.isDirectory()) result = hasFileType(type, f.getAbsolutePath())
+        for (File f : files) {
+            if (result) return true
+            else if (f.isDirectory()) result = hasFileType(type, f.getAbsolutePath())
             else {
-                if(f.getName().endsWith(type)) {
+                if (f.getName().endsWith(type)) {
                     result = true
                 }
             }
@@ -120,7 +117,7 @@ public class FileHandler {
     static void deleteFolder(String folder) {
         File dir = new File(folder)
         File[] files = dir.listFiles()
-        if(files != null) {
+        if (files != null) {
             for (File f : files) {
                 if (f.isDirectory()) {
                     deleteFolder(f.getAbsolutePath())

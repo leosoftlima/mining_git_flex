@@ -1,9 +1,6 @@
 package taskSearch
 
-import commitSearch.Commit
 import util.DataProperties
-
-import java.util.regex.Matcher
 
 
 class Task {
@@ -15,11 +12,11 @@ class Task {
     List<String> productionFiles
     List<String> testFiles
 
-    Task(){
+    Task() {
 
     }
 
-    Task(String index, String url, String id){
+    Task(String index, String url, String id) {
         repositoryIndex = index
         repositoryUrl = url
         this.id = id
@@ -28,34 +25,17 @@ class Task {
         testFiles = []
     }
 
-    Task(String index, String url, String id, List<Commit> commits){
+    Task(String index, String url, String id, List<Commit> commits) {
         this(index, url, id)
         this.commits = commits
-        commits*.files?.flatten()?.each{ file ->
-            if(isTestCode(file)) testFiles += file
+        commits*.files?.flatten()?.each { file ->
+            if (isTestCode(file)) testFiles += file
             else productionFiles += file
         }
     }
 
-    private static boolean isTestCode(String path){
-        def testPath = DataProperties.configProperties.getProperty("spgroup.task.interface.path.test").split(",")*.replaceAll(" ", "")
-
-        def regex
-        if(testPath.size() > 1){
-            regex = ".*("
-            testPath.each{ dir ->
-                regex += dir+"|"
-            }
-            regex = regex.substring(0,regex.lastIndexOf("|"))
-            regex += ").*"
-        }
-        else{
-            regex = ".*${testPath.get(0)}.*"
-        }
-        def FILE_SEPARATOR_REGEX = /(\\|\/)/
-        regex = regex.replaceAll(FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator)+Matcher.quoteReplacement(File.separator))
-
-        if(path ==~ /$regex/) true
+    private static boolean isTestCode(def path) {
+        if (path ==~ /$DataProperties.TEST_CODE_REGEX/) true
         else false
     }
 

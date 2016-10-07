@@ -1,16 +1,19 @@
 package main
 
-import static taskSearch.TaskSearchManager.searchGithubProjects
-import static taskSearch.TaskSearchManager.findProjectsWithLinkAmongTaskAndChangesAndTest
+import groovy.util.logging.Slf4j
+import taskSearch.TaskSearchManager
 
+
+@Slf4j
 class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
-            searchGithubProjects()
-            findProjectsWithLinkAmongTaskAndChangesAndTest(args)
+            TaskSearchManager taskSearchManager = new TaskSearchManager()
+            taskSearchManager.searchGithubProjects()
+            taskSearchManager.findTasks()
         } catch (IOException e) {
-            println "Problem during projects searching: "+e.getMessage()
+            log.info "Problem during projects searching: " + e.getMessage()
         }
     }
 

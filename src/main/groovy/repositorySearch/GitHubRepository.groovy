@@ -1,13 +1,15 @@
-package zipSearch
+package repositorySearch
 
+import groovy.util.logging.Slf4j
 import util.DataProperties
 
 
 /**
  * Represents a GitHub repository and provides mechanism to download de repository zip file, unzip it and check it has
- * Gherkin files (extension .feature).
+ * a specific file type.
  */
-public class GitHubRepository {
+@Slf4j
+class GitHubRepository {
 
     String url
     String branch
@@ -22,29 +24,28 @@ public class GitHubRepository {
     }
 
     GitHubRepository(String zipFileUrl) {
-        this.url = zipFileUrl.substring(0,zipFileUrl.indexOf(DataProperties.ZIP_FILE_URL))
+        this.url = zipFileUrl.substring(0, zipFileUrl.indexOf(DataProperties.ZIP_FILE_URL))
         this.branch = zipFileUrl.substring(zipFileUrl.lastIndexOf("/") + 1, zipFileUrl.length() - DataProperties.FILE_EXTENSION.length())
         this.name = configureName(url)
         configureZipUrl()
     }
 
-    private static String configureName(String url){
-        println url
+    private static String configureName(String url) {
         String name = url.substring(DataProperties.GITHUB_URL.length())
         name = name.replaceAll("/", "_")
-        return name
+        name
     }
 
-    private void configureZipUrl(){
+    private void configureZipUrl() {
         this.zipUrl = url + DataProperties.ZIP_FILE_URL + branch + DataProperties.FILE_EXTENSION
     }
 
-    public String getZipFolderName() {
-        return DataProperties.UNZIPPED_FILES_DIR +name
+    String getZipFolderName() {
+        DataProperties.UNZIPPED_FILES_FOLDER + name
     }
 
-    public String getLocalZipName(){
-        return DataProperties.ZIPPED_FILES_DIR + name+ DataProperties.FILE_EXTENSION
+    String getLocalZipName() {
+        DataProperties.ZIPPED_FILES_FOLDER + name + DataProperties.FILE_EXTENSION
     }
 
     void setUrl(String url) {
@@ -62,7 +63,7 @@ public class GitHubRepository {
      *
      * @throws Exception if there's an error during downloading.
      */
-    void downloadZip() throws Exception {
+    def downloadZip() throws Exception {
         FileHandler.downloadZipFile(zipUrl, getLocalZipName())
     }
 
@@ -71,7 +72,7 @@ public class GitHubRepository {
      *
      * @throws Exception if there's an error during unzipping.
      */
-    void unzip() throws Exception {
+    def unzip() throws Exception {
         FileHandler.unzip(getLocalZipName(), getZipFolderName())
     }
 
@@ -83,36 +84,36 @@ public class GitHubRepository {
      * @return true if the repository does contain Gherkin file, false otherwise. If no file type is defined, the search
      * is also true.
      */
-    boolean hasFileType(String fileType){
+    boolean hasFileType(String fileType) {
         boolean result = false
         try {
             downloadZip()
             unzip()
             result = FileHandler.hasFileType(fileType, getZipFolderName())
         } catch (Exception e) {
-            println e.getMessage()
+            log.info e.getMessage()
         }
-        return result
+        result
     }
 
     /**
      * Deletes unzipped content (folder and files) of the repository, if it does exist.
      */
-    void deleteUnzipedDir(){
+    def deleteUnzipedDir() {
         FileHandler.deleteFolder(getZipFolderName())
     }
 
     /**
      * Deletes the zip file of the repository, if it does exist.
      */
-    void deleteZipFile(){
+    def deleteZipFile() {
         FileHandler.deleteZipFile(getLocalZipName())
     }
 
     /**
      * Deletes the zip file and the unzipped content (folder and files) of the repository, if it does exist.
      */
-    void deleteAll(){
+    def deleteAll() {
         FileHandler.deleteFolder(getZipFolderName())
         FileHandler.deleteZipFile(getLocalZipName())
     }

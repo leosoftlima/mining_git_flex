@@ -1,1 +1,0 @@
-The jar file is not available in Maven Central Repository. For this reason, it is necessary to provide it.

@@ -8,7 +8,7 @@ Search mechanism
 The search mechanism is very simple. The program takes as input the search criteria: project id (id of the repository to run the queries under Google BigQuery service) and programming language.
 As result, the program outputs a csv file (/input/commits.csv) containing the URL (column repository_url) and master branch (column repository_master_branch) of found repositories.
 Then, the program downloads each repository's source code (a zip file) and verifies if it contains Gherkin files (extension .feature). If a repository does contain Gherkin files, the program downloads all repository data and searches for commit messages containing task ID.
-Finally, for each found commit, the program identifies the changed code (production and test code) by using GitMiner and Gremlin. 
+Finally, for each found commit, the program identifies the changed code (production and test code) by using JGit. 
 
 The output could be accessed in /output folder.
 candidate-projects.csv provides data about repositories containing Gherkin files.
@@ -18,10 +18,6 @@ More about Gherkin and Cucumber: https://github.com/cucumber/cucumber/wiki/Gherk
 
 More about Google BigQuery: https://cloud.google.com/bigquery/what-is-bigquery.
 
-More about GitMiner:https://github.com/pridkett/gitminer
-
-More about Gremlin:https://github.com/tinkerpop/gremlin/wiki
-
 Requirement to use Google BigQuery API
 -
 The environment variable GOOGLE_APPLICATION_CREDENTIALS is checked. If this variable is specified it should point to a file that defines the credentials. The simplest way to get a credential for this purpose is to create a service account using the Google Developers Console in the section APIs & Auth, in the sub-section Credentials. Create a service account or choose an existing one and select Generate new JSON key. Set the environment variable to the path of the JSON file downloaded.
@@ -29,10 +25,6 @@ The environment variable GOOGLE_APPLICATION_CREDENTIALS is checked. If this vari
 https://developers.google.com/identity/protocols/application-default-credentials
 
 It is also necessary to provide searching criteria data (project id and language) by configuring the properties file at src/resources path (properties spgroup.bigquery.project.id and spgroup.language). 
-
-Requirement to use GitMiner
--
-It is necessary to provide GitHub user data (login, password, e-mail and security token) by configuring the properties file at src/resources path (properties net.wagstrom.research.github.login, net.wagstrom.research.github.password, net.wagstrom.research.github.email and net.wagstrom.research.github.token).
 
 Compilation
 -

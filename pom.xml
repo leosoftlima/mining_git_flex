@@ -16,19 +16,25 @@
         <jdk.version>1.8</jdk.version>
         <groovy.version>2.9.2-01</groovy.version>
         <junit.version>4.10</junit.version>
-        <slf4j.version>1.7.12</slf4j.version>
-        <blueprints.version>2.6.0</blueprints.version>
+        <slf4j.version>1.7.13</slf4j.version>
     </properties>
 
     <name>mining_git</name>
 
     <build>
-        <!--location is relative to target/classes--> <resources>
+        <resources>
+            <resource>
+                <directory>src\main\resources</directory>
+                <excludes>
+                    <exclude>configuration.properties</exclude>
+                </excludes>
+            </resource>
             <resource>
                 <directory>src\main\resources</directory>
                 <includes>
                     <include>configuration.properties</include>
                 </includes>
+                <!-- location is relative to target/classes -->
                 <targetPath>..</targetPath>
             </resource>
         </resources>
@@ -85,26 +91,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                        <configuration>
-                            <groupId>net.wagstrom.research</groupId>
-                            <artifactId>gitminer</artifactId>
-                            <version>0.3-SNAPSHOT</version>
-                            <packaging>jar</packaging>
-                            <file>${basedir}/lib/gitminer-0.3-SNAPSHOT.jar</file>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -130,24 +116,9 @@
             <version>${slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.tinkerpop.blueprints</groupId>
-            <artifactId>blueprints-core</artifactId>
-            <version>${blueprints.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop.blueprints</groupId>
-            <artifactId>blueprints-neo4j-graph</artifactId>
-            <version>${blueprints.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.tinkerpop.gremlin</groupId>
-            <artifactId>gremlin-groovy</artifactId>
-            <version>${blueprints.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>args4j</groupId>
-            <artifactId>args4j</artifactId>
-            <version>2.0.16</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -155,10 +126,9 @@
             <version>2.4.7</version>
         </dependency>
         <dependency>
-            <groupId>net.wagstrom.research</groupId>
-            <artifactId>gitminer</artifactId>
-            <version>0.3-SNAPSHOT</version>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit</artifactId>
+            <version>4.5.0.201609210915-r</version>
         </dependency>
     </dependencies>
-
 </project>
