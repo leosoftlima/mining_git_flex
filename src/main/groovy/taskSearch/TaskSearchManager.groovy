@@ -44,8 +44,11 @@ class TaskSearchManager {
         String[] text = ["index", "repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files", "commits_message"]
         writer.writeNext(text)
         for (Task task : tasks) {
+            String msgs = task.commits*.message?.flatten()?.toString()
+            if(msgs.length()>1000) msgs = msgs.substring(0,999)+" [TOO_LONG]"
+
             text = [task.repositoryIndex, task.repositoryUrl, task.id, (task.commits*.hash).toString(),
-                    task.productionFiles.toString(), task.testFiles.toString(), task.commits*.message?.flatten()]
+                    task.productionFiles.size(), task.testFiles.size(), msgs]
             writer.writeNext(text)
         }
         writer.close()
