@@ -6,13 +6,13 @@ Java program to search for GitHub repositories using Gherkin-based acceptance te
 Search mechanism
 -
 The search mechanism is very simple. The program takes as input the search criteria: project id (id of the repository to run the queries under Google BigQuery service) and programming language.
-As result, the program outputs a csv file (/input/commits.csv) containing the URL (column repository_url) and master branch (column repository_master_branch) of found repositories.
+As result, the program outputs a csv file (/commits/commits.csv) containing the URL (column repository_url) and master branch (column repository_master_branch) of found repositories.
 Then, the program downloads each repository's source code (a zip file) and verifies if it contains Gherkin files (extension .feature). If a repository does contain Gherkin files, the program downloads all repository data and searches for commit messages containing task ID.
 Finally, for each found commit, the program identifies the changed code (production and test code) by using JGit. 
 
-The output could be accessed in /output folder.
-candidate-projects.csv provides data about repositories containing Gherkin files.
-selected-projects.csv provides data about repositories containing Gherkin files and commit messages with task ID. 
+The output could be accessed in /tasks folder.
+candidate-projects.csv provides data about repositories containing a file type of interest (Gherkin by default).
+selected-projects.csv provides data about repositories containing a file type of interest (Gherkin by default) and commit messages with task ID. 
 
 More about Gherkin and Cucumber: https://github.com/cucumber/cucumber/wiki/Gherkin.
 
