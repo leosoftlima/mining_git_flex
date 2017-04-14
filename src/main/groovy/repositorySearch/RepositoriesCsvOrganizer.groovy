@@ -4,7 +4,7 @@ import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
 import util.DataProperties
 
-public class RepositoriesCsvOrganizer {
+class RepositoriesCsvOrganizer {
 
     private static List<String[]> uniqueValues(List<String[]> input) {
         List<String[]> output = new ArrayList<>()

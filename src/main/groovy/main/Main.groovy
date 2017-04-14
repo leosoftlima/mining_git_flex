@@ -7,7 +7,7 @@ import taskSearch.TaskSearchManager
 @Slf4j
 class Main {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         try {
             TaskSearchManager taskSearchManager = new TaskSearchManager()
             taskSearchManager.searchGithubProjects()

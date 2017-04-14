@@ -1,11 +1,11 @@
 package util
 
 
-class RegexUtil {
+interface RegexUtil {
 
-    public static final FILE_SEPARATOR_REGEX = /(\\|\/)/
-    public static final NEW_LINE_REGEX = /\r\n|\n/
-    public static final PIVOTAL_TRACKER_ID_REGEX = /.*\[(#|fix.* #|complet.* #|finish.* #)\d+\].*/
-    public static final GENERAL_ID_REGEX = /.*#\d+.*/
+    final FILE_SEPARATOR_REGEX = /(\\|\/)/
+    final NEW_LINE_REGEX = /\r\n|\n/
+    final PIVOTAL_TRACKER_ID_REGEX = /.*\[(#|fix.* #|complet.* #|finish.* #)\d+\].*/
+    final GENERAL_ID_REGEX = /.*#\d+.*/
 
 }
