@@ -1,8 +1,7 @@
 package repositorySearch
 
 import groovy.util.logging.Slf4j
-import util.DataProperties
-
+import util.ConstantData
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -10,7 +9,7 @@ import java.util.zip.ZipInputStream
 class FileHandler {
 
     private static void registryDownloadProblem(String text) {
-        FileWriter writer = new FileWriter(DataProperties.DOWNLOAD_PROBLEMS_FILE, true)
+        FileWriter writer = new FileWriter(ConstantData.DOWNLOAD_PROBLEMS_FILE, true)
         writer.write(text+"\n")
         writer.close()
     }
@@ -30,9 +29,9 @@ class FileHandler {
             FileOutputStream fos = new FileOutputStream(zipPath)
             BufferedOutputStream bout = new BufferedOutputStream(fos, 8192)
             byte[] data = new byte[8192]
-            int x;
+            int x
             while ((x = inputStream.read(data, 0, 8192)) >= 0) {
-                bout.write(data, 0, x);
+                bout.write(data, 0, x)
             }
             bout.close()
             inputStream.close()
@@ -66,7 +65,7 @@ class FileHandler {
                     FileOutputStream fos
                     new File(newFile.getParent()).mkdirs()
                     fos = new FileOutputStream(newFile)
-                    int len;
+                    int len
                     while ((len = zis.read(buffer)) > 0) {
                         fos.write(buffer, 0, len)
                     }
@@ -85,11 +84,6 @@ class FileHandler {
         }
     }
 
-    /**
-     * Verifies if a folder contains file for a specific type.
-     * @param type file type to repositorySearch.
-     * @param folder place to repositorySearch.
-     */
     static boolean hasFileType(String type, String folder) {
         boolean result = false
         File dir = new File(folder)
@@ -100,13 +94,30 @@ class FileHandler {
         for (File f : files) {
             if (result) return true
             else if (f.isDirectory()) result = hasFileType(type, f.getAbsolutePath())
-            else {
-                if (f.getName().endsWith(type)) {
-                    result = true
-                }
+            else if (f.getName().endsWith(type)) {
+                result = true
+                break
             }
         }
-        return result
+        result
+    }
+
+    static File retrieveFile(String name, String folder) {
+        File result = null
+        File dir = new File(folder)
+        File[] files = dir.listFiles()
+
+        if (files == null) return null
+
+        for (File f : files) {
+            if (result) return result
+            else if (f.isDirectory()) result = retrieveFile(name, f.getAbsolutePath())
+            else if (f.getName().endsWith(name)) {
+                result = f
+                break
+            }
+        }
+        result
     }
 
     /**

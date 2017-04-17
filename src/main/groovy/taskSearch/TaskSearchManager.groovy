@@ -1,20 +1,38 @@
 package taskSearch
 
-import au.com.bytecode.opencsv.CSVReader
-import au.com.bytecode.opencsv.CSVWriter
 import groovy.util.logging.Slf4j
+import repositorySearch.GithubAPIQueryService
+import repositorySearch.GoogleArchiveQueryService
 import repositorySearch.QueryService
+import taskSearch.mergeScenario.MergeScenario
+import taskSearch.mergeScenario.MergeScenarioExtractor
+import util.ConstantData
 import util.DataProperties
 import util.RegexUtil
 import repositorySearch.DowloadManager
+import util.Util
 
 @Slf4j
 class TaskSearchManager {
 
+    static int taskId = 0
+    boolean filterCommitMessage
     QueryService queryService
+    DowloadManager downloadManager
+    MergeScenarioExtractor mergeScenarioExtractor
 
     TaskSearchManager(){
-        queryService = new QueryService()
+        if(!DataProperties.FILTER_BY_DEFAULT_MESSAGE && !DataProperties.FILTER_BY_PIVOTAL_TRACKER){
+            queryService = new GithubAPIQueryService()
+            filterCommitMessage = false
+            mergeScenarioExtractor = new MergeScenarioExtractor()
+            log.info "Searching by GitHub API"
+        } else {
+            queryService = new GoogleArchiveQueryService()
+            filterCommitMessage = true
+            log.info "Searching by Google Archive"
+        }
+        downloadManager = new DowloadManager()
     }
 
     private static List<Task> organizeCommitsByTaskId(List<Commit> commits, String index, String url) {
@@ -34,93 +52,148 @@ class TaskSearchManager {
         }
 
         log.info "Total tasks: ${tasks.size()}"
-
-        return tasks
+        tasks
     }
 
-    private static void exportSearchResult(List<Task> tasks) {
-        def file = new File(DataProperties.TASKS_FILE)
-        CSVWriter writer = new CSVWriter(new FileWriter(file))
-        String[] text = ["index", "repository_url", "task_id", "commits_hash", "changed_production_files", "changed_test_files", "commits_message"]
-        writer.writeNext(text)
-        for (Task task : tasks) {
-            String msgs = task.commits*.message?.flatten()?.toString()
-            if(msgs.length()>1000) msgs = msgs.substring(0,999)+" [TOO_LONG]"
-
-            text = [task.repositoryIndex, task.repositoryUrl, task.id, (task.commits*.hash).toString(),
-                    task.productionFiles.size(), task.testFiles.size(), msgs]
-            writer.writeNext(text)
+    static void exportTasks(List<Task> tasks, String file) {
+        String[] header = ["INDEX", "REPO_URL", "TASK_ID", "HASHES", "#PROD_FILES", "#TEST_FILES"]
+        List<String[]> content = []
+        tasks?.each{ task ->
+            String[] line = [task.repositoryIndex, task.repositoryUrl, task.id, (task.commits*.hash).toString(),
+                             task.productionFiles.size(), task.testFiles.size()]
+            content += line
         }
-        writer.close()
+        Util.createCsv(file, header, content)
     }
 
-    private static void exportSelectedProjects(List<String[]> projects) {
-        def file = new File(DataProperties.SELECTED_REPOSITORIES_FILE)
-        CSVWriter writer = new CSVWriter(new FileWriter(file))
-        String[] text = ["index", "repository_url", "tasks", "tasks_production_test"]
-        writer.writeNext(text)
-        writer.writeAll(projects)
-        writer.close()
+    static void exportTasks(List<Task> tasks) {
+        exportTasks(tasks, ConstantData.TASKS_FILE)
     }
 
-    /**
-     * Searches for GitHub projects from the last 5 years that contains files of a specific type.
-     * The searching uses Google BigQuery service that requires a BigQuery repository id (spgroup.bigquery.project.id at
-     * configuration.properties). It is also necessary to identify the repository's programming language
-     * (spgroup.language at configuration.properties). If no file type is specified (spgroup.search.file.extension at
-     * configuration.properties), such a criteria is not used.
-     *
-     * @throws IOException if there's an error during the remote repositorySearch.
-     */
-    def searchGithubProjects() {
-        /* Searches GitHub projects and saves the result in a csv file. */
-        queryService.searchProjects()
-        log.info "The repositories found by BigQuery service are saved in ${DataProperties.BIGQUERY_COMMITS_FILE}"
-
-        /* Downloading and unzipping projects from csv file. If this is step is not necessary, leave the
-        spgroup.search.file.extension at configuration.properties empty.*/
-        DowloadManager searcher = new DowloadManager()
-        searcher.searchRepositoriesByFileType()
-
-        log.info "The final result of search for GitHub projects is saved in ${DataProperties.CANDIDATE_REPOSITORIES_FILE}"
+    static void exportSelectedProjects(List<String[]> projects) {
+        String[] header = ["INDEX", "REPO_URL", "#TASKS", "#P&T_TASKS"]
+        Util.createCsv(ConstantData.SELECTED_REPOSITORIES_FILE, header, projects)
     }
 
-    static List<Task> findLinkTaskChangeset(String index, String url) {
+    private static findLinkTaskChangeset(String index, String url) {
         GitRepository repository = GitRepository.getRepository(url)
-
-        List<Commit> commits
+        List<Task> tasks
+        List<Commit> commits = []
         if (DataProperties.FILTER_BY_PIVOTAL_TRACKER) commits = repository.searchByComment(RegexUtil.PIVOTAL_TRACKER_ID_REGEX)
-        else commits = repository.searchByComment(RegexUtil.GENERAL_ID_REGEX)
-
-        organizeCommitsByTaskId(commits, index, url)
+        else if (DataProperties.FILTER_BY_DEFAULT_MESSAGE) commits = repository.searchByComment(RegexUtil.GENERAL_ID_REGEX)
+        tasks = organizeCommitsByTaskId(commits, index, url)
+        [tasks:tasks, repository:repository.name]
     }
 
-    static findTasks() {
-        def file = new File(DataProperties.CANDIDATE_REPOSITORIES_FILE)
-        CSVReader reader = new CSVReader(new FileReader(file))
-        List<String[]> entries = reader.readAll()
-        reader.close()
+    private static List<MergeScenario> extractMerges(String csv){
+        def merges = []
+        def url = ""
+        List<String[]> entries = Util.extractCsvContent(csv)
+        if (entries.size() > 2){
+            url = entries.first()[0]
+            entries.removeAt(0)
+            entries.removeAt(0)
+            entries?.each{ entry ->
+                def v1 = entry[4]?.trim()?.tokenize("@@")?.flatten()
+                def v2 = entry[5]?.trim()?.tokenize("@@")?.flatten()
+                merges += new MergeScenario(url:url, merge:entry[0], left:entry[1], right:entry[2], base:entry[3],
+                        leftCommits: v1 as List<String>, rightCommits: v2 as List<String>)
+            }
+        }
+        merges
+    }
 
+    def searchGithubProjects() {
+        queryService.searchProjects()
+        log.info "Found repositories are saved in ${ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE}"
+    }
+
+    def filterGithubProjects(){
+        downloadManager.searchRepositoriesByFileTypeAndGems()
+        log.info "Filtered repositories are saved in ${ConstantData.CANDIDATE_REPOSITORIES_FILE}"
+    }
+
+    private static void findTasksById(){
+        List<String[]> entries = Util.extractCsvContent(ConstantData.CANDIDATE_REPOSITORIES_FILE)
         if (entries.size() > 0) entries.remove(0) //ignore sheet header
 
         List<String[]> selectedRepositories = []
         List<Task> alltasks = []
         for (String[] entry : entries) {
             entry[1] = entry[1].trim()
-            List<Task> tasks = findLinkTaskChangeset(entry[0], entry[1])
+            def result = findLinkTaskChangeset(entry[0], entry[1])
+            List<Task> tasks = result.tasks
             if (!tasks.isEmpty()) {
-                def tasksPT = tasks.findAll { !it.productionFiles.isEmpty() && !it.testFiles.isEmpty() }
+                def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
                 String[] cell = [entry[0], entry[1], tasks.size(), tasksPT.size()]
                 selectedRepositories += cell
+                exportTasks(tasks, "${ConstantData.TASKS_FOLDER}${result.repository}.csv")
                 alltasks += tasks
             }
         }
-
-        exportSearchResult(alltasks)
-        log.info "The tasks of GitHub projects are saved in ${DataProperties.TASKS_FILE}"
+        exportTasks(alltasks)
+        log.info "The tasks of GitHub projects are saved in '${ConstantData.TASKS_FOLDER}' folder"
 
         exportSelectedProjects(selectedRepositories)
-        log.info "The repositories that contains link amog tasks and code changes are saved in ${DataProperties.SELECTED_REPOSITORIES_FILE}"
+        log.info "The repositories that contains link amog tasks and code changes are saved in ${ConstantData.SELECTED_REPOSITORIES_FILE}"
+    }
+
+    static findCandidatesIndex(String url){
+        List<String[]> lines = Util.extractCsvContent(ConstantData.CANDIDATE_REPOSITORIES_FILE)
+        def repo = url - ConstantData.GITHUB_URL
+        def selected = lines.find{ it[1] == repo }
+        if(selected) selected[0]
+        else null
+    }
+
+    def findTasksByMerge(){
+        mergeScenarioExtractor?.extract()
+        List<String[]> selectedRepositories = []
+        List<Task> alltasks = []
+        def urls = []
+        def indexes = []
+        def mergeFiles = Util.findFilesFromFolder(ConstantData.MERGES_FOLDER)?.findAll{
+            it.endsWith(ConstantData.MERGE_TASK_SUFIX)
+        }
+
+        mergeFiles?.each { mergeFile ->
+            def merges = extractMerges(mergeFile)
+            def url = merges.first().url
+            def index = findCandidatesIndex(url)
+            if(index){
+                urls += url
+                indexes += index
+                def tasks = []
+                GitRepository repository = GitRepository.getRepository(url)
+                merges?.each{ merge ->
+                    List<Commit> commits = repository.searchCommits(merge.leftCommits as String[])
+                    def leftTask = new MergeTask(index, url, ++taskId as String, commits, merge)
+                    tasks += leftTask
+
+                    commits = repository.searchCommits(merge.rightCommits as String[])
+                    def rightTask = new MergeTask(index, url, ++taskId as String, commits, merge)
+                    tasks += rightTask
+
+                    alltasks += tasks
+                }
+
+                def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
+                String[] cell = [index, url, tasks.size(), tasksPT.size()]
+                selectedRepositories += cell
+
+                exportTasks(tasks, "${ConstantData.TASKS_FOLDER}${repository.name}.csv")
+            }
+        }
+        log.info "The tasks of GitHub projects are saved in '${ConstantData.TASKS_FOLDER}' folder"
+        exportTasks(alltasks)
+
+        exportSelectedProjects(selectedRepositories)
+        log.info "The repositories that contains link amog tasks and code changes are saved in ${ConstantData.SELECTED_REPOSITORIES_FILE}"
+    }
+
+    def findTasks() {
+        if(!filterCommitMessage) findTasksByMerge()
+        else findTasksById()
     }
 
 }

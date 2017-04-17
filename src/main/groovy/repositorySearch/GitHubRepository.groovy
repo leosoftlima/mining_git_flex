@@ -1,8 +1,8 @@
 package repositorySearch
 
 import groovy.util.logging.Slf4j
+import util.ConstantData
 import util.DataProperties
-
 
 /**
  * Represents a GitHub repository and provides mechanism to download de repository zip file, unzip it and check it has
@@ -24,28 +24,28 @@ class GitHubRepository {
     }
 
     GitHubRepository(String zipFileUrl) {
-        this.url = zipFileUrl.substring(0, zipFileUrl.indexOf(DataProperties.ZIP_FILE_URL))
-        this.branch = zipFileUrl.substring(zipFileUrl.lastIndexOf("/") + 1, zipFileUrl.length() - DataProperties.FILE_EXTENSION.length())
+        this.url = zipFileUrl.substring(0, zipFileUrl.indexOf(ConstantData.ZIP_FILE_URL))
+        this.branch = zipFileUrl.substring(zipFileUrl.lastIndexOf("/") + 1, zipFileUrl.length() - ConstantData.FILE_EXTENSION.length())
         this.name = configureName(url)
         configureZipUrl()
     }
 
     private static String configureName(String url) {
-        String name = url.substring(DataProperties.GITHUB_URL.length())
+        String name = url.substring(ConstantData.GITHUB_URL.length())
         name = name.replaceAll("/", "_")
         name
     }
 
     private void configureZipUrl() {
-        this.zipUrl = url + DataProperties.ZIP_FILE_URL + branch + DataProperties.FILE_EXTENSION
+        this.zipUrl = url + ConstantData.ZIP_FILE_URL + branch + ConstantData.FILE_EXTENSION
     }
 
     String getZipFolderName() {
-        DataProperties.UNZIPPED_FILES_FOLDER + name
+        ConstantData.UNZIPPED_FILES_FOLDER + name
     }
 
     String getLocalZipName() {
-        DataProperties.ZIPPED_FILES_FOLDER + name + DataProperties.FILE_EXTENSION
+        ConstantData.ZIPPED_FILES_FOLDER + name + ConstantData.FILE_EXTENSION
     }
 
     void setUrl(String url) {
@@ -76,22 +76,59 @@ class GitHubRepository {
         FileHandler.unzip(getLocalZipName(), getZipFolderName())
     }
 
-    /**
-     * Verifies if the repository main branch contains file of specific type that is specified at the configuration
-     * properties file. It's necessary to download the repository as zip file first and unzip it.
-     *
-     * @param fileType the type of file to search for.
-     * @return true if the repository does contain Gherkin file, false otherwise. If no file type is defined, the search
-     * is also true.
-     */
-    boolean hasFileType(String fileType) {
+    boolean satisfiesFilteringCriteria() {
         boolean result = false
-        try {
-            downloadZip()
-            unzip()
-            result = FileHandler.hasFileType(fileType, getZipFolderName())
-        } catch (Exception e) {
-            log.info e.getMessage()
+        if(!DataProperties.FILTER_BY_FILE && !DataProperties.FILTER_RAILS) result = true
+        else {
+            try {
+                downloadZip()
+                unzip()
+                if (DataProperties.FILTER_BY_FILE && DataProperties.FILTER_RAILS) {
+                    def r1 = hasGems()
+                    def r2 = false
+                    if(r1) r2 = FileHandler.hasFileType(DataProperties.FILE_TYPE, getZipFolderName())
+                    if(r1 && r2) result = true
+                } else if (DataProperties.FILTER_BY_FILE) {
+                    result = FileHandler.hasFileType(DataProperties.FILE_TYPE, getZipFolderName())
+                } else if (DataProperties.FILTER_RAILS) {
+                    result = hasGems()
+                }
+                deleteUnzipedDir()
+            } catch (Exception e) {
+                log.info e.getMessage()
+            }
+        }
+        result
+    }
+
+    private static boolean isRailsProject(List<String> gemFileLines){
+        def regex =  /\s*gem\s+"?'?${ConstantData.RAILS_GEM}"?'?.*/
+        def hasGem = gemFileLines.find{ !(it.trim().startsWith("#")) && it==~regex }
+        if(hasGem) true
+        else false
+    }
+
+    boolean hasGems(){
+        def result = false
+        File gemfile = FileHandler.retrieveFile(ConstantData.GEM_FILE, getZipFolderName())
+        if(gemfile) {
+            def lines = gemfile.readLines()
+            int goalCounter = DataProperties.GEMS.size()
+            int counter = 0
+            def railsProject = isRailsProject(lines)
+            if(railsProject){
+                DataProperties.GEMS.each { gem ->
+                    def regex = /\s*gem\s+"?'?${gem}"?'?.*/
+                    def hasGem = lines.find{ !(it.trim().startsWith("#")) && it==~regex }
+                    if(hasGem) {
+                        log.info "Project does use gem '${gem}'"
+                        counter++
+                    } else log.info "Project does not use gem '${gem}'"
+                }
+                if(counter == goalCounter) result = true
+            } else log.info "It is not a Rails project!"
+        } else {
+            log.info "Gemfile was not found!"
         }
         result
     }

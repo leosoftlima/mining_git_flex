@@ -1,7 +1,6 @@
 package taskSearch
 
-import util.DataProperties
-
+import util.Util
 
 class Task {
 
@@ -28,15 +27,10 @@ class Task {
     Task(String index, String url, String id, List<Commit> commits) {
         this(index, url, id)
         this.commits = commits
-        commits*.files?.flatten()?.each { file ->
-            if (isTestCode(file)) testFiles += file
+        commits*.files?.flatten()?.unique()?.each { file ->
+            if (Util.isTestCode(file)) testFiles += file
             else productionFiles += file
         }
-    }
-
-    private static boolean isTestCode(def path) {
-        if (path ==~ /$DataProperties.TEST_CODE_REGEX/) true
-        else false
     }
 
 }

@@ -2,7 +2,7 @@ package repositorySearch
 
 import au.com.bytecode.opencsv.CSVWriter
 import groovy.util.logging.Slf4j
-import util.DataProperties
+import util.ConstantData
 
 @Slf4j
 class DowloadManager {
@@ -20,8 +20,8 @@ class DowloadManager {
     }
 
     private printCounter() {
-        log.info "Number of analyzed projects: ${counter}"
-        if (counter > 0) log.info "Number of candidates projects: ${candidates.size()} (${((double) candidates.size() / counter) * 100}%%)"
+        log.info "Found projects: ${counter}"
+        if (counter > 0) log.info "Filtered projects: ${candidates.size()} (${((double) candidates.size() / counter) * 100}%%)"
     }
 
     private listCandidateRepositories() {
@@ -30,62 +30,47 @@ class DowloadManager {
         }
     }
 
-    /**
-     * Verifies if the repository does contain a file type and updates a csv file to include the analysed repository if
-     * the result is positive.
-     *
-     * @param repository the repository to analyse.
-     * @param writer cvs file to update.
-     * @param index original index of the analysed repository.
-     */
-    private void searchFileType(GitHubRepository repository, CSVWriter writer, int index) {
-        counter++
-        if (repository.hasFileType(DataProperties.FILE_TYPE)) {
+    private void filterRepositories(GitHubRepository repository, CSVWriter writer, int index) {
+        if (repository.satisfiesFilteringCriteria()) {
+            log.info "${repository.url} satisfies filtering criteria!"
             candidates.add(repository)
-            repository.deleteUnzipedDir()
             String[] args = [String.valueOf(index), repository.getUrl()]
             writer.writeNext(args)
         } else {
+            log.info "${repository.url} does not satisfy filtering criteria!"
             repository.deleteAll()
+        }
+        saveFileForCommitsSearch(candidates)
+    }
+
+    private static saveFileForCommitsSearch(List<GitHubRepository> repos){
+        def file = new File(ConstantData.MERGE_ANALYSIS_TEMP_FILE)
+        file.createNewFile()
+        if(!repos || repos.empty) return
+        file.withWriter("utf-8") { out ->
+            repos.each { out.write it.name }
         }
     }
 
-    /**
-     * Verifies if the GitHub repositories identified at a csv file (/input/commits.csv) does contain files of a specific type.
-     * The first column must identify the repository's url and the second column must identify its master branch.
-     *
-     */
-    def searchRepositoriesByFileType() {
+    def searchRepositoriesByFileTypeAndGems() {
         CSVWriter writer
         ArrayList<GitHubRepository> repositories
         resetCounters()
-
         try {
-            repositories = RepositoriesCsvOrganizer.extractRepositories()
-            log.info "The repositories to search for are saved in ${DataProperties.REPOSITORIES_TO_DOWNLOAD_FILE}"
-
-            def file = new File(DataProperties.CANDIDATE_REPOSITORIES_FILE)
+            repositories = CsvOrganizer.extractRepositories()
+            counter = repositories.size()
+            def file = new File(ConstantData.CANDIDATE_REPOSITORIES_FILE)
             writer = new CSVWriter(new FileWriter(file))
-            String[] args1 = ["index", "repository_url"]
-            writer.writeNext(args1)
-
-            if (DataProperties.FILE_TYPE.empty) {
-                for (int i = 0; i < repositories.size(); i++) {
-                    candidates.add(repositories.get(i))
-                    String[] args2 = [String.valueOf(i + 2), repositories.get(i).getUrl()]
-                    writer.writeNext(args2)
-                }
-            } else {
-                for (int i = 0; i < repositories.size(); i++) {
-                    searchFileType(repositories.get(i), writer, i + 2)
-                }
-                printCounter()
+            String[] header = ["INDEX", "URL"]
+            writer.writeNext(header)
+            for (int i = 0; i < repositories.size(); i++) {
+                filterRepositories(repositories.get(i), writer, i + 1)
             }
-
+            printCounter()
             writer.close()
             listCandidateRepositories()
         } catch (IOException e) {
-            e.printStackTrace()
+            e.getStackTrace().each{ log.error it.toString() }
         }
     }
 

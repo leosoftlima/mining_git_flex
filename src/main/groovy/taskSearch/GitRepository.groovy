@@ -8,10 +8,10 @@ import org.eclipse.jgit.diff.RawTextComparator
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevTree
 import org.eclipse.jgit.treewalk.TreeWalk
+import util.ConstantData
 import util.DataProperties
 import util.RegexUtil
 import util.Util
-
 import java.util.regex.Matcher
 
 
@@ -26,7 +26,7 @@ class GitRepository {
 
     private GitRepository(String path) {
         if (path.startsWith("http")) {
-            this.url = path + DataProperties.GIT_EXTENSION
+            this.url = path + ConstantData.GIT_EXTENSION
             this.name = Util.configureGitRepositoryName(url)
             this.localPath = DataProperties.REPOSITORY_FOLDER + name
             if (isCloned()) {
@@ -60,7 +60,7 @@ class GitRepository {
     }
 
     private Iterable<RevCommit> searchAllRevCommitsBySha(String... hash) {
-        def logs = []
+        def logs
         def git = Git.open(new File(localPath))
         if (hash == null || hash?.length == 0) logs = git?.log()?.call()
         else logs = git?.log()?.call()?.findAll { it.name in hash }?.sort { a, b -> b.commitTime <=> a.commitTime }
@@ -115,17 +115,6 @@ class GitRepository {
         files?.sort()?.unique()
     }
 
-    private List<Commit> searchCommits(String... hash) {
-        def revCommits = searchAllRevCommitsBySha(hash)
-        def commits = []
-        revCommits?.each { c ->
-            def files = getAllChangedFilesFromCommit(c)
-            commits += new Commit(hash: c.name, message: c.fullMessage.replaceAll(RegexUtil.NEW_LINE_REGEX, " "), files: files,
-                    author: c.authorIdent.name, date: c.commitTime)
-        }
-        commits
-    }
-
     private static List getAllChangedFilesFromDiffs(List<DiffEntry> diffs) {
         def files = []
         if (!diffs?.empty) {
@@ -140,12 +129,23 @@ class GitRepository {
     }
 
     static GitRepository getRepository(String url) {
-        def repository = repositories.find { (it.url - DataProperties.GIT_EXTENSION).equals(url) }
+        def repository = repositories.find { (it.url - ConstantData.GIT_EXTENSION).equals(url) }
         if (!repository) {
             repository = new GitRepository(url)
             repositories += repository
         }
         repository
+    }
+
+    List<Commit> searchCommits(String... hash) {
+        def revCommits = searchAllRevCommitsBySha(hash)
+        def commits = []
+        revCommits?.each { c ->
+            def files = getAllChangedFilesFromCommit(c)
+            commits += new Commit(hash: c.name, message: c.fullMessage.replaceAll(RegexUtil.NEW_LINE_REGEX, " "),
+                    files: files, author: c.authorIdent.name, date: c.commitTime)
+        }
+        commits
     }
 
     List<Commit> searchByComment(def regex) {

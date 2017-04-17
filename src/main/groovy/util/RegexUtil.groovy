@@ -1,6 +1,5 @@
 package util
 
-
 interface RegexUtil {
 
     final FILE_SEPARATOR_REGEX = /(\\|\/)/

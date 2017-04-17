@@ -1,8 +1,5 @@
 package taskSearch
 
-/***
- *
- */
 class Commit {
 
     String hash
@@ -11,7 +8,7 @@ class Commit {
     String author
     long date
 
-    public String toString() {
+    String toString() {
         "$hash*${new Date(date * 1000)}*$author*$message*${files.toListString()}"
     }
 
