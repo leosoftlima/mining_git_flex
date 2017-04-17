@@ -19,7 +19,7 @@ class GithubAPIQueryService implements QueryService {
 
     GithubAPIQueryService(){
         def stars = '>=' + DataProperties.FILTER_STARS
-        pages = 20
+        pages = 10
         client = new GitHubClient()
         client.setCredentials(DataProperties.GITHUB_LOGIN, DataProperties.GITHUB_PASSWORD)
         repositoryService = new RepositoryService(client)
