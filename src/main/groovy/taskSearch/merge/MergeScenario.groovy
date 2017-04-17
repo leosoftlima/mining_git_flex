@@ -1,4 +1,4 @@
-package taskSearch.mergeScenario
+package taskSearch.merge
 
 class MergeScenario {
 

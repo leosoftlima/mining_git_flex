@@ -4,8 +4,9 @@ import groovy.util.logging.Slf4j
 import repositorySearch.GithubAPIQueryService
 import repositorySearch.GoogleArchiveQueryService
 import repositorySearch.QueryService
-import taskSearch.mergeScenario.MergeScenario
-import taskSearch.mergeScenario.MergeScenarioExtractor
+import taskSearch.merge.MergeScenario
+import taskSearch.merge.MergeScenarioExtractor
+import taskSearch.merge.MergeTask
 import util.ConstantData
 import util.DataProperties
 import util.RegexUtil

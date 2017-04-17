@@ -1,4 +1,4 @@
-package taskSearch.mergeScenario
+package taskSearch.merge
 
 import org.jruby.embed.ScriptingContainer
 import util.ConstantData

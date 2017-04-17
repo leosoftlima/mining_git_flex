@@ -1,6 +1,8 @@
-package taskSearch
+package taskSearch.merge
 
-import taskSearch.mergeScenario.MergeScenario
+import taskSearch.Commit
+import taskSearch.Task
+import taskSearch.merge.MergeScenario
 
 class MergeTask extends Task {
 
