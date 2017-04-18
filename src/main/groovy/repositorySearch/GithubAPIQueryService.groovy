@@ -18,12 +18,11 @@ class GithubAPIQueryService implements QueryService {
     def pages
 
     GithubAPIQueryService(){
-        def stars = '>=' + DataProperties.FILTER_STARS
         pages = 10
         client = new GitHubClient()
         client.setCredentials(DataProperties.GITHUB_LOGIN, DataProperties.GITHUB_PASSWORD)
         repositoryService = new RepositoryService(client)
-        query = [language:'ruby', created:'>=2013-01-01', stars:stars, sort:'stars']
+        query = [language:'ruby', created:DataProperties.FILTER_YEAR, stars:DataProperties.FILTER_STARS, sort:'stars']
     }
 
     private exportGitHubSearchResult(List<SearchRepository> candidates) throws IOException {

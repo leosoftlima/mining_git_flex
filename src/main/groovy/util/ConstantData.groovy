@@ -18,11 +18,13 @@ interface ConstantData {
     String PROP_COMMIT_MESSAGE_FILTER = "spgroup.search.commit.message"
     String PROP_GEMS_FILTER = "spgroup.search.gems"
     String PROP_STARS_FILTER = "spgroup.stars.filter"
+    String PROP_YEAR_FILTER = "spgroup.year.filter"
 
     String DEFAULT_LANGUAGE = "ruby"
     String DEFAULT_GEM_REQUIREALL_FOLDER = "require_all-1.4.0"
     String DEFAULT_REPOSITORY_FOLDER = "repositories"
-    int DEFAULT_STARS = 50
+    String DEFAULT_STARS = "50"
+    String DEFAULT_YEAR = "2010"
 
     String GITHUB_URL = "https://github.com/"
     String GIT_EXTENSION = ".git"

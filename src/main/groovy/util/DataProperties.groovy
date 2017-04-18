@@ -22,7 +22,8 @@ class DataProperties {
     public static final boolean FILTER_BY_FILE
     public static final boolean FILTER_RAILS
     public static final List<String> GEMS
-    public static final int FILTER_STARS
+    public static final String FILTER_STARS
+    public static final String FILTER_YEAR
     public static final String GEMS_PATH
     public static final String GEM_REQUIRE_ALL
 
@@ -61,6 +62,7 @@ class DataProperties {
             GEM_REQUIRE_ALL = configureGemRequireall()
 
             FILTER_STARS = configureStarsFilter()
+            FILTER_YEAR = configureYearFilter()
 
         } catch (Exception ex) {
             log.info ex.message
@@ -72,17 +74,13 @@ class DataProperties {
         log.info "FILTER_BY_DEFAULT_MESSAGE: ${FILTER_BY_DEFAULT_MESSAGE}"
         log.info "FILTER_BY_PIVOTAL_TRACKER: ${FILTER_BY_PIVOTAL_TRACKER}"
         log.info "FILTER_STARS: ${FILTER_STARS}"
+        log.info "FILTER_YEAR: ${FILTER_YEAR}"
     }
 
     private static loadProperties() {
         File configFile = new File(ConstantData.PROPERTIES_FILE_NAME)
         FileInputStream resourceStream = new FileInputStream(configFile)
         properties.load(resourceStream)
-    }
-
-    private static configureMandatoryProperties(value, int defaultValue) {
-        if (!value || value.empty) value = defaultValue
-        value
     }
 
     private static configureMandatoryProperties(value, defaultValue) {
@@ -192,7 +190,13 @@ class DataProperties {
     }
 
     private static configureStarsFilter(){
-        configureMandatoryProperties(properties.(ConstantData.PROP_STARS_FILTER), ConstantData.DEFAULT_STARS) as int
+        def value = configureMandatoryProperties(properties.(ConstantData.PROP_STARS_FILTER), ConstantData.DEFAULT_STARS)
+        '=' + value
+    }
+
+    private static configureYearFilter(){
+        def value = configureMandatoryProperties(properties.(ConstantData.PROP_YEAR_FILTER), ConstantData.DEFAULT_YEAR)
+        '>=' + value + '-01-01'
     }
 
     private static configureGem(value, defaultValue){
