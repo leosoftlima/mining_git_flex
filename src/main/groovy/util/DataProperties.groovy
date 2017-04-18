@@ -191,7 +191,7 @@ class DataProperties {
 
     private static configureStarsFilter(){
         def value = configureMandatoryProperties(properties.(ConstantData.PROP_STARS_FILTER), ConstantData.DEFAULT_STARS)
-        '=' + value
+        '>=' + value
     }
 
     private static configureYearFilter(){
