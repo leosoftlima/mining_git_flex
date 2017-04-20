@@ -47,7 +47,7 @@ class GithubAPIQueryService implements QueryService {
             candidates += repositoryService.searchRepositories(query, it).sort{ it.watchers }
         }
         log.info "GitHub API found ${candidates.size()} repositories based on search criteria."
-        exportGitHubSearchResult(candidates)
+        exportGitHubSearchResult(candidates.unique())
         log.info "Repositories found by GitHub API are saved in ${ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE}"
     }
 
