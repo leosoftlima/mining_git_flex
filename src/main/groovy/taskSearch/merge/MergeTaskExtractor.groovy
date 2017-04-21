@@ -2,9 +2,7 @@ package taskSearch.merge
 
 import groovy.util.logging.Slf4j
 import taskSearch.GitRepository
-import taskSearch.Task
 import util.ConstantData
-import util.DataProperties
 import util.Util
 
 @Slf4j
@@ -32,17 +30,6 @@ class MergeTaskExtractor {
         def selected = lines.find{ it[1] == repo }
         if(selected) selected[0]
         else null
-    }
-
-    private static void exportTasks(List<Task> tasks, String file) {
-        String[] header = ["INDEX", "REPO_URL", "TASK_ID", "HASHES", "#PROD_FILES", "#TEST_FILES"]
-        List<String[]> content = []
-        tasks?.each{ task ->
-            String[] line = [task.repositoryIndex, task.repositoryUrl, task.id, (task.commits*.hash).toString(),
-                             task.productionFiles.size(), task.testFiles.size()]
-            content += line
-        }
-        Util.createCsv(file, header, content)
     }
 
     private configureMergeTask(MergeScenario merge){
@@ -74,26 +61,6 @@ class MergeTaskExtractor {
         merges
     }
 
-    private exportResult(List<MergeTask> tasks, List<MergeTask> tasksPT){
-        String[] info = null
-        def allTasks = []
-        if(tasksPT.size() > DataProperties.TASK_LIMIT) {
-            def sublist = tasksPT.subList(0,DataProperties.TASK_LIMIT)
-            allTasks = sublist
-            exportTasks(sublist, tasksCsv)
-        }
-        else{
-            allTasks = tasksPT
-            exportTasks(tasksPT, tasksCsv)
-        }
-
-        if(tasksPT.size() > 0) {
-            info = [index, repository.url, tasks.size(), tasksPT.size()]
-        }
-
-        [allTasks:allTasks, repository:info]
-    }
-
     static retrieveMergeFiles(){
         MergeScenarioExtractor mergeScenarioExtractor = new MergeScenarioExtractor()
         mergeScenarioExtractor?.extract()
@@ -103,13 +70,13 @@ class MergeTaskExtractor {
         mergeFiles
     }
 
-    def extractTasksFromMergeFile(){
+    def extractTasks(){
         def result = null
         if(index){
             def tasks = []
             mergeScenarios?.each{ tasks += configureMergeTask(it) }
             def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-            result = exportResult(tasks, tasksPT)
+            result = Util.exportProjectTasks(tasks, tasksPT, tasksCsv, index, repository.url)
         }
         result
     }

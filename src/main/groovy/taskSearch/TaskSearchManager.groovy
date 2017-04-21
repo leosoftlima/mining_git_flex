@@ -33,25 +33,25 @@ class TaskSearchManager {
 
     private static void findTasksById(){
         log.info "Finding tasks based on ID in commit message..."
-        List<String[]> entries = Util.extractCsvContent(ConstantData.CANDIDATE_REPOSITORIES_FILE)
-        if (entries.size() > 0) entries.remove(0) //ignore sheet header
-
         List<String[]> selectedRepositories = []
-        List<Task> alltasks = []
-        for (String[] entry : entries) {
-            entry[1] = entry[1].trim()
-            def taskExtractor = new IdTaskExtractor(entry[0], entry[1])
-            def result = taskExtractor.findLinkTaskChangeset()
-            List<Task> tasks = result.tasks
-            if (!tasks.empty) {
-                def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-                String[] cell = [entry[0], entry[1], tasks.size(), tasksPT.size()]
-                selectedRepositories += cell
-                exportTasks(tasksPT, "${ConstantData.TASKS_FOLDER}${result.repository}.csv")
-                alltasks += tasksPT
+        List<Task> allTasks = []
+        List<String[]> entries = Util.extractCsvContent(ConstantData.CANDIDATE_REPOSITORIES_FILE)
+        if (entries.size() > 1) {
+            entries.remove(0) //ignore sheet header
+            for (String[] entry : entries) {
+                entry[1] = entry[1].trim()
+                def taskExtractor = new IdTaskExtractor(entry[0], entry[1])
+                def r = taskExtractor.extractTasks()
+                if(r){
+                    if(!r.allTasks.empty) allTasks += r.allTasks
+                    if(r.repository) {
+                        String[] info = r.repository
+                        selectedRepositories += info
+                    }
+                }
             }
         }
-        exportTasks(alltasks)
+        exportTasks(allTasks)
         log.info "The tasks of GitHub projects are saved in '${ConstantData.TASKS_FOLDER}' folder"
 
         exportSelectedProjects(selectedRepositories)
@@ -64,9 +64,8 @@ class TaskSearchManager {
         List<Task> allTasks = []
         def mergeFiles =  MergeTaskExtractor.retrieveMergeFiles()
         mergeFiles?.each { mergeFile ->
-            println "mergeFile: ${mergeFile}"
             MergeTaskExtractor taskExtractor = new MergeTaskExtractor(mergeFile)
-            def r = taskExtractor.extractTasksFromMergeFile()
+            def r = taskExtractor.extractTasks()
             if(r){
                 if(!r.allTasks.empty) allTasks += r.allTasks
                 if(r.repository) {
@@ -82,19 +81,8 @@ class TaskSearchManager {
         log.info "The repositories that contains link amog tasks and code changes are saved in ${ConstantData.SELECTED_REPOSITORIES_FILE}"
     }
 
-    private static void exportTasks(List<Task> tasks, String file) {
-        String[] header = ["INDEX", "REPO_URL", "TASK_ID", "HASHES", "#PROD_FILES", "#TEST_FILES"]
-        List<String[]> content = []
-        tasks?.each{ task ->
-            String[] line = [task.repositoryIndex, task.repositoryUrl, task.id, (task.commits*.hash).toString(),
-                             task.productionFiles.size(), task.testFiles.size()]
-            content += line
-        }
-        Util.createCsv(file, header, content)
-    }
-
     private static void exportTasks(List<Task> tasks) {
-        exportTasks(tasks, ConstantData.TASKS_FILE)
+        Util.exportTasks(tasks, ConstantData.TASKS_FILE)
     }
 
     private static void exportSelectedProjects(List<String[]> projects) {

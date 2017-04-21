@@ -162,14 +162,10 @@ class GitRepository {
     }
 
     List<Commit> searchByComment(def regex) {
-        log.info "Total commits: ${commits.size()}"
-
         def result = commits.findAll { commit ->
             (commit.message?.toLowerCase() ==~ regex) && !commit.files.empty
         }
         def finalResult = result.unique { a, b -> a.hash <=> b.hash }
-        log.info "Total commits by comment: ${finalResult.size()}"
-
         finalResult.sort { it.date }
     }
 
