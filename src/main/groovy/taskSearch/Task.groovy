@@ -1,5 +1,6 @@
 package taskSearch
 
+import taskSearch.id.Commit
 import util.Util
 
 class Task {

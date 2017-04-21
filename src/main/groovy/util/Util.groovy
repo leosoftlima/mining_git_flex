@@ -65,10 +65,18 @@ class Util {
 
     static extractCsvContent(String csv){
         def file = new File(csv)
+        if(!file.exists()) return []
         CSVReader reader = new CSVReader(new FileReader(file))
         List<String[]> entries = reader.readAll()
         reader.close()
         entries
+    }
+
+    static appendCsv(String filename, List<String[]> content){
+        def file = new File(filename)
+        CSVWriter writer = new CSVWriter(new FileWriter(file, true))
+        writer.writeAll(content)
+        writer.close()
     }
 
     static createCsv(String filename, String[] header, List content){

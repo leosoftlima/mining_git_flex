@@ -1,4 +1,4 @@
-package repositorySearch
+package filter
 
 import groovy.util.logging.Slf4j
 import util.ConstantData
@@ -15,12 +15,16 @@ class GitHubRepository {
     String branch
     final String name
     String zipUrl
+    int stars
+    int size
 
-    GitHubRepository(String url, String branch) {
+    GitHubRepository(String url, String branch, int stars, int size) {
         this.url = url
         this.branch = branch
         this.name = configureName(url)
         configureZipUrl()
+        this.stars = stars
+        this.size = size
     }
 
     GitHubRepository(String zipFileUrl) {
@@ -38,6 +42,13 @@ class GitHubRepository {
 
     private void configureZipUrl() {
         this.zipUrl = url + ConstantData.ZIP_FILE_URL + branch + ConstantData.FILE_EXTENSION
+    }
+
+    private static boolean isRailsProject(List<String> gemFileLines){
+        def regex =  /\s*gem\s+"?'?${ConstantData.RAILS_GEM}"?'?.*/
+        def hasGem = gemFileLines.find{ !(it.trim().startsWith("#")) && it==~regex }
+        if(hasGem) true
+        else false
     }
 
     String getZipFolderName() {
@@ -86,10 +97,10 @@ class GitHubRepository {
                 if (DataProperties.FILTER_BY_FILE && DataProperties.FILTER_RAILS) {
                     def r1 = hasGems()
                     def r2 = false
-                    if(r1) r2 = FileHandler.hasFileType(DataProperties.FILE_TYPE, getZipFolderName())
+                    if(r1) r2 = FileHandler.hasFileType(getZipFolderName())
                     if(r1 && r2) result = true
                 } else if (DataProperties.FILTER_BY_FILE) {
-                    result = FileHandler.hasFileType(DataProperties.FILE_TYPE, getZipFolderName())
+                    result = FileHandler.hasFileType(getZipFolderName())
                 } else if (DataProperties.FILTER_RAILS) {
                     result = hasGems()
                 }
@@ -99,13 +110,6 @@ class GitHubRepository {
             }
         }
         result
-    }
-
-    private static boolean isRailsProject(List<String> gemFileLines){
-        def regex =  /\s*gem\s+"?'?${ConstantData.RAILS_GEM}"?'?.*/
-        def hasGem = gemFileLines.find{ !(it.trim().startsWith("#")) && it==~regex }
-        if(hasGem) true
-        else false
     }
 
     boolean hasGems(){

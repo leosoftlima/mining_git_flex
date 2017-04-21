@@ -11,9 +11,11 @@ class Main {
             TaskSearchManager taskSearchManager = new TaskSearchManager()
             taskSearchManager.searchGithubProjects()
             taskSearchManager.filterGithubProjects()
-            taskSearchManager.findTasks()
-        } catch (IOException e) {
-            log.info "Problem during projects searching: " + e.getMessage()
+            taskSearchManager.searchTasks()
+        } catch (Exception ex) {
+            log.info "Problem during projects searching."
+            log.info ex.message
+            ex.stackTrace.each{ log.error it.toString() }
         }
     }
 

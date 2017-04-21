@@ -2,9 +2,10 @@ package repositorySearch
 
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
+import filter.GitHubRepository
 import util.ConstantData
 
-class CsvOrganizer {
+class SearchResultManager {
 
     private static List<String[]> uniqueValues(List<String[]> input) {
         List<String[]> output = new ArrayList<>()
@@ -41,7 +42,7 @@ class CsvOrganizer {
         List<String[]> entries = extractRepoEntries()
         if (entries.size() > 0) entries.remove(0) //ignore sheet header
         for (String[] line : entries) {
-            repos.add(new GitHubRepository(line[0], line[1])) //url, branch
+            repos.add(new GitHubRepository(line[0], line[1], line[3] as int, line[4] as int))
         }
         repos
     }

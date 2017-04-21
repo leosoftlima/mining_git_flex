@@ -24,8 +24,7 @@ class DataProperties {
     public static final List<String> GEMS
     public static final String FILTER_STARS
     public static final String FILTER_YEAR
-    public static final String GEMS_PATH
-    public static final String GEM_REQUIRE_ALL
+    public static final int TASK_LIMIT
 
     static {
         try {
@@ -57,13 +56,9 @@ class DataProperties {
             def result = configureGemsFilter()
             GEMS = result.gems
             FILTER_RAILS = result.filter
-
-            GEMS_PATH = (properties.(ConstantData.PROP_GEMS)).replace(File.separator, Matcher.quoteReplacement(File.separator))
-            GEM_REQUIRE_ALL = configureGemRequireall()
-
             FILTER_STARS = configureStarsFilter()
             FILTER_YEAR = configureYearFilter()
-
+            TASK_LIMIT = configureTaskLimit()
         } catch (Exception ex) {
             log.info ex.message
             ex.stackTrace.each{ log.info it.toString() }
@@ -191,7 +186,7 @@ class DataProperties {
 
     private static configureStarsFilter(){
         def value = configureMandatoryProperties(properties.(ConstantData.PROP_STARS_FILTER), ConstantData.DEFAULT_STARS)
-        '>=' + value
+        '<=' + value
     }
 
     private static configureYearFilter(){
@@ -199,13 +194,9 @@ class DataProperties {
         '>=' + value + '-01-01'
     }
 
-    private static configureGem(value, defaultValue){
-        def folder = configureMandatoryProperties(value, defaultValue)
-        GEMS_PATH + Matcher.quoteReplacement(File.separator) + folder + ConstantData.GEM_SUFFIX
-    }
-
-    private static configureGemRequireall(){
-        configureGem(properties.(ConstantData.PROP_GEM_REQUIREALL), ConstantData.DEFAULT_GEM_REQUIREALL_FOLDER)
+    private static configureTaskLimit(){
+        def value = configureMandatoryProperties(properties.(ConstantData.PROP_TASK_LIMIT), ConstantData.DEFAULT_TASK_LIMIT)
+        value as int
     }
 
 }

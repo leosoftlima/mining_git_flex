@@ -1,7 +1,8 @@
-package repositorySearch
+package filter
 
 import groovy.util.logging.Slf4j
 import util.ConstantData
+import util.DataProperties
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
@@ -84,7 +85,7 @@ class FileHandler {
         }
     }
 
-    static boolean hasFileType(String type, String folder) {
+    static boolean hasFileType(String folder) {
         boolean result = false
         File dir = new File(folder)
         File[] files = dir.listFiles()
@@ -93,8 +94,8 @@ class FileHandler {
 
         for (File f : files) {
             if (result) return true
-            else if (f.isDirectory()) result = hasFileType(type, f.getAbsolutePath())
-            else if (f.getName().endsWith(type)) {
+            else if (f.isDirectory()) result = hasFileType(f.getAbsolutePath())
+            else if (f.getName().endsWith(DataProperties.FILE_TYPE)) {
                 result = true
                 break
             }

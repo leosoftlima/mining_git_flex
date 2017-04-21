@@ -159,7 +159,7 @@ class GoogleArchiveQueryService implements QueryService {
         if (query != null && !query.empty) {
             List<TableRow> rows = executeQuery(projectId)
             saveQueryResult(rows)
-            CsvOrganizer.generateRepositoriesCsv()
+            SearchResultManager.generateRepositoriesCsv()
             log.info "The repositories to search for are saved in ${ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE}"
         }
     }

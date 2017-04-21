@@ -8,6 +8,7 @@ import org.eclipse.jgit.diff.RawTextComparator
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevTree
 import org.eclipse.jgit.treewalk.TreeWalk
+import taskSearch.id.Commit
 import util.ConstantData
 import util.DataProperties
 import util.RegexUtil
@@ -19,26 +20,30 @@ import java.util.regex.Matcher
 class GitRepository {
 
     static List<GitRepository> repositories = []
-
+    List<Commit> commits
     String url
     String name
     String localPath
 
     private GitRepository(String path) {
         if (path.startsWith("http")) {
-            this.url = path + ConstantData.GIT_EXTENSION
+            if(path.endsWith(ConstantData.GIT_EXTENSION)) url = path
+            else url = path + ConstantData.GIT_EXTENSION
             this.name = Util.configureGitRepositoryName(url)
             this.localPath = DataProperties.REPOSITORY_FOLDER + name
             if (isCloned()) {
                 log.info "Already cloned from " + url + " to " + localPath
             } else cloneRepository()
         } else {
-            this.localPath = path
+            if(path.endsWith(ConstantData.GIT_EXTENSION)) localPath = path - ConstantData.GIT_EXTENSION
+            else localPath = path
             def git = Git.open(new File(localPath))
             this.url = git.repository.config.getString("remote", "origin", "url")
             git.close()
             this.name = Util.configureGitRepositoryName(url)
         }
+        commits = searchCommits()
+        log.info "All commits from project: ${commits.size()}"
     }
 
     private boolean isCloned() {
@@ -50,20 +55,23 @@ class GitRepository {
 
     private cloneRepository() {
         try {
-            def result = Git.cloneRepository().setURI(url).setDirectory(new File(localPath)).call()
-            result.close()
-            log.info "Cloned from " + url + " to " + localPath
+            def folder = new File(localPath)
+            if(!folder.exists()) {
+                folder.mkdir()
+            }
+            String command = "git clone $url $name"
+            Process p = Runtime.getRuntime().exec(command, null, new File(DataProperties.REPOSITORY_FOLDER))
+            p.waitFor()
         } catch (Exception ex) {
+            log.error "Error while cloning repository '${url}' to '${localPath}'."
+            ex.stackTrace.each{ log.error it.toString() }
             Util.deleteFolder(localPath)
-            log.error ex.message
         }
     }
 
-    private Iterable<RevCommit> searchAllRevCommitsBySha(String... hash) {
-        def logs
+    private Iterable<RevCommit> searchAllRevCommitsBySha() {
         def git = Git.open(new File(localPath))
-        if (hash == null || hash?.length == 0) logs = git?.log()?.call()
-        else logs = git?.log()?.call()?.findAll { it.name in hash }?.sort { a, b -> b.commitTime <=> a.commitTime }
+        def logs = git?.log()?.call()
         git.close()
         logs
     }
@@ -129,7 +137,7 @@ class GitRepository {
     }
 
     static GitRepository getRepository(String url) {
-        def repository = repositories.find { (it.url - ConstantData.GIT_EXTENSION).equals(url) }
+        def repository = repositories.find { (it.url).equals(url) }
         if (!repository) {
             repository = new GitRepository(url)
             repositories += repository
@@ -137,8 +145,13 @@ class GitRepository {
         repository
     }
 
-    List<Commit> searchCommits(String... hash) {
-        def revCommits = searchAllRevCommitsBySha(hash)
+    def searchCommits(List hashes){
+        if(hashes && !hashes.empty) commits.findAll{ it.hash in hashes }
+        else commits
+    }
+
+    List<Commit> searchCommits() {
+        def revCommits = searchAllRevCommitsBySha()
         def commits = []
         revCommits?.each { c ->
             def files = getAllChangedFilesFromCommit(c)
@@ -149,7 +162,6 @@ class GitRepository {
     }
 
     List<Commit> searchByComment(def regex) {
-        def commits = searchCommits()
         log.info "Total commits: ${commits.size()}"
 
         def result = commits.findAll { commit ->
