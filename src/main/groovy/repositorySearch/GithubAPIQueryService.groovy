@@ -15,40 +15,40 @@ class GithubAPIQueryService implements QueryService {
     GitHubClient client
     RepositoryService repositoryService
     Map query
-    def pages
+    def pagesLimit
+    File file
 
     GithubAPIQueryService(){
-        pages = 10
+        file = new File(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE)
+        pagesLimit = 10
         client = new GitHubClient()
         client.setCredentials(DataProperties.GITHUB_LOGIN, DataProperties.GITHUB_PASSWORD)
         repositoryService = new RepositoryService(client)
         query = [language:'ruby', created:DataProperties.FILTER_YEAR, stars:DataProperties.FILTER_STARS, sort:'stars']
     }
 
-    private exportGitHubSearchResult(List<SearchRepository> candidates) throws IOException {
-        def file = new File(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE)
+    private exportGitHubSearchResult(List<SearchRepository> repositories) throws IOException {
         CSVWriter writer = new CSVWriter(new FileWriter(file))
         String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION"]
         writer.writeNext(header)
-
-        candidates?.each { //in fact, watchers are stars
+        repositories?.each { //in fact, watchers are stars
             Repository repo = repositoryService.getRepository(it)
             String[] entry = [it.url, repo.masterBranch, it.createdAt, it.watchers, it.size, it.description]
             writer.writeNext(entry)
         }
-
         writer.close()
     }
 
     @Override
-    def searchProjects(){
-        List<SearchRepository> candidates = []
-        (1..pages).each {
-            candidates += repositoryService.searchRepositories(query, it).sort{ it.watchers }
+    def searchProjects() throws IOException {
+        List<SearchRepository> repositories = []
+        (1..pagesLimit).each {
+            def rep = repositoryService.searchRepositories(query, it)
+            if(rep) repositories += rep
         }
-        log.info "GitHub API found ${candidates.size()} repositories based on search criteria."
-        exportGitHubSearchResult(candidates.unique())
-        log.info "Repositories found by GitHub API are saved in ${ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE}"
+        log.info "GitHub API found ${repositories.size()} repositories based on search criteria."
+        exportGitHubSearchResult(repositories.unique())
+        log.info "Repositories found by GitHub API are saved in ${file.path}"
     }
 
 }
