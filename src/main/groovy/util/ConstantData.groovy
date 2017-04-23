@@ -42,4 +42,6 @@ interface ConstantData {
     String MERGES_FOLDER = "${TASKS_FOLDER}merges${File.separator}"
     String MERGE_TASK_SUFIX = "_merges.csv"
     String SELECTED_REPOSITORIES_FILE = "${TASKS_FOLDER}selected-projects.csv"
+    String OUTPUT_FOLDER = "output${File.separator}"
+    String LOG_FILE = "${OUTPUT_FOLDER}execution.log"
 }

@@ -145,6 +145,8 @@ class DataProperties {
         Util.createFolder(ConstantData.ZIPPED_FILES_FOLDER)
         Util.createFolder(ConstantData.UNZIPPED_FILES_FOLDER)
         Util.createFolder(REPOSITORY_FOLDER)
+        Util.createFolder(ConstantData.OUTPUT_FOLDER)
+        //Util.createFile(ConstantData.LOG_FILE)
     }
 
     private static configTestCodeRegex() {
