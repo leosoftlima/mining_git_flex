@@ -68,10 +68,13 @@ class TaskSearchManager {
             def r = taskExtractor.extractTasks()
             if(r){
                 if(!r.allTasks.empty) allTasks += r.allTasks
+                else log.info "No task was found!"
                 if(r.repository) {
                     String[] info = r.repository
                     selectedRepositories += info
                 }
+            } else {
+                log.error "Error while searching merge tasks. Please, verify project's index."
             }
         }
         log.info "The tasks of GitHub projects are saved in '${ConstantData.TASKS_FOLDER}' folder"

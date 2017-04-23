@@ -6,7 +6,6 @@ interface ConstantData {
     String PROP_GITHUB_LOGIN = "spgroup.github.user"
     String PROP_GITHUB_PASSWORD = "spgroup.github.password"
     String PROP_BIGQUERY_ID = "spgroup.bigquery.project.id"
-    String PROP_TEST_PATH = "spgroup.task.interface.path.test"
     String PROP_REPOSITORY = "spgroup.repositories.folder"
     String PROP_TASK_LIMIT = "spgroup.task.limit"
 
@@ -44,4 +43,8 @@ interface ConstantData {
     String SELECTED_REPOSITORIES_FILE = "${TASKS_FOLDER}selected-projects.csv"
     String OUTPUT_FOLDER = "output${File.separator}"
     String LOG_FILE = "${OUTPUT_FOLDER}execution.log"
+
+    String UNIT_TEST_FILES_RELATIVE_PATH = "spec${File.separator}"
+    String GHERKIN_FILES_RELATIVE_PATH = "features${File.separator}"
+    String STEPS_FILES_RELATIVE_PATH = "features/step_definitions${File.separator}"
 }

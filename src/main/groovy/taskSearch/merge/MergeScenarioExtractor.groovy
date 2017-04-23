@@ -3,6 +3,7 @@ package taskSearch.merge
 import groovy.util.logging.Slf4j
 import taskSearch.GitRepository
 import util.ConstantData
+import util.RegexUtil
 import util.Util
 
 @Slf4j
@@ -66,6 +67,7 @@ class MergeScenarioExtractor {
             p1.inputStream.close()
             Collections.reverse(merges)
             exportResult(merges)
+            log.info "All merge commits: ${merges.size()+counter}"
             log.info "Selected merges: ${merges.size()}"
             log.info "Fast-fowarding merges: $counter"
         } catch(Exception ex){
@@ -84,8 +86,7 @@ class MergeScenarioExtractor {
             base = ""
             return null
         }
-        else base = aux?.first()?.replaceAll("\r","")?.
-                replaceAll("\n","")
+        else base = aux?.first()?.replaceAll(RegexUtil.NEW_LINE_REGEX,"")
         process1?.inputStream?.close()
 
         ProcessBuilder p2 = new ProcessBuilder("git", "rev-list", "${base}..${left}")

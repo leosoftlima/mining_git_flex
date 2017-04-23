@@ -89,9 +89,14 @@ class Util {
         writer.close()
     }
 
-    static boolean isTestCode(def path) {
-        if (path ==~ /$DataProperties.TEST_CODE_REGEX/) true
-        else false
+    static boolean isTestFile(path) {
+        def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
+        if (p?.contains(ConstantData.UNIT_TEST_FILES_RELATIVE_PATH) ||
+                p?.contains(ConstantData.GHERKIN_FILES_RELATIVE_PATH) ||
+                p?.contains(ConstantData.STEPS_FILES_RELATIVE_PATH) ||
+                p?.contains("test${File.separator}")) {
+            true
+        } else false
     }
 
     static void exportTasks(List<Task> tasks, String file) {

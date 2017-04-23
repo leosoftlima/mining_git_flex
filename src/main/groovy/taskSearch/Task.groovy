@@ -29,9 +29,20 @@ class Task {
         this(index, url, id)
         this.commits = commits
         commits*.files?.flatten()?.unique()?.each { file ->
-            if (Util.isTestCode(file)) testFiles += file
+            if (Util.isTestFile(file)) testFiles += file
             else productionFiles += file
         }
+    }
+
+    @Override
+    String toString() {
+        def msg = "Task ${id}:\n"
+        msg += "Commits: ${commits.size()}\n"
+        msg += "Production files: ${productionFiles.size()}\n"
+        productionFiles.each{ msg+= "${it}\n" }
+        msg += "Test files: ${testFiles.size()}\n"
+        testFiles.each{ msg+= "${it}\n" }
+        return msg
     }
 
 }

@@ -8,7 +8,6 @@ class DataProperties {
 
     public static final Properties properties
     public static final String BIGQUERY_PROJECT_ID
-    public static final TEST_CODE_REGEX
     public static final String LANGUAGE
     public static final String GITHUB_LOGIN
     public static final String GITHUB_PASSWORD
@@ -33,8 +32,6 @@ class DataProperties {
 
             REPOSITORY_FOLDER = configureRepositoryFolderPath()
             createFolders()
-
-            TEST_CODE_REGEX = configTestCodeRegex()
 
             BIGQUERY_PROJECT_ID = configBigQuery()
 
@@ -146,27 +143,6 @@ class DataProperties {
         Util.createFolder(ConstantData.UNZIPPED_FILES_FOLDER)
         Util.createFolder(REPOSITORY_FOLDER)
         Util.createFolder(ConstantData.OUTPUT_FOLDER)
-        //Util.createFile(ConstantData.LOG_FILE)
-    }
-
-    private static configTestCodeRegex() {
-        def testPath = properties.(ConstantData.PROP_TEST_PATH)
-                .split(",")*.replaceAll(" ", "")
-
-        def regex
-        if (testPath.size() > 1) {
-            regex = ".*("
-            testPath.each { dir ->
-                regex += dir + "|"
-            }
-            regex = regex.substring(0, regex.lastIndexOf("|"))
-            regex += ").*"
-        } else {
-            regex = ".*${testPath.get(0)}.*"
-        }
-
-        regex = regex.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX,
-                Matcher.quoteReplacement(File.separator) + Matcher.quoteReplacement(File.separator))
     }
 
     private static configGithubLogin() throws Exception {

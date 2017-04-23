@@ -34,10 +34,14 @@ class MergeTaskExtractor {
 
     private configureMergeTask(MergeScenario merge){
         def commits1 = repository?.searchCommits(merge.leftCommits)
-        def leftTask = new MergeTask(index, repository.url, ++taskId as String, commits1, merge)
+        log.info "commits1.size: ${commits1.size()}"
         def commits2 = repository?.searchCommits(merge.rightCommits)
-        def rightTask = new MergeTask(index, repository.url, ++taskId as String, commits2, merge)
-        [leftTask, rightTask]
+        log.info "commits2.size: ${commits2.size()}"
+        if(!commits1.empty && !commits2.empty){
+            def leftTask = new MergeTask(index, repository.url, ++taskId as String, commits1, merge)
+            def rightTask = new MergeTask(index, repository.url, ++taskId as String, commits2, merge)
+            return [leftTask, rightTask]
+        } else return []
     }
 
     private List<MergeScenario> extractMergeScenarios(){
@@ -75,6 +79,8 @@ class MergeTaskExtractor {
         if(index){
             def tasks = []
             mergeScenarios?.each{ tasks += configureMergeTask(it) }
+            log.info "Found merge tasks: ${tasks.size()}"
+            tasks.each{ log.info it.toString() }
             def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
             result = Util.exportProjectTasks(tasks, tasksPT, tasksCsv, index, repository.url)
         }
