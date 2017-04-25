@@ -21,7 +21,7 @@ class GitHubRepository {
     GitHubRepository(String url, String branch, int stars, int size) {
         this.url = url
         this.branch = branch
-        this.name = configureName(url)
+        this.name = url?.substring(ConstantData.GITHUB_URL.length())?.replaceAll("/", "_")
         configureZipUrl()
         this.stars = stars
         this.size = size
@@ -30,14 +30,8 @@ class GitHubRepository {
     GitHubRepository(String zipFileUrl) {
         this.url = zipFileUrl.substring(0, zipFileUrl.indexOf(ConstantData.ZIP_FILE_URL))
         this.branch = zipFileUrl.substring(zipFileUrl.lastIndexOf("/") + 1, zipFileUrl.length() - ConstantData.FILE_EXTENSION.length())
-        this.name = configureName(url)
+        this.name = url?.substring(ConstantData.GITHUB_URL.length())?.replaceAll("/", "_")
         configureZipUrl()
-    }
-
-    private static String configureName(String url) {
-        String name = url.substring(ConstantData.GITHUB_URL.length())
-        name = name.replaceAll("/", "_")
-        name
     }
 
     private void configureZipUrl() {

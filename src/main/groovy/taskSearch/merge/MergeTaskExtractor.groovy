@@ -65,15 +65,6 @@ class MergeTaskExtractor {
         merges
     }
 
-    static retrieveMergeFiles(){
-        MergeScenarioExtractor mergeScenarioExtractor = new MergeScenarioExtractor()
-        mergeScenarioExtractor?.extract()
-        def mergeFiles = Util.findFilesFromFolder(ConstantData.MERGES_FOLDER)?.findAll{
-            it.endsWith(ConstantData.MERGE_TASK_SUFIX)
-        }
-        mergeFiles
-    }
-
     def extractTasks(){
         def result = null
         if(index){

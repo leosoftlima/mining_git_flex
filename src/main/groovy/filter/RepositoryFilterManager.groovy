@@ -10,12 +10,14 @@ import util.Util
 @Slf4j
 class RepositoryFilterManager {
 
+    SearchResultManager resultManager
     int repositoriesCounter
     List<GitHubRepository> candidates
     File file
 
     RepositoryFilterManager() {
         candidates = []
+        resultManager = new SearchResultManager()
     }
 
     private configureFile(){
@@ -67,7 +69,7 @@ class RepositoryFilterManager {
         resetCounters()
         try {
             configureFile()
-            repositories = SearchResultManager.extractRepositories()
+            repositories = resultManager.extractRepositoriesFromSearchResult()
             repositoriesCounter = repositories.size()
             for (int i = 0; i < repositories.size(); i++) {
                 filterRepositories(repositories.get(i), i+1)

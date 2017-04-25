@@ -112,22 +112,11 @@ class Util {
 
     static exportProjectTasks(List<Task> tasks, List<Task> tasksPT, String tasksCsv, String index, String url){
         String[] info = null
-        def allTasks = []
-        if(tasksPT.size() > DataProperties.TASK_LIMIT*2) {
-            def sublist = tasksPT.subList(0,DataProperties.TASK_LIMIT*2)
-            allTasks = sublist
-            exportTasks(sublist, tasksCsv)
-        }
-        else{
-            allTasks = tasksPT
-            exportTasks(tasksPT, tasksCsv)
-        }
-
+        exportTasks(tasksPT, tasksCsv)
         if(tasksPT.size() > 0) {
             info = [index, url, tasks.size(), tasksPT.size()]
         }
-
-        [allTasks:allTasks, repository:info]
+        [allTasks:tasksPT, repository:info]
     }
 
 }

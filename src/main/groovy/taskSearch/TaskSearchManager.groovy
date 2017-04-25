@@ -5,6 +5,7 @@ import repositorySearch.GithubAPIQueryService
 import repositorySearch.GoogleArchiveQueryService
 import repositorySearch.QueryService
 import taskSearch.id.IdTaskExtractor
+import taskSearch.merge.MergeScenarioExtractor
 import taskSearch.merge.MergeTaskExtractor
 import util.ConstantData
 import util.DataProperties
@@ -17,6 +18,8 @@ class TaskSearchManager {
     boolean filterCommitMessage
     QueryService queryService
     RepositoryFilterManager filterManager
+    String candidateProjectsFile
+    MergeScenarioExtractor mergeScenarioExtractor
 
     TaskSearchManager(){
         if(!DataProperties.FILTER_BY_DEFAULT_MESSAGE && !DataProperties.FILTER_BY_PIVOTAL_TRACKER){
@@ -29,6 +32,8 @@ class TaskSearchManager {
             log.info "Searching by Google Archive"
         }
         filterManager = new RepositoryFilterManager()
+        candidateProjectsFile = ConstantData.CANDIDATE_REPOSITORIES_FILE
+        mergeScenarioExtractor = new MergeScenarioExtractor()
     }
 
     def start(){
@@ -43,11 +48,11 @@ class TaskSearchManager {
         }
     }
 
-    private static void findTasksById(){
+    private void findTasksById(){
         log.info "Finding tasks based on ID in commit message..."
         List<String[]> selectedRepositories = []
         List<Task> allTasks = []
-        List<String[]> entries = Util.extractCsvContent(ConstantData.CANDIDATE_REPOSITORIES_FILE)
+        List<String[]> entries = Util.extractCsvContent(candidateProjectsFile)
         if (entries.size() > 1) {
             entries.remove(0) //ignore sheet header
             for (String[] entry : entries) {
@@ -70,11 +75,11 @@ class TaskSearchManager {
         log.info "The repositories that contains link amog tasks and code changes are saved in ${ConstantData.SELECTED_REPOSITORIES_FILE}"
     }
 
-    private static findTasksByMerge(){
+    private findTasksByMerge(){
         log.info "Finding tasks based on merge commits..."
         List<String[]> selectedRepositories = []
         List<Task> allTasks = []
-        def mergeFiles =  MergeTaskExtractor.retrieveMergeFiles()
+        def mergeFiles = mergeScenarioExtractor.getMergeFiles()
         mergeFiles?.each { mergeFile ->
             MergeTaskExtractor taskExtractor = new MergeTaskExtractor(mergeFile)
             def r = taskExtractor.extractTasks()

@@ -2,10 +2,22 @@ package repositorySearch
 
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
+import com.google.api.services.bigquery.model.TableCell
+import com.google.api.services.bigquery.model.TableRow
 import filter.GitHubRepository
+import groovy.util.logging.Slf4j
 import util.ConstantData
 
+@Slf4j
 class SearchResultManager {
+
+    File inputFile
+    File outputFile
+
+    SearchResultManager(){
+        inputFile = new File(ConstantData.BIGQUERY_COMMITS_FILE)
+        outputFile = new File(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE)
+    }
 
     private static List<String[]> uniqueValues(List<String[]> input) {
         List<String[]> output = new ArrayList<>()
@@ -30,14 +42,35 @@ class SearchResultManager {
         result
     }
 
-    private static extractRepoEntries(){
-        CSVReader reader = new CSVReader(new FileReader(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE))
+    private extractRepoEntries(){
+        CSVReader reader = new CSVReader(new FileReader(outputFile))
         List<String[]> entries = reader.readAll()
         reader.close()
         entries
     }
 
-    static List<GitHubRepository> extractRepositories() throws IOException {
+    def saveQueryResult(List<TableRow> rows) throws IOException {
+        CSVWriter writer = new CSVWriter(new FileWriter(inputFile))
+        String[] param = ["URL", "MASTER_BRANCH", "COMMIT_MSG", "COMMIT_LINK", "COMMIT_ID", "CREATED_AT", "WATCHERS"]
+        writer.writeNext(param)
+
+        if (rows != null) {
+            for (TableRow row : rows) {
+                List<TableCell> fields = row.getF()
+                String[] entry = new String[fields.size()] //url, branch, msg, commit link, commit id, date, watchers
+                for (int i = 0; i < entry.length; i++) {
+                    entry[i] = fields.get(i).getV().toString()
+                }
+                writer.writeNext(entry)
+            }
+        } else {
+            log.info "No repository was found!"
+        }
+
+        writer.close()
+    }
+
+    List<GitHubRepository> extractRepositoriesFromSearchResult() throws IOException {
         List<GitHubRepository> repos = []
         List<String[]> entries = extractRepoEntries()
         if (entries.size() > 0) entries.remove(0) //ignore sheet header
@@ -47,16 +80,19 @@ class SearchResultManager {
         repos
     }
 
-    static generateRepositoriesCsv() throws IOException {
-        CSVReader reader = new CSVReader(new FileReader(ConstantData.BIGQUERY_COMMITS_FILE))
+    def generateRepositoriesCsv() throws IOException {
+        CSVReader reader = new CSVReader(new FileReader(inputFile))
         List<String[]> entries = reader.readAll()
         reader.close()
 
         List<String[]> unique = uniqueValues(entries)
-        CSVWriter writer = new CSVWriter(new FileWriter(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE))
+        unique.remove(0)
+        CSVWriter writer = new CSVWriter(new FileWriter(outputFile))
+        String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION"]
+        writer.writeNext(header)
         for (String[] line : unique) {
-            String[] args = [line[0], line[1]]
-            writer.writeNext(args) //url, branch
+            String[] args = [line[0], line[1], "", "", "", ""] //url, branch
+            writer.writeNext(args)
         }
         writer.close()
     }

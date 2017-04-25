@@ -16,10 +16,10 @@ class GithubAPIQueryService implements QueryService {
     RepositoryService repositoryService
     Map query
     def pagesLimit
-    File file
+    FileWriter file
 
     GithubAPIQueryService(){
-        file = new File(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE)
+        file = new FileWriter(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE)
         pagesLimit = 10
         client = new GitHubClient()
         client.setCredentials(DataProperties.GITHUB_LOGIN, DataProperties.GITHUB_PASSWORD)
@@ -28,7 +28,7 @@ class GithubAPIQueryService implements QueryService {
     }
 
     private exportGitHubSearchResult(List<SearchRepository> repositories) throws IOException {
-        CSVWriter writer = new CSVWriter(new FileWriter(file))
+        CSVWriter writer = new CSVWriter(file)
         String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION"]
         writer.writeNext(header)
         repositories?.each { //in fact, watchers are stars
@@ -48,7 +48,7 @@ class GithubAPIQueryService implements QueryService {
         }
         log.info "GitHub API found ${repositories.size()} repositories based on search criteria."
         exportGitHubSearchResult(repositories.unique())
-        log.info "Repositories found by GitHub API are saved in ${file.path}"
+        log.info "Repositories found by GitHub API are saved in ${ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE}"
     }
 
 }

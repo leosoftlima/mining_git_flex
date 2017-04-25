@@ -21,7 +21,6 @@ class DataProperties {
     public static final List<String> GEMS
     public static final String FILTER_STARS
     public static final String FILTER_YEAR
-    public static final int TASK_LIMIT
 
     public static final boolean SEARCH_PROJECTS
     public static final boolean FILTER_PROJECTS
@@ -56,7 +55,6 @@ class DataProperties {
             FILTER_RAILS = result.filter
             FILTER_STARS = configureStarsFilter()
             FILTER_YEAR = configureYearFilter()
-            TASK_LIMIT = configureTaskLimit()
 
             SEARCH_PROJECTS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_SEARCH_PROJECTS),
                     ConstantData.DEFAULT_SEARCH_PROJECTS)
@@ -182,11 +180,6 @@ class DataProperties {
     private static configureYearFilter(){
         def value = configureMandatoryProperties(properties.(ConstantData.PROP_YEAR_FILTER), ConstantData.DEFAULT_YEAR)
         '>=' + value + '-01-01'
-    }
-
-    private static configureTaskLimit(){
-        def value = configureMandatoryProperties(properties.(ConstantData.PROP_TASK_LIMIT), ConstantData.DEFAULT_TASK_LIMIT)
-        value as int
     }
 
 }
