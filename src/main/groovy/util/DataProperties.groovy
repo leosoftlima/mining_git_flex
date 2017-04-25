@@ -13,8 +13,6 @@ class DataProperties {
     public static final String GITHUB_PASSWORD
     public static final boolean SIMPLE_GITHUB_SEARCH
 
-    public static final String REPOSITORY_FOLDER
-
     public static final String FILE_TYPE
     public static final boolean FILTER_BY_DEFAULT_MESSAGE
     public static final boolean FILTER_BY_PIVOTAL_TRACKER
@@ -25,12 +23,15 @@ class DataProperties {
     public static final String FILTER_YEAR
     public static final int TASK_LIMIT
 
+    public static final boolean SEARCH_PROJECTS
+    public static final boolean FILTER_PROJECTS
+    public static final boolean SEARCH_TASKS
+
     static {
         try {
             properties = new Properties()
             loadProperties()
 
-            REPOSITORY_FOLDER = configureRepositoryFolderPath()
             createFolders()
 
             BIGQUERY_PROJECT_ID = configBigQuery()
@@ -56,17 +57,29 @@ class DataProperties {
             FILTER_STARS = configureStarsFilter()
             FILTER_YEAR = configureYearFilter()
             TASK_LIMIT = configureTaskLimit()
+
+            SEARCH_PROJECTS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_SEARCH_PROJECTS),
+                    ConstantData.DEFAULT_SEARCH_PROJECTS)
+            FILTER_PROJECTS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_FILTER_PROJECTS),
+                    ConstantData.DEFAULT_FILTER_PROJECTS)
+            SEARCH_TASKS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_SEARCH_TASKS),
+                    ConstantData.DEFAULT_SEARCH_TASKS)
+
         } catch (Exception ex) {
             log.info ex.message
             ex.stackTrace.each{ log.info it.toString() }
         }
 
+        log.info "SEARCH_PROJECTS: ${SEARCH_PROJECTS}"
+        log.info "FILTER_PROJECTS: ${FILTER_PROJECTS}"
+        log.info "SEARCH_TASKS: ${SEARCH_TASKS}"
         log.info "FILTER_BY_FILE: ${FILTER_BY_FILE}; FILE_TYPE: ${FILE_TYPE}"
         log.info "FILTER_RAILS: ${FILTER_RAILS}"
         log.info "FILTER_BY_DEFAULT_MESSAGE: ${FILTER_BY_DEFAULT_MESSAGE}"
         log.info "FILTER_BY_PIVOTAL_TRACKER: ${FILTER_BY_PIVOTAL_TRACKER}"
         log.info "FILTER_STARS: ${FILTER_STARS}"
         log.info "FILTER_YEAR: ${FILTER_YEAR}"
+
     }
 
     private static loadProperties() {
@@ -75,15 +88,14 @@ class DataProperties {
         properties.load(resourceStream)
     }
 
+    private static configureMandatoryBooleanProperties(value, defaultValue) {
+        if (value==null || value.empty || (value!="true" && value!="false")) value = defaultValue
+        Boolean.parseBoolean(value)
+    }
+
     private static configureMandatoryProperties(value, defaultValue) {
         if (!value || value.empty) value = defaultValue
         value.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-    }
-
-    private static configureRepositoryFolderPath() {
-        def value = configureMandatoryProperties(properties.(ConstantData.PROP_REPOSITORY), ConstantData.DEFAULT_REPOSITORY_FOLDER)
-        if (!value.endsWith(File.separator)) value += File.separator
-        value
     }
 
     private static configureLanguage(){
@@ -141,7 +153,7 @@ class DataProperties {
         Util.createFolder(ConstantData.MERGES_FOLDER)
         Util.createFolder(ConstantData.ZIPPED_FILES_FOLDER)
         Util.createFolder(ConstantData.UNZIPPED_FILES_FOLDER)
-        Util.createFolder(REPOSITORY_FOLDER)
+        Util.createFolder(ConstantData.REPOSITORY_FOLDER)
         Util.createFolder(ConstantData.OUTPUT_FOLDER)
     }
 

@@ -31,6 +31,18 @@ class TaskSearchManager {
         filterManager = new RepositoryFilterManager()
     }
 
+    def start(){
+        try {
+            if(DataProperties.SEARCH_PROJECTS) searchGithubProjects()
+            if(DataProperties.FILTER_PROJECTS) filterGithubProjects()
+            if(DataProperties.SEARCH_TASKS) searchTasks()
+        } catch (Exception ex) {
+            log.info "Problem during projects searching."
+            log.info ex.message
+            ex.stackTrace.each{ log.error it.toString() }
+        }
+    }
+
     private static void findTasksById(){
         log.info "Finding tasks based on ID in commit message..."
         List<String[]> selectedRepositories = []

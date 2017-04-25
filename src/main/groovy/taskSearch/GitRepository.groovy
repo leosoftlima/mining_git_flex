@@ -10,7 +10,6 @@ import org.eclipse.jgit.revwalk.RevTree
 import org.eclipse.jgit.treewalk.TreeWalk
 import taskSearch.id.Commit
 import util.ConstantData
-import util.DataProperties
 import util.RegexUtil
 import util.Util
 import java.util.regex.Matcher
@@ -30,7 +29,7 @@ class GitRepository {
             if(path.endsWith(ConstantData.GIT_EXTENSION)) url = path
             else url = path + ConstantData.GIT_EXTENSION
             this.name = Util.configureGitRepositoryName(url)
-            this.localPath = DataProperties.REPOSITORY_FOLDER + name
+            this.localPath = ConstantData.REPOSITORY_FOLDER + name
             if (isCloned()) {
                 log.info "Already cloned from " + url + " to " + localPath
             } else cloneRepository()
@@ -60,7 +59,7 @@ class GitRepository {
                 folder.mkdir()
             }
             String command = "git clone $url $name"
-            Process p = Runtime.getRuntime().exec(command, null, new File(DataProperties.REPOSITORY_FOLDER))
+            Process p = Runtime.getRuntime().exec(command, null, new File(ConstantData.REPOSITORY_FOLDER))
             p.waitFor()
         } catch (Exception ex) {
             log.error "Error while cloning repository '${url}' to '${localPath}'."
