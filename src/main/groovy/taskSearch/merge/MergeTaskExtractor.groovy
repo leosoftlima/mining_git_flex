@@ -3,6 +3,7 @@ package taskSearch.merge
 import groovy.util.logging.Slf4j
 import taskSearch.GitRepository
 import util.ConstantData
+import util.CsvUtil
 import util.Util
 
 @Slf4j
@@ -25,7 +26,7 @@ class MergeTaskExtractor {
     }
 
     private static findCandidatesIndex(String url){
-        List<String[]> lines = Util.extractCsvContent(ConstantData.CANDIDATE_REPOSITORIES_FILE)
+        List<String[]> lines = CsvUtil.read(ConstantData.CANDIDATE_REPOSITORIES_FILE)
         def repo = url - ConstantData.GIT_EXTENSION
         def selected = lines.find{ it[1] == repo }
         if(selected) selected[0]
@@ -47,7 +48,7 @@ class MergeTaskExtractor {
     private List<MergeScenario> extractMergeScenarios(){
         def merges = []
         def url = ""
-        List<String[]> entries = Util.extractCsvContent(mergesCsv)
+        List<String[]> entries = CsvUtil.read(mergesCsv)
         if (entries.size() > 2){
             url = entries.first()[0]
             entries.removeAt(0)

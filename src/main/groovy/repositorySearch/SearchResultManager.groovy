@@ -7,16 +7,17 @@ import com.google.api.services.bigquery.model.TableRow
 import filter.GitHubRepository
 import groovy.util.logging.Slf4j
 import util.ConstantData
+import util.CsvUtil
 
 @Slf4j
 class SearchResultManager {
 
-    File inputFile
-    File outputFile
+    String inputFile
+    String outputFile
 
     SearchResultManager(){
-        inputFile = new File(ConstantData.BIGQUERY_COMMITS_FILE)
-        outputFile = new File(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE)
+        inputFile = ConstantData.BIGQUERY_COMMITS_FILE
+        outputFile = ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE
     }
 
     private static List<String[]> uniqueValues(List<String[]> input) {
@@ -42,13 +43,6 @@ class SearchResultManager {
         result
     }
 
-    private extractRepoEntries(){
-        CSVReader reader = new CSVReader(new FileReader(outputFile))
-        List<String[]> entries = reader.readAll()
-        reader.close()
-        entries
-    }
-
     def saveQueryResult(List<TableRow> rows) throws IOException {
         CSVWriter writer = new CSVWriter(new FileWriter(inputFile))
         String[] param = ["URL", "MASTER_BRANCH", "COMMIT_MSG", "COMMIT_LINK", "COMMIT_ID", "CREATED_AT", "WATCHERS"]
@@ -72,7 +66,7 @@ class SearchResultManager {
 
     List<GitHubRepository> extractRepositoriesFromSearchResult() throws IOException {
         List<GitHubRepository> repos = []
-        List<String[]> entries = extractRepoEntries()
+        List<String[]> entries = CsvUtil.read(outputFile)
         if (entries.size() > 0) entries.remove(0) //ignore sheet header
         for (String[] line : entries) {
             repos.add(new GitHubRepository(line[0], line[1], line[3] as int, line[4] as int))

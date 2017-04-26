@@ -1,7 +1,5 @@
 package util
 
-import au.com.bytecode.opencsv.CSVReader
-import au.com.bytecode.opencsv.CSVWriter
 import taskSearch.Task
 
 import java.util.regex.Matcher
@@ -42,9 +40,9 @@ class Util {
     }
 
     static createFolder(String folder) {
-        File zipFolder = new File(folder)
-        if (!zipFolder.exists()) {
-            zipFolder.mkdirs()
+        File file = new File(folder)
+        if (!file.exists()) {
+            file.mkdirs()
         }
     }
 
@@ -65,30 +63,6 @@ class Util {
         files.sort()
     }
 
-    static extractCsvContent(String csv){
-        def file = new File(csv)
-        if(!file.exists()) return []
-        CSVReader reader = new CSVReader(new FileReader(file))
-        List<String[]> entries = reader.readAll()
-        reader.close()
-        entries
-    }
-
-    static appendCsv(String filename, List<String[]> content){
-        def file = new File(filename)
-        CSVWriter writer = new CSVWriter(new FileWriter(file, true))
-        writer.writeAll(content)
-        writer.close()
-    }
-
-    static createCsv(String filename, String[] header, List content){
-        def file = new File(filename)
-        CSVWriter writer = new CSVWriter(new FileWriter(file))
-        writer.writeNext(header)
-        writer.writeAll(content)
-        writer.close()
-    }
-
     static boolean isTestFile(path) {
         def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
         if (p?.contains(ConstantData.UNIT_TEST_FILES_RELATIVE_PATH) ||
@@ -102,12 +76,13 @@ class Util {
     static void exportTasks(List<Task> tasks, String file) {
         String[] header = ["INDEX", "REPO_URL", "TASK_ID", "HASHES", "#PROD_FILES", "#TEST_FILES"]
         List<String[]> content = []
+        content += header
         tasks?.each{ task ->
             String[] line = [task.repositoryIndex, task.repositoryUrl, task.id, (task.commits*.hash).toString(),
                              task.productionFiles.size(), task.testFiles.size()]
             content += line
         }
-        createCsv(file, header, content)
+        CsvUtil.write(file, content)
     }
 
     static exportProjectTasks(List<Task> tasks, List<Task> tasksPT, String tasksCsv, String index, String url){

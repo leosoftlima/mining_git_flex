@@ -3,6 +3,7 @@ package taskSearch.merge
 import groovy.util.logging.Slf4j
 import taskSearch.GitRepository
 import util.ConstantData
+import util.CsvUtil
 import util.RegexUtil
 import util.Util
 
@@ -18,7 +19,7 @@ class MergeScenarioExtractor {
     }
 
     private updateUrls(){
-        def aux = Util.extractCsvContent(ConstantData.CANDIDATE_REPOSITORIES_FILE)
+        def aux = CsvUtil.read(ConstantData.CANDIDATE_REPOSITORIES_FILE)
         if(aux && aux.size()>1) {
             aux?.removeAt(0)
             urls = aux?.collect{ it[1] }
@@ -29,13 +30,14 @@ class MergeScenarioExtractor {
         def csv = ConstantData.MERGES_FOLDER+repository.name.replaceAll("/", "_")+ConstantData.MERGE_TASK_SUFIX
         List<String[]> content = []
         String[] header1 = [repository.url]
+        content += header1
         String[] header2 = ["MERGE", "LEFT", "RIGHT", "BASE", "LEFT_COMMITS", "RIGHT_COMMITS"]
         content += header2
         merges?.each{
             String[] line = [it.merge, it.left, it.right, it.base, it.leftCommits, it.rightCommits]
             content += line
         }
-        Util.createCsv(csv, header1, content)
+        CsvUtil.write(csv, content)
     }
 
     private searchMergeCommits(String url){

@@ -1,12 +1,12 @@
 package repositorySearch
 
-import au.com.bytecode.opencsv.CSVWriter
 import groovy.util.logging.Slf4j
 import org.eclipse.egit.github.core.Repository
 import org.eclipse.egit.github.core.SearchRepository
 import org.eclipse.egit.github.core.client.GitHubClient
 import org.eclipse.egit.github.core.service.RepositoryService
 import util.ConstantData
+import util.CsvUtil
 import util.DataProperties
 
 @Slf4j
@@ -16,10 +16,8 @@ class GithubAPIQueryService implements QueryService {
     RepositoryService repositoryService
     Map query
     def pagesLimit
-    FileWriter file
 
     GithubAPIQueryService(){
-        file = new FileWriter(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE)
         pagesLimit = 10
         client = new GitHubClient()
         client.setCredentials(DataProperties.GITHUB_LOGIN, DataProperties.GITHUB_PASSWORD)
@@ -28,15 +26,15 @@ class GithubAPIQueryService implements QueryService {
     }
 
     private exportGitHubSearchResult(List<SearchRepository> repositories) throws IOException {
-        CSVWriter writer = new CSVWriter(file)
+        List<String[]> content = []
         String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION"]
-        writer.writeNext(header)
+        content += header
         repositories?.each { //in fact, watchers are stars
             Repository repo = repositoryService.getRepository(it)
             String[] entry = [it.url, repo.masterBranch, it.createdAt, it.watchers, it.size, it.description]
-            writer.writeNext(entry)
+            content += entry
         }
-        writer.close()
+        CsvUtil.write(ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE, content)
     }
 
     @Override

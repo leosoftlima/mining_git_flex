@@ -4,8 +4,8 @@ import au.com.bytecode.opencsv.CSVWriter
 import groovy.util.logging.Slf4j
 import repositorySearch.SearchResultManager
 import util.ConstantData
+import util.CsvUtil
 import util.DataProperties
-import util.Util
 
 @Slf4j
 class RepositoryFilterManager {
@@ -26,7 +26,7 @@ class RepositoryFilterManager {
         List<String[]> content = []
         String[] header = ["INDEX", "URL", "STARS", "SIZE", "GEMS"]
         content += header
-        Util.appendCsv(ConstantData.CANDIDATE_REPOSITORIES_FILE, content)
+        CsvUtil.append(ConstantData.CANDIDATE_REPOSITORIES_FILE, content)
     }
 
     private resetCounters() {

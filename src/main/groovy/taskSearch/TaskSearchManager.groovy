@@ -8,6 +8,7 @@ import taskSearch.id.IdTaskExtractor
 import taskSearch.merge.MergeScenarioExtractor
 import taskSearch.merge.MergeTaskExtractor
 import util.ConstantData
+import util.CsvUtil
 import util.DataProperties
 import filter.RepositoryFilterManager
 import util.Util
@@ -52,7 +53,7 @@ class TaskSearchManager {
         log.info "Finding tasks based on ID in commit message..."
         List<String[]> selectedRepositories = []
         List<Task> allTasks = []
-        List<String[]> entries = Util.extractCsvContent(candidateProjectsFile)
+        List<String[]> entries = CsvUtil.read(candidateProjectsFile)
         if (entries.size() > 1) {
             entries.remove(0) //ignore sheet header
             for (String[] entry : entries) {
@@ -107,7 +108,10 @@ class TaskSearchManager {
 
     private static void exportSelectedProjects(List<String[]> projects) {
         String[] header = ["INDEX", "REPO_URL", "#TASKS", "#P&T_TASKS"]
-        Util.createCsv(ConstantData.SELECTED_REPOSITORIES_FILE, header, projects)
+        List<String[]> content = []
+        content += header
+        content += projects
+        CsvUtil.write(ConstantData.SELECTED_REPOSITORIES_FILE, content)
     }
 
     def searchGithubProjects() {
