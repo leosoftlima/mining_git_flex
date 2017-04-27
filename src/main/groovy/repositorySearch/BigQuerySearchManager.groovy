@@ -8,25 +8,24 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.bigquery.Bigquery
 import com.google.api.services.bigquery.BigqueryScopes
 import com.google.api.services.bigquery.model.*
-import groovy.time.TimeCategory
 import groovy.util.logging.Slf4j
 import util.ConstantData
 import util.DataProperties
 
 @Slf4j
-class GoogleArchiveSearchManager implements RepositorySearchManager {
+class BigQuerySearchManager implements RepositorySearchManager {
 
     ResultManager resultManager
     Bigquery bigquery
     String query
 
-    GoogleArchiveSearchManager(){
+    BigQuerySearchManager(){
         createAuthorizedClient()
         configureQuery()
         this.resultManager = new ResultManager()
     }
 
-    GoogleArchiveSearchManager(String query){
+    BigQuerySearchManager(String query){
         createAuthorizedClient()
         this.query = query
         this.resultManager = new ResultManager()
