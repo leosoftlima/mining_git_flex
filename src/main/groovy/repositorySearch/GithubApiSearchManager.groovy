@@ -10,14 +10,14 @@ import util.CsvUtil
 import util.DataProperties
 
 @Slf4j
-class GithubAPIQueryService implements QueryService {
+class GithubApiSearchManager implements RepositorySearchManager {
 
     GitHubClient client
     RepositoryService repositoryService
     Map query
     def pagesLimit
 
-    GithubAPIQueryService(){
+    GithubApiSearchManager(){
         pagesLimit = 10
         client = new GitHubClient()
         client.setCredentials(DataProperties.GITHUB_LOGIN, DataProperties.GITHUB_PASSWORD)
@@ -38,7 +38,7 @@ class GithubAPIQueryService implements QueryService {
     }
 
     @Override
-    def searchProjects() throws IOException {
+    def search() throws IOException {
         List<SearchRepository> repositories = []
         (1..pagesLimit).each {
             def rep = repositoryService.searchRepositories(query, it)

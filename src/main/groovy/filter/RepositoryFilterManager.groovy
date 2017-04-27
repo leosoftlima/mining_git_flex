@@ -2,7 +2,7 @@ package filter
 
 import au.com.bytecode.opencsv.CSVWriter
 import groovy.util.logging.Slf4j
-import repositorySearch.SearchResultManager
+import repositorySearch.ResultManager
 import util.ConstantData
 import util.CsvUtil
 import util.DataProperties
@@ -10,14 +10,14 @@ import util.DataProperties
 @Slf4j
 class RepositoryFilterManager {
 
-    SearchResultManager resultManager
+    ResultManager resultManager
     int repositoriesCounter
     List<GitHubRepository> candidates
     File file
 
     RepositoryFilterManager() {
         candidates = []
-        resultManager = new SearchResultManager()
+        resultManager = new ResultManager()
     }
 
     private configureFile(){

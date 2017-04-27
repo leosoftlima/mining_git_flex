@@ -1,9 +1,9 @@
 package taskSearch
 
 import groovy.util.logging.Slf4j
-import repositorySearch.GithubAPIQueryService
-import repositorySearch.GoogleArchiveQueryService
-import repositorySearch.QueryService
+import repositorySearch.GithubApiSearchManager
+import repositorySearch.GoogleArchiveSearchManager
+import repositorySearch.RepositorySearchManager
 import taskSearch.id.IdTaskExtractor
 import taskSearch.merge.MergeScenarioExtractor
 import taskSearch.merge.MergeTaskExtractor
@@ -16,37 +16,30 @@ import util.Util
 @Slf4j
 class TaskSearchManager {
 
+    String tasksFile
+    String selectedRepositoriesFile
+    static int TASK_LIMIT = 100
     boolean filterCommitMessage
-    QueryService queryService
-    RepositoryFilterManager filterManager
+    RepositorySearchManager repoSearchManager
+    RepositoryFilterManager repoFilterManager
     String candidateProjectsFile
     MergeScenarioExtractor mergeScenarioExtractor
 
     TaskSearchManager(){
+        tasksFile = ConstantData.TASKS_FILE
+        selectedRepositoriesFile = ConstantData.SELECTED_REPOSITORIES_FILE
         if(!DataProperties.FILTER_BY_DEFAULT_MESSAGE && !DataProperties.FILTER_BY_PIVOTAL_TRACKER){
-            queryService = new GithubAPIQueryService()
+            repoSearchManager = new GithubApiSearchManager()
             filterCommitMessage = false
             log.info "Searching by GitHub API"
         } else {
-            queryService = new GoogleArchiveQueryService()
+            repoSearchManager = new GoogleArchiveSearchManager()
             filterCommitMessage = true
             log.info "Searching by Google Archive"
         }
-        filterManager = new RepositoryFilterManager()
+        repoFilterManager = new RepositoryFilterManager()
         candidateProjectsFile = ConstantData.CANDIDATE_REPOSITORIES_FILE
         mergeScenarioExtractor = new MergeScenarioExtractor()
-    }
-
-    def start(){
-        try {
-            if(DataProperties.SEARCH_PROJECTS) searchGithubProjects()
-            if(DataProperties.FILTER_PROJECTS) filterGithubProjects()
-            if(DataProperties.SEARCH_TASKS) searchTasks()
-        } catch (Exception ex) {
-            log.info "Problem during projects searching."
-            log.info ex.message
-            ex.stackTrace.each{ log.error it.toString() }
-        }
     }
 
     private void findTasksById(){
@@ -102,25 +95,42 @@ class TaskSearchManager {
         log.info "The repositories that contains link amog tasks and code changes are saved in ${ConstantData.SELECTED_REPOSITORIES_FILE}"
     }
 
-    private static void exportTasks(List<Task> tasks) {
-        Util.exportTasks(tasks, ConstantData.TASKS_FILE)
+    private void exportTasks(List<Task> tasks) {
+        def aux = tasks
+        if(tasks.size()>TASK_LIMIT) {
+            Util.exportTasks(tasks, tasksFile-".csv"+"_ALL.csv")
+            aux = tasks.subList(0,TASK_LIMIT)
+        }
+        Util.exportTasks(aux, tasksFile)
     }
 
-    private static void exportSelectedProjects(List<String[]> projects) {
+    private void exportSelectedProjects(List<String[]> projects) {
         String[] header = ["INDEX", "REPO_URL", "#TASKS", "#P&T_TASKS"]
         List<String[]> content = []
         content += header
         content += projects
-        CsvUtil.write(ConstantData.SELECTED_REPOSITORIES_FILE, content)
+        CsvUtil.write(selectedRepositoriesFile, content)
+    }
+
+    def start(){
+        try {
+            if(DataProperties.SEARCH_PROJECTS) searchGithubProjects()
+            if(DataProperties.FILTER_PROJECTS) filterGithubProjects()
+            if(DataProperties.SEARCH_TASKS) searchTasks()
+        } catch (Exception ex) {
+            log.info "Problem during projects searching."
+            log.info ex.message
+            ex.stackTrace.each{ log.error it.toString() }
+        }
     }
 
     def searchGithubProjects() {
-        queryService.searchProjects()
+        repoSearchManager.search()
         log.info "Found repositories are saved in ${ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE}"
     }
 
     def filterGithubProjects(){
-        filterManager.searchRepositoriesByFileTypeAndGems()
+        repoFilterManager.searchRepositoriesByFileTypeAndGems()
         log.info "Filtered repositories are saved in ${ConstantData.CANDIDATE_REPOSITORIES_FILE}"
     }
 

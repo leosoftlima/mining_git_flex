@@ -65,10 +65,8 @@ class Util {
 
     static boolean isTestFile(path) {
         def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-        if (p?.contains(ConstantData.UNIT_TEST_FILES_RELATIVE_PATH) ||
-                p?.contains(ConstantData.GHERKIN_FILES_RELATIVE_PATH) ||
-                p?.contains(ConstantData.STEPS_FILES_RELATIVE_PATH) ||
-                p?.contains("test${File.separator}")) {
+        if (p?.contains(ConstantData.GHERKIN_FILES_RELATIVE_PATH)
+                || p?.contains(ConstantData.STEPS_FILES_RELATIVE_PATH)) {
             true
         } else false
     }

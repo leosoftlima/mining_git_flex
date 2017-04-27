@@ -14,22 +14,22 @@ import util.ConstantData
 import util.DataProperties
 
 @Slf4j
-class GoogleArchiveQueryService implements QueryService {
+class GoogleArchiveSearchManager implements RepositorySearchManager {
 
-    SearchResultManager resultManager
+    ResultManager resultManager
     Bigquery bigquery
     String query
 
-    GoogleArchiveQueryService(){
+    GoogleArchiveSearchManager(){
         createAuthorizedClient()
         configureQuery()
-        this.resultManager = new SearchResultManager()
+        this.resultManager = new ResultManager()
     }
 
-    GoogleArchiveQueryService(String query){
+    GoogleArchiveSearchManager(String query){
         createAuthorizedClient()
         this.query = query
-        this.resultManager = new SearchResultManager()
+        this.resultManager = new ResultManager()
     }
 
     /**
@@ -114,7 +114,7 @@ class GoogleArchiveQueryService implements QueryService {
      * @throws IOException if there's an error communicating with the API.
      */
     @Override
-    def searchProjects() throws IOException {
+    def search() throws IOException {
         String projectId = DataProperties.BIGQUERY_PROJECT_ID
         Scanner sc
         if (projectId == null || projectId.empty) { // Prompt the user to enter the id of the repository

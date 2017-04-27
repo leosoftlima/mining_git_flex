@@ -1,7 +1,5 @@
 package repositorySearch
 
-import au.com.bytecode.opencsv.CSVReader
-import au.com.bytecode.opencsv.CSVWriter
 import com.google.api.services.bigquery.model.TableCell
 import com.google.api.services.bigquery.model.TableRow
 import filter.GitHubRepository
@@ -10,12 +8,12 @@ import util.ConstantData
 import util.CsvUtil
 
 @Slf4j
-class SearchResultManager {
+class ResultManager {
 
     String inputFile
     String outputFile
 
-    SearchResultManager(){
+    ResultManager(){
         inputFile = ConstantData.BIGQUERY_COMMITS_FILE
         outputFile = ConstantData.REPOSITORIES_TO_DOWNLOAD_FILE
     }
@@ -44,10 +42,9 @@ class SearchResultManager {
     }
 
     def saveQueryResult(List<TableRow> rows) throws IOException {
-        CSVWriter writer = new CSVWriter(new FileWriter(inputFile))
+        List<String[]> content = []
         String[] param = ["URL", "MASTER_BRANCH", "COMMIT_MSG", "COMMIT_LINK", "COMMIT_ID", "CREATED_AT", "WATCHERS"]
-        writer.writeNext(param)
-
+        content += param
         if (rows != null) {
             for (TableRow row : rows) {
                 List<TableCell> fields = row.getF()
@@ -55,13 +52,13 @@ class SearchResultManager {
                 for (int i = 0; i < entry.length; i++) {
                     entry[i] = fields.get(i).getV().toString()
                 }
-                writer.writeNext(entry)
+                content += entry
             }
         } else {
             log.info "No repository was found!"
         }
 
-        writer.close()
+        CsvUtil.write(inputFile, content)
     }
 
     List<GitHubRepository> extractRepositoriesFromSearchResult() throws IOException {
@@ -75,20 +72,17 @@ class SearchResultManager {
     }
 
     def generateRepositoriesCsv() throws IOException {
-        CSVReader reader = new CSVReader(new FileReader(inputFile))
-        List<String[]> entries = reader.readAll()
-        reader.close()
-
+        List<String[]> entries = CsvUtil.read(inputFile)
         List<String[]> unique = uniqueValues(entries)
         unique.remove(0)
-        CSVWriter writer = new CSVWriter(new FileWriter(outputFile))
+        List<String[]> content = []
         String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION"]
-        writer.writeNext(header)
+        content += header
         for (String[] line : unique) {
             String[] args = [line[0], line[1], "", "", "", ""] //url, branch
-            writer.writeNext(args)
+            content += args
         }
-        writer.close()
+        CsvUtil.write(outputFile, content)
     }
 
 }
