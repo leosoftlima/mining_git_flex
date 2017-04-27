@@ -1,22 +1,29 @@
 mining_git
 ==========
 
-Java program to search for GitHub repositories using Gherkin-based acceptance test tool, such as Cucumber, that maintain a link among tasks and code changes. Such a link is defined by the occurrence of task ID in commit messages. That is, if it possible to identify changes at the production code and at the test code related to a same task, which in turn is identified by an ID. The task is a programming activity, such as the development of a new feature, a feature change, bug fix or refactoring.
+Groovy program to search tasks from GitHub repositories. In such context, a task is a set of commits whose message contains an specific ID or
+a set of commits of a merge scenario. The program can filter repositories by program language, creation date, stars, ID in commit message and file type.
+In case of Ruby projects, the program can also filter repositories by required gems.
+In this sense, the program is organized into 3 steps: (i) searching for repositories; (ii) filtering repositories; (iii) searching for tasks.
+Respectively, the output of each step is saved into separated folders: _1-github_, _2-filtered_, _3-tasks_.
+The program also generates auxiliary folders to internal usage: _repositories_, _zipped_, _unzipped_.
+The execution logging can be verified at _output/execution.log_.
 
-Search mechanism
+Mechanism
 -
-The search mechanism is very simple. The program takes as input the search criteria: project id (id of the repository to run the queries under Google BigQuery service) and programming language.
-As result, the program outputs a csv file (/commits/commits.csv) containing the URL (column repository_url) and master branch (column repository_master_branch) of found repositories.
-Then, the program downloads each repository's source code (a zip file) and verifies if it contains Gherkin files (extension .feature). If a repository does contain Gherkin files, the program downloads all repository data and searches for commit messages containing task ID.
-Finally, for each found commit, the program identifies the changed code (production and test code) by using JGit. 
+The mechanism of searching for repositories depends the search criteria adopted.
+To search repositories by language, creation date and stars, the program uses _GitHub Search API_.
+Because GitHub API does not support searching by commit message, in such a case the program uses _Google BigQuery_.
+Then, to filter repositories by file type and required gems, the program downloads each repository's zipball 
+(considering the current version of main branch) and verifies file extensions and Gemfile content, respectively.
+Finally, to search for tasks (by ID or merge scenario), the program clones each repository that satisfies search criteria and groups its commits. 
+Then, for each task, the program identifies changed code (production and test code) by using _JGit_. 
 
-The output could be accessed in /tasks folder.
-candidate-projects.csv provides data about repositories containing a file type of interest (Gherkin by default).
-selected-projects.csv provides data about repositories containing a file type of interest (Gherkin by default) and commit messages with task ID. 
+More about _Google BigQuery_: https://cloud.google.com/bigquery/what-is-bigquery.
 
-More about Gherkin and Cucumber: https://github.com/cucumber/cucumber/wiki/Gherkin.
+More about _GitHub Search API_: https://developer.github.com/v3/search/.
 
-More about Google BigQuery: https://cloud.google.com/bigquery/what-is-bigquery.
+More about _JGit_: https://eclipse.org/jgit/.
 
 Requirement to use Google BigQuery API
 -
@@ -34,7 +41,6 @@ More about Maven: https://maven.apache.org/
 
 Execution
 -
-
 (1) Generate the jar file (MiningGit-1.0-jar-with-dependencies.jar)by using Maven
 
 (2) Locate the jar and the configuration.properties file at target folder
@@ -44,4 +50,31 @@ Execution
 (4) Run the jar by command line: java -jar MiningGit-1.0-jar-with-dependencies.jar
 
 
-To remember: The jar and the properties file must be at the same folder.
+**To remember: The jar and the properties file must be at the same folder.**
+
+Configuration (configuration.properties file)
+-
+`spgroup.bigquery.project.id`: Identification of the repository used to run queries under Google BigQuery service.
+
+`spgroup.project.search.commit.message`: Criteria to filter repositories by commit message.
+Valid values: _default_ (ID according to issue style), pivotal (ID according to PivotalTracker style), _false_ or _empty_.
+
+`spgroup.github.user`: Username of valid GitHub account.
+
+`spgroup.github.password`: Password of valid GitHub account.
+
+`spgroup.project.search.stars`: Maximum value of repository's stars.
+
+`spgroup.project.search.language`: Repository's program language.
+
+`spgroup.project.search.year`: Minimum year for repository's creation date.
+
+`spgroup.project.filter.gems`: Gems of interest (only for Rails projects).
+
+`spgroup.project.filter.file`: File type of interest. 
+
+`spgroup.search.projects`: Enable/disable the search mechanism for GitHub repositories. Valid values: true or false.
+
+`spgroup.filter.projects`: Enable/disable the filter mechanism for GitHub repositories. Valid values: true or false.
+
+`spgroup.search.tasks`: Enable/disable the search mechanism for tasks. Valid values: true or false.
