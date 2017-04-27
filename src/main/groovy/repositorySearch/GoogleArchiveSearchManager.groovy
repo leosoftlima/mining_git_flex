@@ -67,10 +67,9 @@ class GoogleArchiveSearchManager implements RepositorySearchManager {
 
     private configureQuery() {
         def endDate = new Date()
-        def initialDate
-        use(TimeCategory) {
-            initialDate = endDate - 5.years
-        }
+        def initialDate = new Date().clearTime()
+        def year = Integer.parseInt(DataProperties.FILTER_YEAR.substring(2,6))
+        initialDate.set(year: year, month: Calendar.JANUARY, date: 1)
 
         query = """SELECT repository_url, repository_master_branch, payload_commit_msg,
         (repository_url + '/commit/' + payload_commit_id) AS commit_link, payload_commit_id, created_at, repository_watchers
