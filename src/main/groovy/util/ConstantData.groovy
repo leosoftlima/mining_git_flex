@@ -58,4 +58,7 @@ abstract class ConstantData {
     public static final String UNIT_TEST_FILES_RELATIVE_PATH = "spec${File.separator}"
     public static final String GHERKIN_FILES_RELATIVE_PATH = "features${File.separator}"
     public static final String STEPS_FILES_RELATIVE_PATH = "features/step_definitions${File.separator}"
+
+    /* Tasks */
+    public static int TASK_LIMIT = 100
 }

@@ -85,11 +85,16 @@ class Util {
 
     static exportProjectTasks(List<Task> tasks, List<Task> tasksPT, String tasksCsv, String index, String url){
         String[] info = null
-        exportTasks(tasksPT, tasksCsv)
-        if(tasksPT.size() > 0) {
+        def aux = tasksPT
+        if(tasksPT.size() > ConstantData.TASK_LIMIT) {
+            exportTasks(tasksPT, tasksCsv-".csv"+"_ALL.csv")
+            aux = aux.subList(0, ConstantData.TASK_LIMIT)
+        }
+        exportTasks(aux, tasksCsv)
+        if(aux.size() > 0) {
             info = [index, url, tasks.size(), tasksPT.size()]
         }
-        [allTasks:tasksPT, repository:info]
+        [allTasks:aux, repository:info]
     }
 
 }

@@ -18,7 +18,6 @@ class TaskSearchManager {
 
     String tasksFile
     String selectedRepositoriesFile
-    static int TASK_LIMIT = 100
     boolean filterCommitMessage
     RepositorySearchManager repoSearchManager
     RepositoryFilterManager repoFilterManager
@@ -96,12 +95,7 @@ class TaskSearchManager {
     }
 
     private void exportTasks(List<Task> tasks) {
-        def aux = tasks
-        if(tasks.size()>TASK_LIMIT) {
-            Util.exportTasks(tasks, tasksFile-".csv"+"_ALL.csv")
-            aux = tasks.subList(0,TASK_LIMIT)
-        }
-        Util.exportTasks(aux, tasksFile)
+        Util.exportTasks(tasks, tasksFile)
     }
 
     private void exportSelectedProjects(List<String[]> projects) {
