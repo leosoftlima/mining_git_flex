@@ -2,7 +2,7 @@ package taskSearch
 
 import groovy.util.logging.Slf4j
 import repositorySearch.GithubApiSearchManager
-import repositorySearch.GoogleArchiveSearchManager
+import repositorySearch.BigQuerySearchManager
 import repositorySearch.RepositorySearchManager
 import taskSearch.id.IdTaskExtractor
 import taskSearch.merge.MergeScenarioExtractor
@@ -33,7 +33,7 @@ class TaskSearchManager {
             filterCommitMessage = false
             log.info "Searching by GitHub API"
         } else {
-            repoSearchManager = new GoogleArchiveSearchManager()
+            repoSearchManager = new BigQuerySearchManager()
             filterCommitMessage = true
             log.info "Searching by Google Archive"
         }
