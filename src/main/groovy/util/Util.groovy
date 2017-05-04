@@ -70,11 +70,12 @@ class Util {
     }
 
     static void exportTasks(List<Task> tasks, String file) {
-        String[] header = ["INDEX", "REPO_URL", "TASK_ID", "HASHES", "#PROD_FILES", "#TEST_FILES"]
+        String[] header = ["INDEX", "REPO_URL", "TASK_ID", "#HASHES", "HASHES", "#PROD_FILES", "#TEST_FILES"]
         List<String[]> content = []
         content += header
         tasks?.each{ task ->
-            String[] line = [task.repositoryIndex, task.repositoryUrl, task.id, (task.commits*.hash).toString(),
+            def hashes = task.commits*.hash
+            String[] line = [task.repositoryIndex, task.repositoryUrl, task.id, hashes.size(), hashes.toString(),
                              task.productionFiles.size(), task.testFiles.size()]
             content += line
         }
