@@ -87,7 +87,6 @@ class Util {
     }
 
     static boolean isProductionFile(path) {
-        println "$path is valid? ${isValidFile(path)}"
         if (isValidFile(path) && !isTestFile(path) && !isSecundaryTestFile(path)) true
         else false
     }
