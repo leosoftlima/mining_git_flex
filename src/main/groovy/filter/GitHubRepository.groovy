@@ -13,18 +13,23 @@ class GitHubRepository {
 
     String url
     String branch
-    final String name
-    String zipUrl
+    String createdAt
     int stars
     int size
+    String description
+    final String name
+    String zipUrl
 
-    GitHubRepository(String url, String branch, int stars, int size) {
+
+    GitHubRepository(String url, String branch, String createdAt, int stars, int size, String description) {
         this.url = url
         this.branch = branch
-        this.name = url?.substring(ConstantData.GITHUB_URL.length())?.replaceAll("/", "_")
-        configureZipUrl()
+        this.createdAt = createdAt
         this.stars = stars
         this.size = size
+        this.description = description
+        this.name = url?.substring(ConstantData.GITHUB_URL.length())?.replaceAll("/", "_")
+        configureZipUrl()
     }
 
     GitHubRepository(String zipFileUrl) {

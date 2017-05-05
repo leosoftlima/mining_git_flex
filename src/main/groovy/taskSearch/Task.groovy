@@ -5,7 +5,6 @@ import util.Util
 
 class Task {
 
-    String repositoryIndex
     String repositoryUrl
     String id
     List<Commit> commits
@@ -16,8 +15,7 @@ class Task {
 
     }
 
-    Task(String index, String url, String id) {
-        repositoryIndex = index
+    Task(String url, String id) {
         repositoryUrl = url
         this.id = id
         commits = []
@@ -25,9 +23,13 @@ class Task {
         testFiles = []
     }
 
-    Task(String index, String url, String id, List<Commit> commits) {
-        this(index, url, id)
+    Task(String url, String id, List<Commit> commits) {
+        this(url, id)
         this.commits = commits
+        organizeFiles()
+    }
+
+    private organizeFiles(){
         commits*.files?.flatten()?.unique()?.each { file ->
             if (Util.isTestFile(file)) testFiles += file
             else if(Util.isProductionFile(file)) productionFiles += file

@@ -11,7 +11,6 @@ class MergeTaskExtractor {
 
     String mergesCsv
     GitRepository repository
-    String index
     List<MergeScenario> mergeScenarios
     String tasksCsv
     private static int taskId = 0
@@ -20,17 +19,8 @@ class MergeTaskExtractor {
         mergesCsv = mergeFile
         mergeScenarios = extractMergeScenarios()
         def url = mergeScenarios.first().url
-        index = findCandidatesIndex(url)
         repository = GitRepository.getRepository(url)
         tasksCsv = "${ConstantData.TASKS_FOLDER}${repository.name}.csv"
-    }
-
-    private static findCandidatesIndex(String url){
-        List<String[]> lines = CsvUtil.read(ConstantData.CANDIDATE_REPOSITORIES_FILE)
-        def repo = url - ConstantData.GIT_EXTENSION
-        def selected = lines.find{ it[1] == repo }
-        if(selected) selected[0]
-        else null
     }
 
     private configureMergeTask(MergeScenario merge){
@@ -39,8 +29,8 @@ class MergeTaskExtractor {
         def commits2 = repository?.searchCommits(merge.rightCommits)
         log.info "commits2.size: ${commits2.size()}"
         if(!commits1.empty && !commits2.empty){
-            def leftTask = new MergeTask(index, repository.url, ++taskId as String, commits1, merge)
-            def rightTask = new MergeTask(index, repository.url, ++taskId as String, commits2, merge)
+            def leftTask = new MergeTask(repository.url, ++taskId as String, commits1, merge)
+            def rightTask = new MergeTask(repository.url, ++taskId as String, commits2, merge)
             return [leftTask, rightTask]
         } else return []
     }
@@ -67,16 +57,12 @@ class MergeTaskExtractor {
     }
 
     def extractTasks(){
-        def result = null
-        if(index){
-            def tasks = []
-            mergeScenarios?.each{ tasks += configureMergeTask(it) }
-            log.info "Found merge tasks: ${tasks.size()}"
-            tasks.each{ log.info it.toString() }
-            def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-            result = Util.exportProjectTasks(tasks, tasksPT, tasksCsv, index, repository.url)
-        }
-        result
+        def tasks = []
+        mergeScenarios?.each{ tasks += configureMergeTask(it) }
+        log.info "Found merge tasks: ${tasks.size()}"
+        tasks.each{ log.info it.toString() }
+        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
+        Util.exportProjectTasks(tasks, tasksPT, tasksCsv, repository.url)
     }
 
 }

@@ -12,12 +12,10 @@ import util.Util
 class IdTaskExtractor {
 
     GitRepository repository
-    String index
     List<Commit> commits
     String tasksCsv
 
-    IdTaskExtractor(String index, String url){
-        this.index = index
+    IdTaskExtractor(String url){
         repository = GitRepository.getRepository(url)
         if (DataProperties.FILTER_BY_PIVOTAL_TRACKER)
             commits = repository.searchByComment(RegexUtil.PIVOTAL_TRACKER_ID_REGEX)
@@ -36,20 +34,16 @@ class IdTaskExtractor {
     }
 
     def extractTasks() {
-        def result = null
-        if(index){
-            def tasks = []
-            def organizedCommits = organizeCommitsById()
-            def ids = (organizedCommits*.code)?.unique()?.flatten()
-            ids?.each { id ->
-                def commitsWithId = organizedCommits.findAll { id in it.code }
-                Task task = new Task(index, repository.url, id, commitsWithId*.commit)
-                tasks += task
-            }
-            def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-            result = Util.exportProjectTasks(tasks, tasksPT, tasksCsv, index, repository.url)
+        def tasks = []
+        def organizedCommits = organizeCommitsById()
+        def ids = (organizedCommits*.code)?.unique()?.flatten()
+        ids?.each { id ->
+            def commitsWithId = organizedCommits.findAll { id in it.code }
+            Task task = new Task(repository.url, id, commitsWithId*.commit)
+            tasks += task
         }
-        result
+        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
+        Util.exportProjectTasks(tasks, tasksPT, tasksCsv, repository.url)
     }
 
 }

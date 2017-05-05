@@ -8,13 +8,14 @@ class Util {
 
     private static boolean isSecundaryTestFile(path){
         def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-        if (p?.contains(ConstantData.UNIT_TEST_FILES_RELATIVE_PATH) || p?.contains("test${File.separator}")) true
+        if (p?.contains(ConstantData.UNIT_TEST_FILES_RELATIVE_PATH) || p?.contains(ConstantData.STEPS_FILES_RELATIVE_PATH)
+                || p?.contains("test${File.separator}")) true
         else false
     }
 
     private static boolean isValidFile(path) {
         def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-        def validFolder = ConstantData.VALID_FOLDERS.any { p?.contains(it + File.separator) }
+        def validFolder = ConstantData.VALID_FOLDERS.any { p?.contains(it) }
         def validExtension = ConstantData.VALID_EXTENSIONS.any { p?.endsWith(it) }
         def validViewExtension = (p?.endsWith(".erb") || p?.endsWith(".haml") || p?.endsWith(".slim"))
         if (validFolder && validExtension) true
@@ -81,40 +82,34 @@ class Util {
 
     static boolean isTestFile(path) {
         def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-        if (p?.contains(ConstantData.GHERKIN_FILES_RELATIVE_PATH)) true
+        if (p?.contains(ConstantData.GHERKIN_FILES_RELATIVE_PATH) && p?.endsWith(".feature")) true
         else false
     }
 
     static boolean isProductionFile(path) {
+        println "$path is valid? ${isValidFile(path)}"
         if (isValidFile(path) && !isTestFile(path) && !isSecundaryTestFile(path)) true
         else false
     }
 
     static void exportTasks(List<Task> tasks, String file) {
-        String[] header = ["INDEX", "REPO_URL", "TASK_ID", "#HASHES", "HASHES", "#PROD_FILES", "#TEST_FILES"]
+        String[] header = ["REPO_URL", "TASK_ID", "#HASHES", "HASHES", "#PROD_FILES", "#TEST_FILES"]
         List<String[]> content = []
         content += header
         tasks?.each{ task ->
             def hashes = task.commits*.hash
-            String[] line = [task.repositoryIndex, task.repositoryUrl, task.id, hashes.size(), hashes.toString(),
+            String[] line = [task.repositoryUrl, task.id, hashes.size(), hashes.toString(),
                              task.productionFiles.size(), task.testFiles.size()]
             content += line
         }
         CsvUtil.write(file, content)
     }
 
-    static exportProjectTasks(List<Task> tasks, List<Task> tasksPT, String tasksCsv, String index, String url){
-        String[] info = null
-        def aux = tasksPT
-        if(tasksPT.size() > ConstantData.TASK_LIMIT) {
-            exportTasks(tasksPT, tasksCsv-".csv"+"_ALL.csv")
-            aux = aux.subList(0, ConstantData.TASK_LIMIT)
-        }
-        exportTasks(aux, tasksCsv)
-        if(aux.size() > 0) {
-            info = [index, url, tasks.size(), tasksPT.size()]
-        }
-        [allTasks:aux, repository:info]
+    static exportProjectTasks(List<Task> tasks, List<Task> tasksPT, String tasksCsv, String url){
+        exportTasks(tasksPT, tasksCsv)
+        if(!tasksPT || tasksPT.empty) return null
+        String[] info = [url, tasks.size(), tasksPT.size()]
+        [allTasks:tasksPT, repository:info]
     }
 
 }

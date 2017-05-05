@@ -24,7 +24,7 @@ class RepositoryFilterManager {
         file = new File(ConstantData.CANDIDATE_REPOSITORIES_FILE)
         if(file.exists()) file.delete()
         List<String[]> content = []
-        String[] header = ["INDEX", "URL", "STARS", "SIZE", "GEMS"]
+        String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION", "GEMS"]
         content += header
         CsvUtil.append(ConstantData.CANDIDATE_REPOSITORIES_FILE, content)
     }
@@ -49,11 +49,12 @@ class RepositoryFilterManager {
         }
     }
 
-    private void filterRepositories(GitHubRepository repository, int index) {
+    private void filterRepositories(GitHubRepository repository) {
         if (repository.satisfiesFilteringCriteria()) {
             log.info "${repository.url} satisfies filtering criteria!"
             candidates.add(repository)
-            String[] args = [String.valueOf(index), repository.url, repository.stars, repository.size, DataProperties.GEMS]
+            String[] args = [repository.url, repository.branch, repository.createdAt, repository.stars, repository.size,
+                             repository.description, DataProperties.GEMS]
             CSVWriter writer = new CSVWriter(new FileWriter(file, true))
             writer.writeNext(args)
             writer.close()
@@ -71,9 +72,7 @@ class RepositoryFilterManager {
             configureFile()
             repositories = resultManager.extractRepositoriesFromSearchResult()
             repositoriesCounter = repositories.size()
-            for (int i = 0; i < repositories.size(); i++) {
-                filterRepositories(repositories.get(i), i+1)
-            }
+            repositories.each{ filterRepositories(it) }
             printCounter()
             listCandidateRepositories()
         } catch (IOException e) {

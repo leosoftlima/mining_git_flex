@@ -7,8 +7,8 @@ class MergeTask extends Task {
 
     MergeScenario mergeScenario
 
-    MergeTask(String index, String url, String id, List<Commit> commits, MergeScenario m) {
-        super(index, url, id, commits)
+    MergeTask(String url, String id, List<Commit> commits, MergeScenario m) {
+        super(url, id, commits)
         mergeScenario = m
     }
 

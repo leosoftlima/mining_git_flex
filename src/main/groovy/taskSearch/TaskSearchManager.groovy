@@ -49,8 +49,7 @@ class TaskSearchManager {
         if (entries.size() > 1) {
             entries.remove(0) //ignore sheet header
             for (String[] entry : entries) {
-                entry[1] = entry[1].trim()
-                def taskExtractor = new IdTaskExtractor(entry[0], entry[1])
+                def taskExtractor = new IdTaskExtractor(entry[0].trim())
                 def r = taskExtractor.extractTasks()
                 if(r){
                     if(!r.allTasks.empty) allTasks += r.allTasks
@@ -83,8 +82,6 @@ class TaskSearchManager {
                     String[] info = r.repository
                     selectedRepositories += info
                 }
-            } else {
-                log.error "Error while searching merge tasks. Please, verify project's index."
             }
         }
         log.info "The tasks of GitHub projects are saved in '${ConstantData.TASKS_FOLDER}' folder"
@@ -99,7 +96,7 @@ class TaskSearchManager {
     }
 
     private void exportSelectedProjects(List<String[]> projects) {
-        String[] header = ["INDEX", "REPO_URL", "#TASKS", "#P&T_TASKS"]
+        String[] header = ["REPO_URL", "#TASKS", "#P&T_TASKS"]
         List<String[]> content = []
         content += header
         content += projects

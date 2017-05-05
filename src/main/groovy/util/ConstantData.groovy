@@ -59,6 +59,7 @@ abstract class ConstantData {
     public static final String RAILS_GEM = "rails"
     public static final String UNIT_TEST_FILES_RELATIVE_PATH = "spec${File.separator}"
     public static final String GHERKIN_FILES_RELATIVE_PATH = "features${File.separator}"
+    public static final String STEPS_FILES_RELATIVE_PATH = "${GHERKIN_FILES_RELATIVE_PATH}step_definitions${File.separator}"
     public static final String PRODUCTION_FILES_RELATIVE_PATH = "app${File.separator}"
     public static final String LIB_RELATIVE_PATH = "lib${File.separator}"
     public static final List<String> VALID_FOLDERS = [GHERKIN_FILES_RELATIVE_PATH, UNIT_TEST_FILES_RELATIVE_PATH,

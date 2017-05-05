@@ -22,7 +22,7 @@ class MergeScenarioExtractor {
         def aux = CsvUtil.read(ConstantData.CANDIDATE_REPOSITORIES_FILE)
         if(aux && aux.size()>1) {
             aux?.removeAt(0)
-            urls = aux?.collect{ it[1] }
+            urls = aux?.collect{ it[0] }
         }
     }
 
@@ -113,7 +113,7 @@ class MergeScenarioExtractor {
     }
 
     def getMergeFiles(){
-        generateMergeFiles()
+        //generateMergeFiles()
         def mergeFiles = Util.findFilesFromFolder(ConstantData.MERGES_FOLDER)?.findAll{
             it.endsWith(ConstantData.MERGE_TASK_SUFIX)
         }
