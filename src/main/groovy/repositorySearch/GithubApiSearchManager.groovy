@@ -15,7 +15,7 @@ class GithubApiSearchManager implements RepositorySearchManager {
     GitHubClient client
     RepositoryService repositoryService
     Map query
-    def pagesLimit
+    int pagesLimit
 
     GithubApiSearchManager(){
         pagesLimit = 10

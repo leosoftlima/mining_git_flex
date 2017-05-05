@@ -6,6 +6,22 @@ import java.util.regex.Matcher
 
 class Util {
 
+    private static boolean isSecundaryTestFile(path){
+        def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
+        if (p?.contains(ConstantData.UNIT_TEST_FILES_RELATIVE_PATH) || p?.contains("test${File.separator}")) true
+        else false
+    }
+
+    private static boolean isValidFile(path) {
+        def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
+        def validFolder = ConstantData.VALID_FOLDERS.any { p?.contains(it + File.separator) }
+        def validExtension = ConstantData.VALID_EXTENSIONS.any { p?.endsWith(it) }
+        def validViewExtension = (p?.endsWith(".erb") || p?.endsWith(".haml") || p?.endsWith(".slim"))
+        if (validFolder && validExtension) true
+        else if(validFolder && p?.count(".")==1 && validViewExtension) true
+        else false
+    }
+
     static deleteFile(String filename){
         def file = new File(filename)
         if(file.exists() && file.isFile()) file.delete()
@@ -66,6 +82,11 @@ class Util {
     static boolean isTestFile(path) {
         def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
         if (p?.contains(ConstantData.GHERKIN_FILES_RELATIVE_PATH)) true
+        else false
+    }
+
+    static boolean isProductionFile(path) {
+        if (isValidFile(path) && !isTestFile(path) && !isSecundaryTestFile(path)) true
         else false
     }
 

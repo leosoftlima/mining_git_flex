@@ -30,7 +30,7 @@ class Task {
         this.commits = commits
         commits*.files?.flatten()?.unique()?.each { file ->
             if (Util.isTestFile(file)) testFiles += file
-            else productionFiles += file
+            else if(Util.isProductionFile(file)) productionFiles += file
         }
     }
 
