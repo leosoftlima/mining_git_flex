@@ -47,7 +47,7 @@ abstract class ConstantData {
     public static final String SELECTED_REPOSITORIES_FILE = "${TASKS_FOLDER}selected-projects.csv"
     public static final String OUTPUT_FOLDER = "output${File.separator}"
     public static final String LOG_FILE = "${OUTPUT_FOLDER}execution.log"
-    public static final String REPOSITORY_FOLDER = "repositories${File.separator}"
+    public static final String REPOSITORY_FOLDER = "spg_repos${File.separator}"
 
     /* Files */
     public static final String GIT_EXTENSION = ".git"
