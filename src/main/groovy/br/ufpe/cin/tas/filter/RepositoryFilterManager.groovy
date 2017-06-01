@@ -1,8 +1,8 @@
 package br.ufpe.cin.tas.filter
 
 import au.com.bytecode.opencsv.CSVWriter
+import br.ufpe.cin.tas.search.repository.ResultManager
 import groovy.util.logging.Slf4j
-import repositorySearch.ResultManager
 import br.ufpe.cin.tas.util.ConstantData
 import br.ufpe.cin.tas.util.CsvUtil
 import br.ufpe.cin.tas.util.DataProperties

@@ -1,9 +1,9 @@
 package br.ufpe.cin.tas.search.task
 
+import br.ufpe.cin.tas.search.repository.BigQuerySearchManager
+import br.ufpe.cin.tas.search.repository.GithubApiSearchManager
+import br.ufpe.cin.tas.search.repository.RepositorySearchManager
 import groovy.util.logging.Slf4j
-import repositorySearch.GithubApiSearchManager
-import repositorySearch.BigQuerySearchManager
-import repositorySearch.RepositorySearchManager
 import br.ufpe.cin.tas.search.task.id.IdTaskExtractor
 import br.ufpe.cin.tas.search.task.merge.MergeScenarioExtractor
 import br.ufpe.cin.tas.search.task.merge.MergeTaskExtractor
