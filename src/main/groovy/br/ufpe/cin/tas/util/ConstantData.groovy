@@ -62,9 +62,9 @@ abstract class ConstantData {
     public static final String STEPS_FILES_RELATIVE_PATH = "${GHERKIN_FILES_RELATIVE_PATH}step_definitions${File.separator}"
     public static final String PRODUCTION_FILES_RELATIVE_PATH = "app${File.separator}"
     public static final String LIB_RELATIVE_PATH = "lib${File.separator}"
-    public static final List<String> VALID_FOLDERS = [GHERKIN_FILES_RELATIVE_PATH, UNIT_TEST_FILES_RELATIVE_PATH,
-                                               PRODUCTION_FILES_RELATIVE_PATH, LIB_RELATIVE_PATH]
-    public static final List<String> VALID_EXTENSIONS = [".rb", ".html", ".html.haml", ".html.erb", ".html.slim", ".feature"]
+    public static final List<String> VALID_PROD_FOLDERS = [PRODUCTION_FILES_RELATIVE_PATH, LIB_RELATIVE_PATH]
+    public static final List<String> VALID_PROD_EXTENSIONS = [".rb", ".html", ".html.haml", ".html.erb", ".html.slim"]
+    public static final String VALID_TEST_EXTENSION = ".feature"
 
     /* Tasks */
     public static int TASK_LIMIT = 100

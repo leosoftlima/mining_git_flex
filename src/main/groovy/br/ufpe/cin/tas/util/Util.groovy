@@ -15,8 +15,8 @@ class Util {
 
     private static boolean isValidFile(path) {
         def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-        def validFolder = ConstantData.VALID_FOLDERS.any { p?.contains(it) }
-        def validExtension = ConstantData.VALID_EXTENSIONS.any { p?.endsWith(it) }
+        def validFolder = ConstantData.VALID_PROD_FOLDERS.any { p?.contains(it) }
+        def validExtension = ConstantData.VALID_PROD_EXTENSIONS.any { p?.endsWith(it) }
         def validViewExtension = (p?.endsWith(".erb") || p?.endsWith(".haml") || p?.endsWith(".slim"))
         if (validFolder && validExtension) true
         else if(validFolder && p?.count(".")==1 && validViewExtension) true
@@ -82,7 +82,7 @@ class Util {
 
     static boolean isTestFile(path) {
         def p = path?.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-        if (p?.contains(ConstantData.GHERKIN_FILES_RELATIVE_PATH) && p?.endsWith(".feature")) true
+        if (p?.contains(ConstantData.GHERKIN_FILES_RELATIVE_PATH) && p?.endsWith(ConstantData.VALID_TEST_EXTENSION)) true
         else false
     }
 
