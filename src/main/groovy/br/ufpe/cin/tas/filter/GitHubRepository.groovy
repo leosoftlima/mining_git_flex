@@ -1,8 +1,8 @@
-package filter
+package br.ufpe.cin.tas.filter
 
 import groovy.util.logging.Slf4j
-import util.ConstantData
-import util.DataProperties
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.DataProperties
 
 /**
  * Represents a GitHub repository and provides mechanism to download de repository zip file, unzip it and check it has

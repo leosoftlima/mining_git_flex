@@ -1,4 +1,4 @@
-package repositorySearch
+package br.ufpe.cin.tas.search.repository
 
 interface RepositorySearchManager {
 

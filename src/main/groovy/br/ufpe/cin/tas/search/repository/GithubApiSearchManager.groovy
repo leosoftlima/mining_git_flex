@@ -1,13 +1,13 @@
-package repositorySearch
+package br.ufpe.cin.tas.search.repository
 
 import groovy.util.logging.Slf4j
 import org.eclipse.egit.github.core.Repository
 import org.eclipse.egit.github.core.SearchRepository
 import org.eclipse.egit.github.core.client.GitHubClient
 import org.eclipse.egit.github.core.service.RepositoryService
-import util.ConstantData
-import util.CsvUtil
-import util.DataProperties
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.CsvUtil
+import br.ufpe.cin.tas.util.DataProperties
 
 @Slf4j
 class GithubApiSearchManager implements RepositorySearchManager {

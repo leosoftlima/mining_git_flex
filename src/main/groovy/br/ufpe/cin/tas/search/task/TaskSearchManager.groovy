@@ -1,17 +1,17 @@
-package taskSearch
+package br.ufpe.cin.tas.search.task
 
 import groovy.util.logging.Slf4j
 import repositorySearch.GithubApiSearchManager
 import repositorySearch.BigQuerySearchManager
 import repositorySearch.RepositorySearchManager
-import taskSearch.id.IdTaskExtractor
-import taskSearch.merge.MergeScenarioExtractor
-import taskSearch.merge.MergeTaskExtractor
-import util.ConstantData
-import util.CsvUtil
-import util.DataProperties
-import filter.RepositoryFilterManager
-import util.Util
+import br.ufpe.cin.tas.search.task.id.IdTaskExtractor
+import br.ufpe.cin.tas.search.task.merge.MergeScenarioExtractor
+import br.ufpe.cin.tas.search.task.merge.MergeTaskExtractor
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.CsvUtil
+import br.ufpe.cin.tas.util.DataProperties
+import br.ufpe.cin.tas.filter.RepositoryFilterManager
+import br.ufpe.cin.tas.util.Util
 
 @Slf4j
 class TaskSearchManager {

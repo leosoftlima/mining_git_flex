@@ -1,4 +1,4 @@
-package util
+package br.ufpe.cin.tas.util
 
 import groovy.util.logging.Slf4j
 import java.util.regex.Matcher

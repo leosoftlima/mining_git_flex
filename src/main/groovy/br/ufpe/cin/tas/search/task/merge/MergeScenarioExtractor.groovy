@@ -1,11 +1,11 @@
-package taskSearch.merge
+package br.ufpe.cin.tas.search.task.merge
 
 import groovy.util.logging.Slf4j
-import taskSearch.GitRepository
-import util.ConstantData
-import util.CsvUtil
-import util.RegexUtil
-import util.Util
+import br.ufpe.cin.tas.search.task.GitRepository
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.CsvUtil
+import br.ufpe.cin.tas.util.RegexUtil
+import br.ufpe.cin.tas.util.Util
 
 @Slf4j
 class MergeScenarioExtractor {

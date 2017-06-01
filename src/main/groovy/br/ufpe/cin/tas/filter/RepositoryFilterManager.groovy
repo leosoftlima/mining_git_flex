@@ -1,11 +1,11 @@
-package filter
+package br.ufpe.cin.tas.filter
 
 import au.com.bytecode.opencsv.CSVWriter
 import groovy.util.logging.Slf4j
 import repositorySearch.ResultManager
-import util.ConstantData
-import util.CsvUtil
-import util.DataProperties
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.CsvUtil
+import br.ufpe.cin.tas.util.DataProperties
 
 @Slf4j
 class RepositoryFilterManager {

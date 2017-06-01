@@ -1,4 +1,4 @@
-package taskSearch.id
+package br.ufpe.cin.tas.search.task.id
 
 class Commit {
 

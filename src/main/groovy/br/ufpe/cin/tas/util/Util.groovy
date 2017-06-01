@@ -1,6 +1,6 @@
-package util
+package br.ufpe.cin.tas.util
 
-import taskSearch.Task
+import br.ufpe.cin.tas.search.task.Task
 
 import java.util.regex.Matcher
 

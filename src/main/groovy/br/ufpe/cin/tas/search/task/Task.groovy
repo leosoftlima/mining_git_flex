@@ -1,7 +1,7 @@
-package taskSearch
+package br.ufpe.cin.tas.search.task
 
-import taskSearch.id.Commit
-import util.Util
+import br.ufpe.cin.tas.search.task.id.Commit
+import br.ufpe.cin.tas.util.Util
 
 class Task {
 

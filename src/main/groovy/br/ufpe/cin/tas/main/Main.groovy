@@ -1,7 +1,7 @@
-package main
+package br.ufpe.cin.tas.main
 
 import groovy.util.logging.Slf4j
-import taskSearch.TaskSearchManager
+import br.ufpe.cin.tas.search.task.TaskSearchManager
 
 @Slf4j
 class Main {

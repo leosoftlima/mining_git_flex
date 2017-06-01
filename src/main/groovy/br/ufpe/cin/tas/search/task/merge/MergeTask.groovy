@@ -1,7 +1,7 @@
-package taskSearch.merge
+package br.ufpe.cin.tas.search.task.merge
 
-import taskSearch.id.Commit
-import taskSearch.Task
+import br.ufpe.cin.tas.search.task.id.Commit
+import br.ufpe.cin.tas.search.task.Task
 
 class MergeTask extends Task {
 

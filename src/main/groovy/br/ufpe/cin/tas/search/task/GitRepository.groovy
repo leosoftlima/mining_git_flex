@@ -1,4 +1,4 @@
-package taskSearch
+package br.ufpe.cin.tas.search.task
 
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.Git
@@ -8,10 +8,10 @@ import org.eclipse.jgit.diff.RawTextComparator
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevTree
 import org.eclipse.jgit.treewalk.TreeWalk
-import taskSearch.id.Commit
-import util.ConstantData
-import util.RegexUtil
-import util.Util
+import br.ufpe.cin.tas.search.task.id.Commit
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.RegexUtil
+import br.ufpe.cin.tas.util.Util
 import java.util.regex.Matcher
 
 

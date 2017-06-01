@@ -1,4 +1,4 @@
-package repositorySearch
+package br.ufpe.cin.tas.search.repository
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.http.HttpTransport
@@ -9,8 +9,8 @@ import com.google.api.services.bigquery.Bigquery
 import com.google.api.services.bigquery.BigqueryScopes
 import com.google.api.services.bigquery.model.*
 import groovy.util.logging.Slf4j
-import util.ConstantData
-import util.DataProperties
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.DataProperties
 
 @Slf4j
 class BigQuerySearchManager implements RepositorySearchManager {

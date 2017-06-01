@@ -1,12 +1,12 @@
-package taskSearch.id
+package br.ufpe.cin.tas.search.task.id
 
 import groovy.util.logging.Slf4j
-import taskSearch.GitRepository
-import taskSearch.Task
-import util.ConstantData
-import util.DataProperties
-import util.RegexUtil
-import util.Util
+import br.ufpe.cin.tas.search.task.GitRepository
+import br.ufpe.cin.tas.search.task.Task
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.DataProperties
+import br.ufpe.cin.tas.util.RegexUtil
+import br.ufpe.cin.tas.util.Util
 
 @Slf4j
 class IdTaskExtractor {

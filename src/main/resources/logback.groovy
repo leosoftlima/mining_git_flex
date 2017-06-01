@@ -1,5 +1,5 @@
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
-import util.ConstantData
+import br.ufpe.cin.tas.util.ConstantData
 import static ch.qos.logback.classic.Level.INFO
 
 //Linux: change file name to lower case

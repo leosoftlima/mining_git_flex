@@ -1,11 +1,11 @@
-package repositorySearch
+package br.ufpe.cin.tas.search.repository
 
 import com.google.api.services.bigquery.model.TableCell
 import com.google.api.services.bigquery.model.TableRow
-import filter.GitHubRepository
+import br.ufpe.cin.tas.filter.GitHubRepository
 import groovy.util.logging.Slf4j
-import util.ConstantData
-import util.CsvUtil
+import br.ufpe.cin.tas.util.ConstantData
+import br.ufpe.cin.tas.util.CsvUtil
 
 @Slf4j
 class ResultManager {

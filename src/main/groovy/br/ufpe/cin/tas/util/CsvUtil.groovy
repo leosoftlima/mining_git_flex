@@ -1,4 +1,4 @@
-package util
+package br.ufpe.cin.tas.util
 
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter

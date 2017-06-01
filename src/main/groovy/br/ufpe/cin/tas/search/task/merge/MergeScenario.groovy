@@ -1,4 +1,4 @@
-package taskSearch.merge
+package br.ufpe.cin.tas.search.task.merge
 
 class MergeScenario {
 

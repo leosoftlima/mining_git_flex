@@ -1,4 +1,4 @@
-package util
+package br.ufpe.cin.tas.util
 
 interface RegexUtil {
 
