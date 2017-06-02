@@ -22,7 +22,6 @@ class TaskSearchManager {
     RepositorySearchManager repoSearchManager
     RepositoryFilterManager repoFilterManager
     String candidateProjectsFile
-    MergeScenarioExtractor mergeScenarioExtractor
 
     TaskSearchManager(){
         tasksFile = ConstantData.TASKS_FILE
@@ -38,7 +37,6 @@ class TaskSearchManager {
         }
         repoFilterManager = new RepositoryFilterManager()
         candidateProjectsFile = ConstantData.CANDIDATE_REPOSITORIES_FILE
-        mergeScenarioExtractor = new MergeScenarioExtractor()
     }
 
     private void findTasksById(){
@@ -49,7 +47,7 @@ class TaskSearchManager {
         if (entries.size() > 1) {
             entries.remove(0) //ignore sheet header
             for (String[] entry : entries) {
-                def taskExtractor = new IdTaskExtractor(entry[0].trim())
+                IdTaskExtractor taskExtractor = new IdTaskExtractor(entry[0].trim())
                 def r = taskExtractor.extractTasks()
                 if(r){
                     if(!r.allTasks.empty) allTasks += r.allTasks
@@ -71,6 +69,7 @@ class TaskSearchManager {
         log.info "Finding tasks based on merge commits..."
         List<String[]> selectedRepositories = []
         List<Task> allTasks = []
+        def mergeScenarioExtractor = new MergeScenarioExtractor()
         def mergeFiles = mergeScenarioExtractor.getMergeFiles()
         mergeFiles?.each { mergeFile ->
             MergeTaskExtractor taskExtractor = new MergeTaskExtractor(mergeFile)

@@ -67,7 +67,6 @@ class MergeScenarioExtractor {
                 }
             }
             p1.inputStream.close()
-            Collections.reverse(merges)
             exportResult(merges)
             log.info "All merge commits: ${merges.size()+counter}"
             log.info "Selected merges: ${merges.size()}"
