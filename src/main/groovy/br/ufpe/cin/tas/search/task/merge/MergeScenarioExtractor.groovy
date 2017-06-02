@@ -84,7 +84,6 @@ class MergeScenarioExtractor {
         def base
         def aux = process1?.inputStream?.readLines()
         if(!aux || aux.empty) {
-            base = ""
             return null
         }
         else base = aux?.first()?.replaceAll(RegexUtil.NEW_LINE_REGEX,"")
