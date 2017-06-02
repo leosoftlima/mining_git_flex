@@ -136,7 +136,7 @@ class GitRepository {
     }
 
     static GitRepository getRepository(String url) {
-        def repository = repositories.find { (it.url).equals(url) }
+        def repository = repositories.find { ((it.url) == url) }
         if (!repository) {
             repository = new GitRepository(url)
             repositories += repository

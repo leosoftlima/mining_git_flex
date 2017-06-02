@@ -42,8 +42,7 @@ class IdTaskExtractor {
             Task task = new Task(repository.url, id, commitsWithId*.commit)
             tasks += task
         }
-        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-        Util.exportProjectTasks(tasks, tasksPT, tasksCsv, repository.url)
+        Util.exportProjectTasks(tasks, tasksCsv, repository.url)
     }
 
 }

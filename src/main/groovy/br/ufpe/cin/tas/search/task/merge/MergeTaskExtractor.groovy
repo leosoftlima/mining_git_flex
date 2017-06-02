@@ -61,8 +61,7 @@ class MergeTaskExtractor {
         mergeScenarios?.each{ tasks += configureMergeTask(it) }
         log.info "Found merge tasks: ${tasks.size()}"
         tasks.each{ log.info it.toString() }
-        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-        Util.exportProjectTasks(tasks, tasksPT, tasksCsv, repository.url)
+        Util.exportProjectTasks(tasks, tasksCsv, repository.url)
     }
 
 }

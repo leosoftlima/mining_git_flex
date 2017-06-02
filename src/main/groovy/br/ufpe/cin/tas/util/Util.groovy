@@ -12,14 +12,8 @@ class Util {
     }
 
     static deleteFolder(String folder) {
+        emptyFolder(folder)
         def dir = new File(folder)
-        def files = dir.listFiles()
-        if (files != null) {
-            files.each { f ->
-                if (f.isDirectory()) emptyFolder(f.getAbsolutePath())
-                else f.delete()
-            }
-        }
         dir.deleteDir()
     }
 
@@ -63,18 +57,23 @@ class Util {
         files.sort()
     }
 
-    static boolean isTestFile(path) {
-        if(!path || path.empty) return false
+    private static String configurePath(path){
         def p = path.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
         def root = extractRootFolder(path)
         p = p - root
+        p
+    }
+
+    static boolean isTestFile(path) {
+        if(!path || path.empty) return false
+        def p = configurePath(path)
         if (p.startsWith(ConstantData.GHERKIN_FILES_RELATIVE_PATH) && p.endsWith(ConstantData.VALID_TEST_EXTENSION)) true
         else false
     }
 
     static boolean isProductionFile(path) {
         if(!path || path.empty) return false
-        if (isValidFile(path) && !isTestFile(path) && !isSecundaryTestFile(path)) true
+        if (isValidFile(path) && !isTestFile(path) && !isSecondaryTestFile(path)) true
         else false
     }
 
@@ -91,7 +90,8 @@ class Util {
         CsvUtil.write(file, content)
     }
 
-    static exportProjectTasks(List<Task> tasks, List<Task> tasksPT, String tasksCsv, String url){
+    static exportProjectTasks(List<Task> tasks, String tasksCsv, String url){
+        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
         exportTasks(tasksPT, tasksCsv)
         if(!tasksPT || tasksPT.empty) return null
         String[] info = [url, tasks.size(), tasksPT.size()]
@@ -115,11 +115,9 @@ class Util {
         root
     }
 
-    private static boolean isSecundaryTestFile(path){
+    private static boolean isSecondaryTestFile(path){
         if(!path || path.empty) return false
-        def p = path.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-        def root = extractRootFolder(path)
-        p = p - root
+        def p = configurePath(path)
         if (p.startsWith(ConstantData.UNIT_TEST_FILES_RELATIVE_PATH) || p.startsWith(ConstantData.STEPS_FILES_RELATIVE_PATH)
                 || p.startsWith("test${File.separator}")) true
         else false
@@ -127,9 +125,7 @@ class Util {
 
     private static boolean isValidFile(path) {
         if(!path || path.empty) return false
-        def p = path.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
-        def root = extractRootFolder(path)
-        p = p - root
+        def p = configurePath(path)
         def validFolder = ConstantData.VALID_PROD_FOLDERS.any { p.startsWith(it) }
         def validExtension = ConstantData.VALID_PROD_EXTENSIONS.any { p.endsWith(it) }
         def validViewExtension = (p?.endsWith(".erb") || p?.endsWith(".haml") || p?.endsWith(".slim"))

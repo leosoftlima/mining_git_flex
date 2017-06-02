@@ -16,7 +16,7 @@ import br.ufpe.cin.tas.util.DataProperties
 class BigQuerySearchManager implements RepositorySearchManager {
 
     ResultManager resultManager
-    Bigquery bigquery
+    Bigquery bigQueryService
     String query
 
     BigQuerySearchManager(){
@@ -32,9 +32,9 @@ class BigQuerySearchManager implements RepositorySearchManager {
     }
 
     /**
-     * Creates an authorized Bigquery client repositoryService using Application Default Credentials.
+     * Creates an authorized BigQuery client repositoryService using Application Default Credentials.
      *
-     * @return an authorized Bigquery client
+     * @return an authorized BigQuery client
      * @throws IOException if there's an error getting the default credentials.
      */
     private createAuthorizedClient() throws IOException {
@@ -45,12 +45,12 @@ class BigQuerySearchManager implements RepositorySearchManager {
 
         // Depending on the environment that provides the default credentials (e.g. Compute Engine, App
         // Engine), the credentials may require us to specify the scopes we need explicitly.
-        // Check for this case, and inject the Bigquery scope if required.
+        // Check for this case, and inject the BigQuery scope if required.
         if (credential.createScopedRequired()) {
             credential = credential.createScoped(BigqueryScopes.all())
         }
 
-        bigquery = new Bigquery.Builder(transport, jsonFactory, credential).setApplicationName("Bigquery Samples").build()
+        bigQueryService = new Bigquery.Builder(transport, jsonFactory, credential).setApplicationName("Bigquery Samples").build()
     }
 
     private static String filterPivotalTracker() {
@@ -86,20 +86,18 @@ class BigQuerySearchManager implements RepositorySearchManager {
     /**
      * Executes the given query synchronously.
      *
-     * @param querySql the query to execute.
-     * @param bigquery the Bigquery repositoryService object.
      * @param projectId the id of the repository under which to run the query.
      * @return a list of the results of the query.
      * @throws IOException if there's an error communicating with the API.
      */
     private List<TableRow> executeQuery(String projectId)
             throws IOException {
-        QueryResponse query = bigquery.jobs().query(
+        QueryResponse query = bigQueryService.jobs().query(
                 projectId,
                 new QueryRequest().setQuery(query))
                 .execute()
 
-        GetQueryResultsResponse queryResult = bigquery.jobs().getQueryResults(
+        GetQueryResultsResponse queryResult = bigQueryService.jobs().getQueryResults(
                 query.getJobReference().getProjectId(),
                 query.getJobReference().getJobId()).execute()
 
