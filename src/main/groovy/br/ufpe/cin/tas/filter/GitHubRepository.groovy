@@ -103,7 +103,7 @@ class GitHubRepository {
                 } else if (DataProperties.FILTER_RAILS) {
                     result = hasGems()
                 }
-                deleteUnzipedDir()
+                deleteUnzippedDir()
             } catch (Exception e) {
                 log.info e.getMessage()
             }
@@ -139,7 +139,7 @@ class GitHubRepository {
     /**
      * Deletes unzipped content (folder and files) of the repository, if it does exist.
      */
-    def deleteUnzipedDir() {
+    def deleteUnzippedDir() {
         FileHandler.deleteFolder(getZipFolderName())
     }
 
