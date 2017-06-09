@@ -18,7 +18,8 @@ class MergeTaskExtractor {
     MergeTaskExtractor(String mergeFile){
         mergesCsv = mergeFile
         mergeScenarios = extractMergeScenarios()
-        def url = mergeScenarios.first().url
+        def url = ""
+        if(!mergeScenarios.empty) url = mergeScenarios.first().url
         repository = GitRepository.getRepository(url)
         tasksCsv = "${ConstantData.TASKS_FOLDER}${repository.name}.csv"
     }

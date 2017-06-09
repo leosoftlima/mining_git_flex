@@ -44,36 +44,41 @@ class MergeScenarioExtractor {
         def counter = 0
         List<MergeScenario> merges = []
 
-        try{
-            log.info "Extracting merge commit from project '$url'"
-            repository = GitRepository.getRepository(url)
-            processBuilderMerges.directory(new File(repository.localPath))
-            Process p1 = processBuilderMerges.start()
-            List<String> lines = p1.inputStream.readLines()
-            lines?.eachWithIndex { line, index ->
-                if(line.startsWith('commit')){
-                    def merge = line.split(' ')[1]
-                    def nextLine = lines.get(index+1)
-                    String[] data = nextLine.split(' ')
-                    def parent1  = data[1]
-                    def parent2 = data[2]
-                    def parentsData = searchLeftRight(parent1, parent2)
-                    if(parentsData && parentsData.left.size()>0 && parentsData.right.size()>0){
-                        MergeScenario mergeScenario = new MergeScenario(merge: merge, left: parent1, right: parent2,
-                                leftCommits: parentsData.left, rightCommits: parentsData.right, base: parentsData.base)
-                        merges += mergeScenario
-                        log.info mergeScenario.toString()
-                    } else counter++
+        if(url==null || url.empty) {
+            log.warn "It is not possible to extract merge commits for invalid project: url is empty!"
+        }
+        else{
+            try{
+                log.info "Extracting merge commit from project '$url'"
+                repository = GitRepository.getRepository(url)
+                processBuilderMerges.directory(new File(repository.localPath))
+                Process p1 = processBuilderMerges.start()
+                List<String> lines = p1.inputStream.readLines()
+                lines?.eachWithIndex { line, index ->
+                    if(line.startsWith('commit')){
+                        def merge = line.split(' ')[1]
+                        def nextLine = lines.get(index+1)
+                        String[] data = nextLine.split(' ')
+                        def parent1  = data[1]
+                        def parent2 = data[2]
+                        def parentsData = searchLeftRight(parent1, parent2)
+                        if(parentsData && parentsData.left.size()>0 && parentsData.right.size()>0){
+                            MergeScenario mergeScenario = new MergeScenario(merge: merge, left: parent1, right: parent2,
+                                    leftCommits: parentsData.left, rightCommits: parentsData.right, base: parentsData.base)
+                            merges += mergeScenario
+                            log.info mergeScenario.toString()
+                        } else counter++
+                    }
                 }
+                p1.inputStream.close()
+                exportResult(merges)
+                log.info "All merge commits: ${merges.size()+counter}"
+                log.info "Selected merges: ${merges.size()}"
+                log.info "Fast-fowarding merges: $counter"
+            } catch(Exception ex){
+                log.error "Error while searching merge commits."
+                ex.stackTrace.each{ log.error it.toString() }
             }
-            p1.inputStream.close()
-            exportResult(merges)
-            log.info "All merge commits: ${merges.size()+counter}"
-            log.info "Selected merges: ${merges.size()}"
-            log.info "Fast-fowarding merges: $counter"
-        } catch(Exception ex){
-            log.error "Error while searching merge commits."
-            ex.stackTrace.each{ log.error it.toString() }
         }
     }
 

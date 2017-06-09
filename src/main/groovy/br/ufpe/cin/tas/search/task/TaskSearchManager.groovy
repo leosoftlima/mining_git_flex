@@ -58,7 +58,6 @@ class TaskSearchManager {
                 }
             }
         }
-        exportTasks(allTasks)
         log.info "The tasks of GitHub projects are saved in '${ConstantData.TASKS_FOLDER}' folder"
 
         exportSelectedProjects(selectedRepositories)
@@ -84,14 +83,9 @@ class TaskSearchManager {
             }
         }
         log.info "The tasks of GitHub projects are saved in '${ConstantData.TASKS_FOLDER}' folder"
-        exportTasks(allTasks)
 
         exportSelectedProjects(selectedRepositories)
         log.info "The repositories that contains link amog tasks and code changes are saved in ${ConstantData.SELECTED_REPOSITORIES_FILE}"
-    }
-
-    private void exportTasks(List<Task> tasks) {
-        Util.exportTasks(tasks, tasksFile)
     }
 
     private void exportSelectedProjects(List<String[]> projects) {
