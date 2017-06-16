@@ -10,6 +10,7 @@ class Task {
     List<Commit> commits
     List<String> productionFiles
     List<String> testFiles
+    String newestCommit
 
     Task() {
 
@@ -23,9 +24,10 @@ class Task {
         testFiles = []
     }
 
-    Task(String url, String id, List<Commit> commits) {
+    Task(String url, String id, List<Commit> commits, String newestCommit) {
         this(url, id)
         this.commits = commits
+        this.newestCommit = newestCommit
         organizeFiles()
     }
 
@@ -40,6 +42,7 @@ class Task {
     String toString() {
         def msg = "Task ${id}:\n"
         msg += "Commits: ${commits.size()}\n"
+        msg += "Newest commit: $newestCommit\n"
         msg += "Production files: ${productionFiles.size()}\n"
         productionFiles.each{ msg+= "${it}\n" }
         msg += "Test files: ${testFiles.size()}\n"

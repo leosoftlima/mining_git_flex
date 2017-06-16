@@ -78,13 +78,13 @@ class Util {
     }
 
     static void exportTasks(List<Task> tasks, String file) {
-        String[] header = ["REPO_URL", "TASK_ID", "#HASHES", "HASHES", "#PROD_FILES", "#TEST_FILES"]
+        String[] header = ["REPO_URL", "TASK_ID", "#HASHES", "HASHES", "#PROD_FILES", "#TEST_FILES", "LAST"]
         List<String[]> content = []
         content += header
         tasks?.each{ task ->
             def hashes = task.commits*.hash
             String[] line = [task.repositoryUrl, task.id, hashes.size(), hashes.toString(),
-                             task.productionFiles.size(), task.testFiles.size()]
+                             task.productionFiles.size(), task.testFiles.size(), task.newestCommit]
             content += line
         }
         CsvUtil.write(file, content)

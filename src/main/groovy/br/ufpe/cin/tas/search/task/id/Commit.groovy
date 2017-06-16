@@ -12,4 +12,8 @@ class Commit {
         "$hash*${new Date(date * 1000)}*$author*$message*${files.toListString()}"
     }
 
+    List<String> extractIds(){
+        message.findAll(/#\d+/).unique().collect { it - "#" }
+    }
+
 }

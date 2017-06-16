@@ -25,24 +25,86 @@ class GitRepository {
     String localPath
 
     private GitRepository(String path) {
-        if (path.startsWith("http")) {
-            if(path.endsWith(ConstantData.GIT_EXTENSION)) url = path
-            else url = path + ConstantData.GIT_EXTENSION
-            this.name = Util.configureGitRepositoryName(url)
-            this.localPath = ConstantData.REPOSITORY_FOLDER + name
-            if (isCloned()) {
-                log.info "Already cloned from " + url + " to " + localPath
-            } else cloneRepository()
-        } else {
-            if(path.endsWith(ConstantData.GIT_EXTENSION)) localPath = path - ConstantData.GIT_EXTENSION
-            else localPath = path
-            def git = Git.open(new File(localPath))
-            this.url = git.repository.config.getString("remote", "origin", "url")
-            git.close()
-            this.name = Util.configureGitRepositoryName(url)
-        }
-        commits = searchCommits()
+        commits = []
+        if (path.startsWith("http")) extractDataFromRemoteRepository(path)
+        else extractDataFromlocalRepository(path)
+        searchCommits()
         log.info "All commits from project: ${commits.size()}"
+    }
+
+    def searchCommits(List hashes){
+        if(hashes && !hashes.empty) {
+            def result = []
+            hashes.each{ hash ->
+                def c = commits.find{ it.hash == hash }
+                if(c) result += c
+            }
+            result
+        }
+        else commits
+    }
+
+    def searchCommits() {
+        if(commits.empty){
+            def revCommits = searchAllRevCommits()
+            revCommits?.each { c ->
+                def files = getAllChangedFilesFromCommit(c)
+                commits += new Commit(hash: c.name, message: c.fullMessage.replaceAll(RegexUtil.NEW_LINE_REGEX, " "),
+                        files: files, author: c.authorIdent.name, date: c.commitTime)
+            }
+        }
+    }
+
+    List<Commit> searchByComment(def regex) {
+        def result = []
+        commits.each { commit ->
+            if((commit.message?.toLowerCase() ==~ regex) && !commit.files.empty) result += commit
+        }
+        result.unique { a, b -> a.hash <=> b.hash }
+    }
+
+    String findNewestCommit(List<Commit> commitList){
+        if(commitList && !commitList.empty) {
+            def hashes = commitList*.hash
+            def result = []
+            commits.eachWithIndex{ Commit entry, int i ->
+                if(entry.hash in hashes){
+                    result += [hash:entry.hash, index:i]
+                }
+            }
+            def sortedCommits = result.sort{ it.index }
+            sortedCommits.first().hash
+        }
+        else null
+    }
+
+    static GitRepository getRepository(String url) {
+        if(url==null || url.empty) return null
+        def repository = repositories.find { ((it.url) == url) }
+        if (!repository) {
+            repository = new GitRepository(url)
+            repositories += repository
+        }
+        repository
+    }
+
+    private extractDataFromRemoteRepository(String path){
+        if(path.endsWith(ConstantData.GIT_EXTENSION)) url = path
+        else url = path + ConstantData.GIT_EXTENSION
+        this.name = Util.configureGitRepositoryName(url)
+        this.localPath = ConstantData.REPOSITORY_FOLDER + name
+        if (isCloned()) {
+            log.info "Already cloned from " + url + " to " + localPath
+        } else cloneRepository()
+    }
+
+    private extractDataFromlocalRepository(String path){
+        if(path.endsWith(ConstantData.GIT_EXTENSION)) localPath = path - ConstantData.GIT_EXTENSION
+        else localPath = path
+        def git = Git.open(new File(localPath))
+        this.url = git.repository.config.getString("remote", "origin", "url")
+        git.close()
+        this.name = Util.configureGitRepositoryName(url)
     }
 
     private boolean isCloned() {
@@ -68,9 +130,9 @@ class GitRepository {
         }
     }
 
-    private Iterable<RevCommit> searchAllRevCommitsBySha() {
+    private Iterable<RevCommit> searchAllRevCommits() {
         def git = Git.open(new File(localPath))
-        def logs = git?.log()?.call()
+        Iterable<RevCommit> logs = git?.log()?.all()?.call()
         git.close()
         logs
     }
@@ -133,40 +195,6 @@ class GitRepository {
             }
         }
         return files
-    }
-
-    static GitRepository getRepository(String url) {
-        if(url==null || url.empty) return null
-        def repository = repositories.find { ((it.url) == url) }
-        if (!repository) {
-            repository = new GitRepository(url)
-            repositories += repository
-        }
-        repository
-    }
-
-    def searchCommits(List hashes){
-        if(hashes && !hashes.empty) commits.findAll{ it.hash in hashes }
-        else commits
-    }
-
-    List<Commit> searchCommits() {
-        def revCommits = searchAllRevCommitsBySha()
-        def commits = []
-        revCommits?.each { c ->
-            def files = getAllChangedFilesFromCommit(c)
-            commits += new Commit(hash: c.name, message: c.fullMessage.replaceAll(RegexUtil.NEW_LINE_REGEX, " "),
-                    files: files, author: c.authorIdent.name, date: c.commitTime)
-        }
-        commits
-    }
-
-    List<Commit> searchByComment(def regex) {
-        def result = commits.findAll { commit ->
-            (commit.message?.toLowerCase() ==~ regex) && !commit.files.empty
-        }
-        def finalResult = result.unique { a, b -> a.hash <=> b.hash }
-        finalResult.sort { it.date }
     }
 
 }

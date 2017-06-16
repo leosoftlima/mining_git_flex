@@ -11,7 +11,6 @@ import br.ufpe.cin.tas.util.ConstantData
 import br.ufpe.cin.tas.util.CsvUtil
 import br.ufpe.cin.tas.util.DataProperties
 import br.ufpe.cin.tas.filter.RepositoryFilterManager
-import br.ufpe.cin.tas.util.Util
 
 @Slf4j
 class TaskSearchManager {
@@ -39,7 +38,7 @@ class TaskSearchManager {
         candidateProjectsFile = ConstantData.CANDIDATE_REPOSITORIES_FILE
     }
 
-    private void findTasksById(){
+    private void findTasksById() throws Exception {
         log.info "Finding tasks based on ID in commit message..."
         List<String[]> selectedRepositories = []
         List<Task> allTasks = []
@@ -64,7 +63,7 @@ class TaskSearchManager {
         log.info "The repositories that contains link amog tasks and code changes are saved in ${ConstantData.SELECTED_REPOSITORIES_FILE}"
     }
 
-    private findTasksByMerge(){
+    private findTasksByMerge() throws Exception {
         log.info "Finding tasks based on merge commits..."
         List<String[]> selectedRepositories = []
         List<Task> allTasks = []
@@ -118,7 +117,7 @@ class TaskSearchManager {
         log.info "Filtered repositories are saved in ${ConstantData.CANDIDATE_REPOSITORIES_FILE}"
     }
 
-    def searchTasks() {
+    def searchTasks() throws Exception {
         if(!filterCommitMessage) findTasksByMerge()
         else findTasksById()
     }

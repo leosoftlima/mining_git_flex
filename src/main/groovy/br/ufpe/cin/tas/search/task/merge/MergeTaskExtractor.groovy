@@ -15,12 +15,13 @@ class MergeTaskExtractor {
     String tasksCsv
     private static int taskId = 0
 
-    MergeTaskExtractor(String mergeFile){
+    MergeTaskExtractor(String mergeFile) throws Exception {
         mergesCsv = mergeFile
         mergeScenarios = extractMergeScenarios()
         def url = ""
         if(!mergeScenarios.empty) url = mergeScenarios.first().url
         repository = GitRepository.getRepository(url)
+        if(repository == null) throw new Exception("Error: Repository '$url' not found.")
         tasksCsv = "${ConstantData.TASKS_FOLDER}${repository.name}.csv"
     }
 
@@ -30,8 +31,8 @@ class MergeTaskExtractor {
         def commits2 = repository?.searchCommits(merge.rightCommits)
         log.info "commits2.size: ${commits2.size()}"
         if(!commits1.empty && !commits2.empty){
-            def leftTask = new MergeTask(repository.url, ++taskId as String, commits1, merge)
-            def rightTask = new MergeTask(repository.url, ++taskId as String, commits2, merge)
+            def leftTask = new MergeTask(repository.url, ++taskId as String, commits1, merge, merge.left)
+            def rightTask = new MergeTask(repository.url, ++taskId as String, commits2, merge, merge.right)
             return [leftTask, rightTask]
         } else return []
     }
