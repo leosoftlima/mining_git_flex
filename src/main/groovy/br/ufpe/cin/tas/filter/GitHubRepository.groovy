@@ -1,5 +1,6 @@
 package br.ufpe.cin.tas.filter
 
+import br.ufpe.cin.tas.util.CsvUtil
 import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.util.ConstantData
 import br.ufpe.cin.tas.util.DataProperties
@@ -112,6 +113,9 @@ class GitHubRepository {
     }
 
     boolean hasGems(){
+        def railsProjects = []
+        String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION", "GEMS"]
+        railsProjects += header
         def result = false
         File gemfile = FileHandler.retrieveFile(ConstantData.GEM_FILE, getZipFolderName())
         if(gemfile) {
@@ -120,6 +124,7 @@ class GitHubRepository {
             int counter = 0
             def railsProject = isRailsProject(lines)
             if(railsProject){
+                railsProjects += railsProject
                 DataProperties.GEMS.each { gem ->
                     def regex = /\s*gem\s+"?'?${gem}"?'?.*/
                     def hasGem = lines.find{ !(it.trim().startsWith("#")) && it==~regex }
@@ -133,6 +138,8 @@ class GitHubRepository {
         } else {
             log.info "Gemfile was not found!"
         }
+
+        CsvUtil.write(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
         result
     }
 
