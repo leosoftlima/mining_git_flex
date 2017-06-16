@@ -96,7 +96,7 @@ class MergeScenarioExtractor {
         ProcessBuilder builder = new ProcessBuilder("git", "rev-list", "${base}..${other}")
         builder.directory(new File(repository.localPath))
         Process process = builder.start()
-        def commitSet = process?.inputStream?.readLines()
+        def commitSet = process?.inputStream?.readLines()?.reverse()
         process?.inputStream?.close()
         commitSet
     }
