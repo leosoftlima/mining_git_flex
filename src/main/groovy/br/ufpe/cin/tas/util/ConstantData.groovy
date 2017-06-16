@@ -40,6 +40,7 @@ abstract class ConstantData {
     public static final String REPOSITORIES_TO_DOWNLOAD_FILE = "${GITHUB_SEARCH_RESULT_FOLDER}projects.csv"
     public static final String FILTERED_RESULT_FOLDER = "2-filtered${File.separator}"
     public static final String CANDIDATE_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}candidate-projects.csv"
+    public static final String RAILS_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}rails-projects.csv"
     public static final String TASKS_FOLDER = "3-tasks${File.separator}"
     public static final String TASKS_FILE = "${TASKS_FOLDER}tasks.csv"
     public static final String MERGES_FOLDER = "${TASKS_FOLDER}merges${File.separator}"
