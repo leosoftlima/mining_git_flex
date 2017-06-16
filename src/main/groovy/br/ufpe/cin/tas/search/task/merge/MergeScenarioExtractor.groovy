@@ -82,30 +82,30 @@ class MergeScenarioExtractor {
         }
     }
 
+    private findBase(String left, String right){
+        ProcessBuilder builder = new ProcessBuilder("git", "merge-base", left, right)
+        builder.directory(new File(repository.localPath))
+        Process process = builder.start()
+        def aux = process?.inputStream?.readLines()
+        process?.inputStream?.close()
+        if(!aux || aux.empty) return null
+        else aux?.first()?.replaceAll(RegexUtil.NEW_LINE_REGEX,"")
+    }
+
+    private getCommitSetBetween(String base, String other){
+        ProcessBuilder builder = new ProcessBuilder("git", "rev-list", "${base}..${other}")
+        builder.directory(new File(repository.localPath))
+        Process process = builder.start()
+        def commitSet = process?.inputStream?.readLines()
+        process?.inputStream?.close()
+        commitSet
+    }
+
     private searchLeftRight(String left, String right){
-        ProcessBuilder p1 = new ProcessBuilder("git", "merge-base", left, right)
-        p1.directory(new File(repository.localPath))
-        Process process1 = p1.start()
-        def base
-        def aux = process1?.inputStream?.readLines()
-        if(!aux || aux.empty) {
-            return null
-        }
-        else base = aux?.first()?.replaceAll(RegexUtil.NEW_LINE_REGEX,"")
-        process1?.inputStream?.close()
-
-        ProcessBuilder p2 = new ProcessBuilder("git", "rev-list", "${base}..${left}")
-        p2.directory(new File(repository.localPath))
-        Process process2 = p2.start()
-        def leftCommits = process2?.inputStream?.readLines()
-        process2?.inputStream?.close()
-
-        ProcessBuilder p3 = new ProcessBuilder("git", "rev-list", "${base}..${right}")
-        p3.directory(new File(repository.localPath))
-        Process process3 = p3.start()
-        def rightCommits = process3?.inputStream?.readLines()
-        process3?.inputStream?.close()
-
+        def base = findBase(left, right)
+        if(!base || base.empty) { return null }
+        def leftCommits = getCommitSetBetween(base, left)
+        def rightCommits = getCommitSetBetween(base, right)
         [base: base, left: leftCommits, right: rightCommits]
     }
 
