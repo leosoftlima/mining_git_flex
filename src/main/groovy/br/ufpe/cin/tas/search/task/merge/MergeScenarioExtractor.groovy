@@ -59,12 +59,11 @@ class MergeScenarioExtractor {
                         def merge = line.split(' ')[1]
                         def nextLine = lines.get(index+1)
                         String[] data = nextLine.split(' ')
-                        def parent1  = data[1]
-                        def parent2 = data[2]
-                        def parentsData = searchLeftRight(parent1, parent2)
-                        if(parentsData && parentsData.left.size()>0 && parentsData.right.size()>0){
-                            MergeScenario mergeScenario = new MergeScenario(merge: merge, left: parent1, right: parent2,
-                                    leftCommits: parentsData.left, rightCommits: parentsData.right, base: parentsData.base)
+                        def left  = data[1]
+                        def right = data[2]
+                        MergeScenario mergeScenario = configureMergeScenario(left, right)
+                        if(mergeScenario){
+                            mergeScenario.merge = merge
                             merges += mergeScenario
                             log.info mergeScenario.toString()
                         } else counter++
@@ -101,12 +100,15 @@ class MergeScenarioExtractor {
         commitSet
     }
 
-    private searchLeftRight(String left, String right){
+    private configureMergeScenario(String left, String right){
         def base = findBase(left, right)
         if(!base || base.empty) { return null }
         def leftCommits = getCommitSetBetween(base, left)
         def rightCommits = getCommitSetBetween(base, right)
-        [base: base, left: leftCommits, right: rightCommits]
+        if(leftCommits.empty || rightCommits.empty) return null
+        def leftHash = leftCommits.last()
+        def rightHash = rightCommits.last()
+        new MergeScenario(left: leftHash, right: rightHash, leftCommits: leftCommits, rightCommits: rightCommits, base: base)
     }
 
     def generateMergeFiles(){

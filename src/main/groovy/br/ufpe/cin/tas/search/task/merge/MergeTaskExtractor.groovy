@@ -13,9 +13,10 @@ class MergeTaskExtractor {
     GitRepository repository
     List<MergeScenario> mergeScenarios
     String tasksCsv
-    private static int taskId = 0
+    private static int taskId
 
     MergeTaskExtractor(String mergeFile) throws Exception {
+        taskId = 0
         mergesCsv = mergeFile
         mergeScenarios = extractMergeScenarios()
         def url = ""
