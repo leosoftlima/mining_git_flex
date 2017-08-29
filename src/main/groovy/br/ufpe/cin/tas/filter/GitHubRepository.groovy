@@ -113,7 +113,7 @@ class GitHubRepository {
     }
 
     boolean hasGems(){
-        def railsProjects = []
+        List<String[]> railsProjects = []
         String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION", "GEMS"]
         railsProjects += header
         def result = false
@@ -124,7 +124,6 @@ class GitHubRepository {
             int counter = 0
             def railsProject = isRailsProject(lines)
             if(railsProject){
-                railsProjects += railsProject
                 DataProperties.GEMS.each { gem ->
                     def regex = /\s*gem\s+"?'?${gem}"?'?.*/
                     def hasGem = lines.find{ !(it.trim().startsWith("#")) && it==~regex }
@@ -134,6 +133,8 @@ class GitHubRepository {
                     } else log.info "Project does not use gem '${gem}'"
                 }
                 if(counter == goalCounter) result = true
+                String[] project = [url, branch, createdAt, stars, size, description, result]
+                railsProjects += project
             } else log.info "It is not a Rails project!"
         } else {
             log.info "Gemfile was not found!"
@@ -163,5 +164,10 @@ class GitHubRepository {
     def deleteAll() {
         FileHandler.deleteFolder(getZipFolderName())
         FileHandler.deleteZipFile(getLocalZipName())
+    }
+
+    @Override
+    String toString(){
+        return "Repository: $name ($url); created at: $createdAt"
     }
 }
