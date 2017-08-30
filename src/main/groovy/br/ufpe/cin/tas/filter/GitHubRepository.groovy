@@ -135,7 +135,7 @@ class GitHubRepository {
                 railsProjects += project
             } else log.info "It is not a Rails project!"
         } else {
-            log.info "Gemfile was not found!"
+            log.info "Gemfile was not found! It is not a Rails project!"
         }
 
         CsvUtil.append(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
