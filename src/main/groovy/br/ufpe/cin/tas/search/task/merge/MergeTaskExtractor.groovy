@@ -19,10 +19,11 @@ class MergeTaskExtractor {
         taskId = 0
         mergesCsv = mergeFile
         mergeScenarios = extractMergeScenarios()
-        def url = ""
-        if(!mergeScenarios.empty) url = mergeScenarios.first().url
+        if(mergeScenarios.empty){
+            throw new Exception("No merge commit was found!")
+        }
+        def url = mergeScenarios.first().url
         repository = GitRepository.getRepository(url)
-        if(repository == null) throw new Exception("Error: Repository '$url' not found.")
         tasksCsv = "${ConstantData.TASKS_FOLDER}${repository.name}.csv"
     }
 

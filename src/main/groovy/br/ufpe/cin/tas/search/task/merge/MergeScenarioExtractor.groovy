@@ -23,7 +23,7 @@ class MergeScenarioExtractor {
         if(aux && aux.size()>1) {
             aux?.removeAt(0)
             urls = aux?.collect{ it[0] }
-        }
+        } else urls = []
     }
 
     private exportResult(List<MergeScenario> merges){
@@ -113,7 +113,7 @@ class MergeScenarioExtractor {
 
     def generateMergeFiles(){
         updateUrls()
-        urls.each{ searchMergeCommits(it) }
+        urls?.each{ searchMergeCommits(it) }
         repository = null
     }
 

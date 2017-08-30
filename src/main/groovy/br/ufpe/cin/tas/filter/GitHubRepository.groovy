@@ -114,8 +114,6 @@ class GitHubRepository {
 
     boolean hasGems(){
         List<String[]> railsProjects = []
-        String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION", "GEMS"]
-        railsProjects += header
         def result = false
         File gemfile = FileHandler.retrieveFile(ConstantData.GEM_FILE, getZipFolderName())
         if(gemfile) {
@@ -140,7 +138,7 @@ class GitHubRepository {
             log.info "Gemfile was not found!"
         }
 
-        CsvUtil.write(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
+        CsvUtil.append(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
         result
     }
 

@@ -18,6 +18,18 @@ class RepositoryFilterManager {
     RepositoryFilterManager() {
         candidates = []
         resultManager = new ResultManager()
+        configureRailsFile()
+    }
+
+    private static configureRailsFile(){
+        def railsRepoFile = new File(ConstantData.RAILS_REPOSITORIES_FILE)
+        if(railsRepoFile.exists()) {
+            railsRepoFile.delete()
+            String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION", "GEMS"]
+            List<String[]> railsProjects = []
+            railsProjects += header
+            CsvUtil.write(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
+        }
     }
 
     private configureFile(){

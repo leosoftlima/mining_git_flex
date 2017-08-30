@@ -38,7 +38,7 @@ class TaskSearchManager {
         candidateProjectsFile = ConstantData.CANDIDATE_REPOSITORIES_FILE
     }
 
-    private void findTasksById() throws Exception {
+    private void findTasksById() {
         log.info "Finding tasks based on ID in commit message..."
         List<String[]> selectedRepositories = []
         List<Task> allTasks = []
@@ -46,14 +46,18 @@ class TaskSearchManager {
         if (entries.size() > 1) {
             entries.remove(0) //ignore sheet header
             for (String[] entry : entries) {
-                IdTaskExtractor taskExtractor = new IdTaskExtractor(entry[0].trim())
-                def r = taskExtractor.extractTasks()
-                if(r){
-                    if(!r.allTasks.empty) allTasks += r.allTasks
-                    if(r.repository) {
-                        String[] info = r.repository
-                        selectedRepositories += info
+                try{
+                    IdTaskExtractor taskExtractor = new IdTaskExtractor(entry[0].trim())
+                    def r = taskExtractor.extractTasks()
+                    if(r){
+                        if(!r.allTasks.empty) allTasks += r.allTasks
+                        if(r.repository) {
+                            String[] info = r.repository
+                            selectedRepositories += info
+                        }
                     }
+                } catch (Exception ex) {
+                    log.info "Problem while mining repository: ${ex.message}"
                 }
             }
         }
@@ -63,22 +67,26 @@ class TaskSearchManager {
         log.info "The repositories that contains link amog tasks and code changes are saved in ${ConstantData.SELECTED_REPOSITORIES_FILE}"
     }
 
-    private findTasksByMerge() throws Exception {
+    private findTasksByMerge() {
         log.info "Finding tasks based on merge commits..."
         List<String[]> selectedRepositories = []
         List<Task> allTasks = []
         def mergeScenarioExtractor = new MergeScenarioExtractor()
         def mergeFiles = mergeScenarioExtractor.getMergeFiles()
         mergeFiles?.each { mergeFile ->
-            MergeTaskExtractor taskExtractor = new MergeTaskExtractor(mergeFile)
-            def r = taskExtractor.extractTasks()
-            if(r){
-                if(!r.allTasks.empty) allTasks += r.allTasks
-                else log.info "No task was found!"
-                if(r.repository) {
-                    String[] info = r.repository
-                    selectedRepositories += info
+            try{
+                MergeTaskExtractor taskExtractor = new MergeTaskExtractor(mergeFile)
+                def r = taskExtractor.extractTasks()
+                if(r){
+                    if(!r.allTasks.empty) allTasks += r.allTasks
+                    else log.info "No task was found!"
+                    if(r.repository) {
+                        String[] info = r.repository
+                        selectedRepositories += info
+                    }
                 }
+            } catch (Exception ex) {
+                log.info "Problem while mining repository: ${ex.message}"
             }
         }
         log.info "The tasks of GitHub projects are saved in '${ConstantData.TASKS_FOLDER}' folder"
@@ -101,9 +109,7 @@ class TaskSearchManager {
             if(DataProperties.FILTER_PROJECTS) filterGithubProjects()
             if(DataProperties.SEARCH_TASKS) searchTasks()
         } catch (Exception ex) {
-            log.info "Problem during projects searching."
-            log.info ex.message
-            ex.stackTrace.each{ log.error it.toString() }
+            log.info "Problem while mining repositories: ${ex.message}"
         }
     }
 
@@ -117,7 +123,7 @@ class TaskSearchManager {
         log.info "Filtered repositories are saved in ${ConstantData.CANDIDATE_REPOSITORIES_FILE}"
     }
 
-    def searchTasks() throws Exception {
+    def searchTasks() {
         if(!filterCommitMessage) findTasksByMerge()
         else findTasksById()
     }
