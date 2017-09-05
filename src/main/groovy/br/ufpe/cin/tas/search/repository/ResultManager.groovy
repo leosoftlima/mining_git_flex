@@ -66,7 +66,9 @@ class ResultManager {
         List<String[]> entries = CsvUtil.read(outputFile)
         if (entries.size() > 0) entries.remove(0) //ignore sheet header
         for (String[] line : entries) {
-            repos.add(new GitHubRepository(line[0], line[1], line[2], line[3] as int, line[4] as int, line[5]))
+            int stars = (line[3] && line[3] != "") ? line[3] as int : 0
+            int size = (line[4] && line[4] != "") ? line[4] as int : 0
+            repos.add(new GitHubRepository(line[0], line[1], line[2], stars, size, line[5]))
         }
         repos
     }
