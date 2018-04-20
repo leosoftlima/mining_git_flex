@@ -21,6 +21,7 @@ class DataProperties {
     public static final List<String> GEMS
     public static final String FILTER_STARS
     public static final String FILTER_YEAR
+    public static final boolean FILTER_BY_LAST_UPDATE
 
     public static final boolean SEARCH_PROJECTS
     public static final boolean FILTER_PROJECTS
@@ -54,6 +55,7 @@ class DataProperties {
             GEMS = result.gems
             FILTER_RAILS = result.filter
             FILTER_STARS = configureStarsFilter()
+            FILTER_BY_LAST_UPDATE = FILTER_STARS.empty
             FILTER_YEAR = configureYearFilter()
 
             SEARCH_PROJECTS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_SEARCH_PROJECTS),
@@ -173,8 +175,14 @@ class DataProperties {
     }
 
     private static configureStarsFilter(){
-        def value = configureMandatoryProperties(properties.(ConstantData.PROP_STARS_FILTER), ConstantData.DEFAULT_STARS)
-        '<=' + value
+        def value = properties.(ConstantData.PROP_STARS_FILTER)
+        if (!value || value.empty) {
+            value = ''
+        } else {
+            def userValue = configureMandatoryProperties(properties.(ConstantData.PROP_STARS_FILTER), ConstantData.DEFAULT_STARS)
+            value = '<=' + userValue
+        }
+        value
     }
 
     private static configureYearFilter(){

@@ -11,6 +11,7 @@ class Task {
     List<String> productionFiles
     List<String> testFiles
     String newestCommit
+    List<String> gems
 
     Task() {
 
@@ -22,6 +23,7 @@ class Task {
         commits = []
         productionFiles = []
         testFiles = []
+        gems = []
     }
 
     Task(String url, String id, List<Commit> commits, String newestCommit) {
@@ -47,7 +49,27 @@ class Task {
         productionFiles.each{ msg+= "${it}\n" }
         msg += "Test files: ${testFiles.size()}\n"
         testFiles.each{ msg+= "${it}\n" }
+        msg += "Gems: ${gems}\n"
         return msg
+    }
+
+    boolean hasCoverageAndTests(){
+        def hasGems = false
+        if(gems.contains("rails") && gems.contains("cucumber-rails") && (gems.contains("simplecov")
+                || gems.contains("coveralls"))) {
+            hasGems = true
+        }
+        if(commits.size()<=500 && hasGems) true
+        else false
+    }
+
+    boolean hasTests(){
+        def hasGems = false
+        if(gems.contains("rails") && gems.contains("cucumber-rails")) {
+            hasGems = true
+        }
+        if(commits.size()<=500 && hasGems) true
+        else false
     }
 
 }

@@ -72,8 +72,8 @@ class MergeScenarioExtractor {
                 p1.inputStream.close()
                 exportResult(merges)
                 log.info "All merge commits: ${merges.size()+counter}"
-                log.info "Selected merges: ${merges.size()}"
                 log.info "Fast-fowarding merges: $counter"
+                log.info "Selected merges: ${merges.size()}"
             } catch(Exception ex){
                 log.error "Error while searching merge commits."
                 ex.stackTrace.each{ log.error it.toString() }

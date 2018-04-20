@@ -1,9 +1,11 @@
 package br.ufpe.cin.tas.util
 
 import br.ufpe.cin.tas.search.task.Task
+import groovy.util.logging.Slf4j
 
 import java.util.regex.Matcher
 
+@Slf4j
 class Util {
 
     static deleteFile(String filename){
@@ -94,8 +96,40 @@ class Util {
         def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
         exportTasks(tasksPT, tasksCsv)
         if(!tasksPT || tasksPT.empty) return null
-        String[] info = [url, tasks.size(), tasksPT.size()]
-        [allTasks:tasksPT, repository:info]
+
+        def coverageTasks = tasksPT.findAll{ it.hasCoverageAndTests() }
+        def coverageTasksFile = tasksCsv - ".csv" + ConstantData.COVERAGE_TASKS_FILE_SUFIX
+        exportTasks(coverageTasks, coverageTasksFile)
+
+        def cucumberTasks = tasksPT.findAll{ it.hasTests() }
+        def cucumberTasksFile = tasksCsv - ".csv" + ConstantData.CUCUMBER_TASKS_FILE_SUFIX
+        exportTasks(cucumberTasks, cucumberTasksFile)
+
+        log.info "Found coverage tasks (from P&T): ${coverageTasks.size()}"
+        log.info "Found cucumber tasks (from P&T): ${cucumberTasks.size()}"
+
+        tasksPT.each{ task ->
+            log.info "TASK ${task.id}: ${task.gems}"
+        }
+
+        String[] info = [url, tasks.size(), tasksPT.size(), cucumberTasks.size()]
+        [allTasks:cucumberTasks, repository:info]
+    }
+
+    static checkRailsVersionAndGems(String path) {
+        List<String> gems = []
+        File file = new File(path + File.separator + ConstantData.GEM_FILE)
+        if (file.exists()) {
+            def lines = file.readLines()
+            ConstantData.GEMS_OF_INTEREST.each { gem ->
+                def regex = /\s*gem\s+"?'?${gem}"?'?.*/
+                def foundGem = lines.find { !(it.trim().startsWith("#")) && it ==~ regex }
+                if (foundGem) {
+                    gems += gem
+                }
+            }
+        }
+        gems
     }
 
     private static extractRootFolder(path){

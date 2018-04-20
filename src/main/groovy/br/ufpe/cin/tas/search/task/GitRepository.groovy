@@ -23,15 +23,29 @@ class GitRepository {
     String url
     String name
     String localPath
+    String lastCommit
 
     private GitRepository(String path) {
         commits = []
         if (path.startsWith("http")) extractDataFromRemoteRepository(path)
         else extractDataFromlocalRepository(path)
         searchCommits()
+        log.info "Project: ${name}"
         log.info "All commits from project: ${commits.size()}"
     }
 
+    def reset(String sha) {
+        def git = Git.open(new File(localPath))
+        git.checkout().setName(sha).setStartPoint(sha).call()
+        git.close()
+    }
+
+    def reset() {
+        def git = Git.open(new File(localPath))
+        git.checkout().setName(lastCommit).setStartPoint(lastCommit).call()
+        git.close()
+    }
+    
     def searchCommits(List hashes){
         if(hashes && !hashes.empty) {
             def result = []
@@ -96,6 +110,7 @@ class GitRepository {
         if (isCloned()) {
             log.info "Already cloned from " + url + " to " + localPath
         } else cloneRepository()
+        this.lastCommit = searchAllRevCommits()?.last()?.name
     }
 
     private extractDataFromlocalRepository(String path){

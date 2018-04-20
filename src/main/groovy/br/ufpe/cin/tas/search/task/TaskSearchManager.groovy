@@ -96,7 +96,7 @@ class TaskSearchManager {
     }
 
     private void exportSelectedProjects(List<String[]> projects) {
-        String[] header = ["REPO_URL", "#TASKS", "#P&T_TASKS"]
+        String[] header = ["REPO_URL", "#TASKS", "#P&T_TASKS", "#VALID_TASKS"]
         List<String[]> content = []
         content += header
         content += projects

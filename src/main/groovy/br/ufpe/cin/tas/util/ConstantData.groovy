@@ -41,6 +41,10 @@ abstract class ConstantData {
     public static final String FILTERED_RESULT_FOLDER = "2-filtered${File.separator}"
     public static final String CANDIDATE_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}candidate-projects.csv"
     public static final String RAILS_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}rails-projects.csv"
+    public static final String CUCUMBER_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}cucumber-projects.csv"
+    public static final String SIMPLECOV_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}simplecov-projects.csv"
+    public static final String COVERALLS_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}coveralls-projects.csv"
+    public static final String FEATURES_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}features-projects.csv"
     public static final String TASKS_FOLDER = "3-tasks${File.separator}"
     public static final String TASKS_FILE = "${TASKS_FOLDER}tasks.csv"
     public static final String MERGES_FOLDER = "${TASKS_FOLDER}merges${File.separator}"
@@ -49,6 +53,8 @@ abstract class ConstantData {
     public static final String OUTPUT_FOLDER = "output${File.separator}"
     public static final String LOG_FILE = "${OUTPUT_FOLDER}execution.log"
     public static final String REPOSITORY_FOLDER = "spg_repos${File.separator}"
+    public static final String CUCUMBER_TASKS_FILE_SUFIX = "_cucumber.csv"
+    public static final String COVERAGE_TASKS_FILE_SUFIX = "_cucumber_coverage.csv"
 
     /* Files */
     public static final String GIT_EXTENSION = ".git"
@@ -66,6 +72,7 @@ abstract class ConstantData {
     public static final List<String> VALID_PROD_FOLDERS = [PRODUCTION_FILES_RELATIVE_PATH, LIB_RELATIVE_PATH]
     public static final List<String> VALID_PROD_EXTENSIONS = [".rb", ".html", ".html.haml", ".html.erb", ".html.slim"]
     public static final String VALID_TEST_EXTENSION = ".feature"
+    public static final List<String> GEMS_OF_INTEREST = ["rails", "cucumber-rails", "simplecov", "coveralls"]
 
     /* Tasks */
     public static int TASK_LIMIT = 100

@@ -26,6 +26,10 @@ class RepositoryFilterManager {
         List<String[]> railsProjects = []
         railsProjects += header
         CsvUtil.write(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
+        CsvUtil.write(ConstantData.CUCUMBER_REPOSITORIES_FILE, railsProjects)
+        CsvUtil.write(ConstantData.SIMPLECOV_REPOSITORIES_FILE, railsProjects)
+        CsvUtil.write(ConstantData.COVERALLS_REPOSITORIES_FILE, railsProjects)
+        CsvUtil.write(ConstantData.FEATURES_REPOSITORIES_FILE, railsProjects)
     }
 
     private configureFile(){

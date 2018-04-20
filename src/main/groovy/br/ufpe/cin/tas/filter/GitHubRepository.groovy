@@ -98,6 +98,12 @@ class GitHubRepository {
                     def r1 = hasGems()
                     def r2 = false
                     if(r1) r2 = FileHandler.hasFileType(getZipFolderName())
+                    if(r2){
+                        List<String[]> featuresProjects = []
+                        String[] project = [url, branch, createdAt, stars, size, description, result]
+                        featuresProjects += project
+                        CsvUtil.append(ConstantData.RAILS_REPOSITORIES_FILE, featuresProjects)
+                    }
                     if(r1 && r2) result = true
                 } else if (DataProperties.FILTER_BY_FILE) {
                     result = FileHandler.hasFileType(getZipFolderName())
@@ -113,6 +119,9 @@ class GitHubRepository {
     }
 
     boolean hasGems(){
+        List<String[]> cucumberProjects = []
+        List<String[]> simplecovProjects = []
+        List<String[]> coverallsProjects = []
         List<String[]> railsProjects = []
         def result = false
         File gemfile = FileHandler.retrieveFile(ConstantData.GEM_FILE, getZipFolderName())
@@ -128,6 +137,11 @@ class GitHubRepository {
                     if(hasGem) {
                         log.info "Project does use gem '${gem}'"
                         counter++
+                        String[] project = [url, branch, createdAt, stars, size, description, result]
+                        if(gem.contains("cucumber")) cucumberProjects += project
+                        if(gem.contains("simplecov")) simplecovProjects += project
+                        if(gem.contains("coveralls")) coverallsProjects += project
+
                     } else log.info "Project does not use gem '${gem}'"
                 }
                 if(counter == goalCounter) result = true
@@ -139,6 +153,9 @@ class GitHubRepository {
         }
 
         CsvUtil.append(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
+        CsvUtil.append(ConstantData.CUCUMBER_REPOSITORIES_FILE, cucumberProjects)
+        CsvUtil.append(ConstantData.SIMPLECOV_REPOSITORIES_FILE, simplecovProjects)
+        CsvUtil.append(ConstantData.COVERALLS_REPOSITORIES_FILE, coverallsProjects)
         result
     }
 

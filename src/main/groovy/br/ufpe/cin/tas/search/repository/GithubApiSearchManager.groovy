@@ -22,7 +22,11 @@ class GithubApiSearchManager implements RepositorySearchManager {
         client = new GitHubClient()
         client.setCredentials(DataProperties.GITHUB_LOGIN, DataProperties.GITHUB_PASSWORD)
         repositoryService = new RepositoryService(client)
-        query = [language:'ruby', created:DataProperties.FILTER_YEAR, stars:DataProperties.FILTER_STARS, sort:'stars']
+        if(DataProperties.FILTER_BY_LAST_UPDATE){
+            query = [language:'ruby', created:DataProperties.FILTER_YEAR, sort:'updated']
+        } else {
+            query = [language:'ruby', created:DataProperties.FILTER_YEAR, stars:DataProperties.FILTER_STARS, sort:'stars']
+        }
     }
 
     private exportGitHubSearchResult(List<SearchRepository> repositories) throws IOException {

@@ -29,9 +29,7 @@ class MergeTaskExtractor {
 
     private configureMergeTask(MergeScenario merge){
         def commits1 = repository?.searchCommits(merge.leftCommits)
-        log.info "commits1.size: ${commits1.size()}"
         def commits2 = repository?.searchCommits(merge.rightCommits)
-        log.info "commits2.size: ${commits2.size()}"
         if(!commits1.empty && !commits2.empty){
             def leftTask = new MergeTask(repository.url, ++taskId as String, commits1, merge, merge.left)
             def rightTask = new MergeTask(repository.url, ++taskId as String, commits2, merge, merge.right)
@@ -63,9 +61,26 @@ class MergeTaskExtractor {
     def extractTasks(){
         def tasks = []
         mergeScenarios?.each{ tasks += configureMergeTask(it) }
+        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
         log.info "Found merge tasks: ${tasks.size()}"
-        tasks.each{ log.info it.toString() }
-        Util.exportProjectTasks(tasks, tasksCsv, repository.url)
+        log.info "Found P&T tasks: ${tasksPT.size()}"
+
+        def taskGroups = tasksPT.groupBy { it.newestCommit }
+        log.info "SHAs: ${taskGroups.size()}"
+        taskGroups.eachWithIndex{ group, index ->
+            def sha = group.key as String
+            def gems = extractGemsInfo(sha)
+            log.info "${index} Extracted gems for commit '${sha}'"
+            group.getValue().each{ task -> task.gems = gems }
+        }
+        Util.exportProjectTasks(tasksPT, tasksCsv, repository.url)
+    }
+    
+    def extractGemsInfo(String sha){
+        repository.reset(sha)
+        def gems = Util.checkRailsVersionAndGems(repository.getLocalPath())
+        repository.reset()
+        gems
     }
 
 }
