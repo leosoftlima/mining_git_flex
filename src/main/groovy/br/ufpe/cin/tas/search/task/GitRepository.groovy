@@ -1,10 +1,15 @@
 package br.ufpe.cin.tas.search.task
 
+import br.ufpe.cin.tas.search.task.merge.MergeScenario
 import groovy.util.logging.Slf4j
+import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.MergeResult
+import org.eclipse.jgit.api.ResetCommand
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.diff.RawTextComparator
+import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevTree
 import org.eclipse.jgit.treewalk.TreeWalk
@@ -34,16 +39,72 @@ class GitRepository {
         log.info "All commits from project: ${commits.size()}"
     }
 
-    def reset(String sha) {
+    def checkout(String sha) {
         def git = Git.open(new File(localPath))
         git.checkout().setName(sha).setStartPoint(sha).call()
         git.close()
     }
 
-    def reset() {
+    def checkout() {
         def git = Git.open(new File(localPath))
         git.checkout().setName(lastCommit).setStartPoint(lastCommit).call()
         git.close()
+    }
+
+    def clean() {
+        def git = Git.open(new File(localPath))
+        git.clean().setIgnore(true).setCleanDirectories(true).setForce(true).call()
+        git.close()
+    }
+
+    def reset(String sha){
+        def git = Git.open(new File(localPath))
+        git.reset().setMode(ResetCommand.ResetType.HARD).setRef(sha).call()
+        git.close()
+    }
+
+    def reset(){
+        def git = Git.open(new File(localPath))
+        git.reset().setMode(ResetCommand.ResetType.HARD).call()
+        git.close()
+    }
+
+    def resetToLastCommit(){
+        def git = Git.open(new File(localPath))
+        git.reset().setRef(lastCommit).setMode(ResetCommand.ResetType.HARD).call()
+        git.close()
+    }
+
+    def revertMerge(){
+        //remove created branch
+        deleteBranch()
+
+        //clean working directory
+        clean()
+
+        //reset
+        resetToLastCommit()
+    }
+
+    def extractConflictingFiles(MergeScenario mergeScenario) {
+        def conflictingFiles = []
+        try{
+            this.clean()
+            this.reset(mergeScenario.left)
+            this.checkout(mergeScenario.left)
+            def refNew = this.createBranch(mergeScenario.right)
+            MergeResult mergeResult = this.merge(refNew)
+            boolean conflict = (mergeResult.mergeStatus == MergeResult.MergeStatus.CONFLICTING)
+            if (conflict) {
+                conflictingFiles = mergeResult.conflicts.keySet() as List
+            }
+        } catch(ignored){
+            this.clean()
+            this.resetToLastCommit()
+            this.checkout()
+            conflictingFiles = null
+        }
+        conflictingFiles
     }
     
     def searchCommits(List hashes){
@@ -90,6 +151,32 @@ class GitRepository {
             sortedCommits.first().hash
         }
         else null
+    }
+
+    def createBranch(String commit){
+        def git = Git.open(new File(localPath))
+        Ref checkout = git.branchCreate()
+                .setName("spgstudy")
+                .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
+                .setStartPoint(commit)
+                .setForce(true)
+                .call()
+        git.close()
+        checkout
+    }
+
+    def deleteBranch() {
+        def git = Git.open(new File(localPath))
+        git.branchDelete().setBranchNames("spgstudy").setForce(true).call()
+        git.close()
+    }
+
+    def merge(Ref refNew){
+        def git = Git.open(new File(localPath))
+        MergeResult mergeResult = git.merge().include(refNew).call()
+        git.close()
+        revertMerge()
+        mergeResult
     }
 
     static GitRepository getRepository(String url) {

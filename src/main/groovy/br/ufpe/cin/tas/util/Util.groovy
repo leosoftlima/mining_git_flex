@@ -1,6 +1,7 @@
 package br.ufpe.cin.tas.util
 
 import br.ufpe.cin.tas.search.task.Task
+import br.ufpe.cin.tas.search.task.merge.MergeTask
 import groovy.util.logging.Slf4j
 
 import java.util.regex.Matcher
@@ -77,6 +78,22 @@ class Util {
         if(!path || path.empty) return false
         if (isValidFile(path) && !isTestFile(path) && !isSecondaryTestFile(path)) true
         else false
+    }
+
+    static void exportTasksWithConflictInfo(List<MergeTask> tasks, String file) {
+        String[] header = ["REPO_URL", "TASK_ID", "#HASHES", "HASHES", "#PROD_FILES", "#TEST_FILES", "LAST", "CONFLICT",
+                           "MERGE", "BASE", "#CONF_FILES", "CONF_FILES"]
+        List<String[]> content = []
+        content += header
+        tasks?.each{ task ->
+            def hashes = task.commits*.hash
+            String[] line = [task.repositoryUrl, task.id, hashes.size(), hashes.toString(),
+                             task.productionFiles.size(), task.testFiles.size(), task.newestCommit, task.conflict,
+                             task.mergeScenario.merge, task.mergeScenario.base, task.conflictingFiles.size(),
+                             task.conflictingFiles]
+            content += line
+        }
+        CsvUtil.write(file, content)
     }
 
     static void exportTasks(List<Task> tasks, String file) {

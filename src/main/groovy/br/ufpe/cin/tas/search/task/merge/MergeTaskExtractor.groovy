@@ -13,6 +13,7 @@ class MergeTaskExtractor {
     GitRepository repository
     List<MergeScenario> mergeScenarios
     String tasksCsv
+    String cucumberConflictingTasksCsv
     private static int taskId
 
     MergeTaskExtractor(String mergeFile) throws Exception {
@@ -25,9 +26,20 @@ class MergeTaskExtractor {
         def url = mergeScenarios.first().url
         repository = GitRepository.getRepository(url)
         tasksCsv = "${ConstantData.TASKS_FOLDER}${repository.name}.csv"
+        cucumberConflictingTasksCsv = "${ConstantData.TASKS_FOLDER}${repository.name}-conflict.csv"
+    }
+
+    private static printMergeInfo(MergeScenario merge){
+        log.info "Extracting merge scenario"
+        log.info "merge commit: ${merge.merge}"
+        log.info "base commit: ${merge.base}"
+        log.info "left commit: ${merge.left}"
+        log.info "right commit: ${merge.right}\n"
     }
 
     private configureMergeTask(MergeScenario merge){
+        printMergeInfo(merge)
+
         def commits1 = repository?.searchCommits(merge.leftCommits)
         def commits2 = repository?.searchCommits(merge.rightCommits)
         if(!commits1.empty && !commits2.empty){
@@ -35,6 +47,22 @@ class MergeTaskExtractor {
             def rightTask = new MergeTask(repository.url, ++taskId as String, commits2, merge, merge.right)
             return [leftTask, rightTask]
         } else return []
+    }
+
+    private configureMergeTaskWithConflictInfo(MergeScenario merge){
+        printMergeInfo(merge)
+        def result = []
+        def commits1 = repository?.searchCommits(merge.leftCommits)
+        def commits2 = repository?.searchCommits(merge.rightCommits)
+        if(!commits1.empty && !commits2.empty){
+            List conflictingFiles = repository.extractConflictingFiles(merge)
+            if(conflictingFiles!=null){
+                def leftTask = new MergeTask(repository.url, ++taskId as String, commits1, merge, merge.left, conflictingFiles)
+                def rightTask = new MergeTask(repository.url, ++taskId as String, commits2, merge, merge.right, conflictingFiles)
+                result = [leftTask, rightTask]
+            }
+        }
+        result
     }
 
     private List<MergeScenario> extractMergeScenarios(){
@@ -77,10 +105,29 @@ class MergeTaskExtractor {
     }
     
     def extractGemsInfo(String sha){
+        repository.clean()
         repository.reset(sha)
+        repository.checkout(sha)
         def gems = Util.checkRailsVersionAndGems(repository.getLocalPath())
         repository.reset()
+        repository.checkout()
         gems
+    }
+
+    def extractCucumberConflictingTasks(){
+        List<MergeTask> tasks = []
+        mergeScenarios?.each{ tasks += configureMergeTaskWithConflictInfo(it) }
+        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
+        def taskGroups = tasksPT.groupBy { it.newestCommit }
+        log.info "SHAs: ${taskGroups.size()}"
+        taskGroups.eachWithIndex{ group, index ->
+            def sha = group.key as String
+            def gems = extractGemsInfo(sha)
+            log.info "${index} Extracted gems for commit '${sha}'"
+            group.getValue().each{ task -> task.gems = gems }
+        }
+        def cucumberTasks = tasksPT.findAll{ it.hasTests() }
+        Util.exportTasksWithConflictInfo(cucumberTasks, cucumberConflictingTasksCsv)
     }
 
 }
