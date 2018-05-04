@@ -40,50 +40,52 @@ class GitRepository {
     }
 
     def checkout(String sha) {
-        def git = Git.open(new File(localPath))
-        git.checkout().setName(sha).setStartPoint(sha).call()
-        git.close()
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "checkout", sha)
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
     }
 
     def checkout() {
-        def git = Git.open(new File(localPath))
-        git.checkout().setName(lastCommit).setStartPoint(lastCommit).call()
-        git.close()
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "checkout", lastCommit)
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
     }
 
     def clean() {
-        def git = Git.open(new File(localPath))
-        git.clean().setIgnore(true).setCleanDirectories(true).setForce(true).call()
-        git.close()
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "clean", "-f", "-d", "-x")
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
     }
 
     def reset(String sha){
-        def git = Git.open(new File(localPath))
-        git.reset().setMode(ResetCommand.ResetType.HARD).setRef(sha).call()
-        git.close()
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "reset", "--hard", sha)
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
     }
 
     def reset(){
-        def git = Git.open(new File(localPath))
-        git.reset().setMode(ResetCommand.ResetType.HARD).call()
-        git.close()
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "reset", "--hard")
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
     }
 
     def resetToLastCommit(){
-        def git = Git.open(new File(localPath))
-        git.reset().setRef(lastCommit).setMode(ResetCommand.ResetType.HARD).call()
-        git.close()
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "reset", "--hard", lastCommit)
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
     }
 
     def revertMerge(){
-        //remove created branch
-        deleteBranch()
-
-        //clean working directory
-        clean()
-
-        //reset
-        resetToLastCommit()
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "merge", "--abort")
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
     }
 
     def extractConflictingFiles(MergeScenario mergeScenario) {
@@ -165,18 +167,33 @@ class GitRepository {
         checkout
     }
 
-    def deleteBranch() {
-        def git = Git.open(new File(localPath))
-        git.branchDelete().setBranchNames("spgstudy").setForce(true).call()
-        git.close()
-    }
-
     def merge(Ref refNew){
         def git = Git.open(new File(localPath))
         MergeResult mergeResult = git.merge().include(refNew).call()
         git.close()
         revertMerge()
         mergeResult
+    }
+
+    def merge(String left, String right){
+        def conflictingFiles = []
+        try {
+            this.clean()
+            this.reset(left)
+            this.checkout(left)
+            def refNew = this.createBranch(right)
+            MergeResult mergeResult = this.merge(refNew)
+            boolean conflict = (mergeResult.mergeStatus == MergeResult.MergeStatus.CONFLICTING)
+            if (conflict) {
+                conflictingFiles = mergeResult.conflicts.keySet() as List
+            }
+        } catch(ignored){
+            this.clean()
+            this.resetToLastCommit()
+            this.checkout()
+            conflictingFiles = null
+        }
+        conflictingFiles
     }
 
     static GitRepository getRepository(String url) {
