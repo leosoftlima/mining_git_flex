@@ -1,5 +1,6 @@
 package br.ufpe.cin.tas.filter
 
+import br.ufpe.cin.tas.util.Util
 import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.util.ConstantData
 import br.ufpe.cin.tas.util.DataProperties
@@ -105,18 +106,10 @@ class FileHandler {
 
     static File retrieveFile(String name, String folder) {
         File result = null
-        File dir = new File(folder)
-        File[] files = dir.listFiles()
-
-        if (files == null) return null
-
-        for (File f : files) {
-            if (result) return result
-            else if (f.isDirectory()) result = retrieveFile(name, f.getAbsolutePath())
-            else if (f.getName().endsWith(name)) {
-                result = f
-                break
-            }
+        def allFiles = Util.findFilesFromFolder(folder)
+        def candidates = allFiles?.findAll{ it.endsWith(name) }?.sort()
+        if(!candidates.empty){
+            result = new File(candidates.first())
         }
         result
     }
