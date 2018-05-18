@@ -102,7 +102,7 @@ class GitHubRepository {
                         List<String[]> featuresProjects = []
                         String[] project = [url, branch, createdAt, stars, size, description, result]
                         featuresProjects += project
-                        CsvUtil.append(ConstantData.RAILS_REPOSITORIES_FILE, featuresProjects)
+                        CsvUtil.append(ConstantData.FEATURES_REPOSITORIES_FILE, featuresProjects)
                     }
                     if(r1 && r2) result = true
                 } else if (DataProperties.FILTER_BY_FILE) {
@@ -127,8 +127,6 @@ class GitHubRepository {
         File gemfile = FileHandler.retrieveFile(ConstantData.GEM_FILE, getZipFolderName())
         if(gemfile) {
             def lines = gemfile.readLines()
-            int goalCounter = DataProperties.GEMS.size()
-            int counter = 0
             def railsProject = isRailsProject(lines)
             if(railsProject){
                 DataProperties.GEMS.each { gem ->
@@ -136,15 +134,16 @@ class GitHubRepository {
                     def hasGem = lines.find{ !(it.trim().startsWith("#")) && it==~regex }
                     if(hasGem) {
                         log.info "Project does use gem '${gem}'"
-                        counter++
                         String[] project = [url, branch, createdAt, stars, size, description, result]
-                        if(gem.contains("cucumber")) cucumberProjects += project
+                        if(gem.contains("cucumber")) {
+                            cucumberProjects += project
+                            result = true
+                        }
                         if(gem.contains("simplecov")) simplecovProjects += project
                         if(gem.contains("coveralls")) coverallsProjects += project
 
                     } else log.info "Project does not use gem '${gem}'"
                 }
-                if(counter == goalCounter) result = true
                 String[] project = [url, branch, createdAt, stars, size, description, result]
                 railsProjects += project
             } else log.info "It is not a Rails project!"
