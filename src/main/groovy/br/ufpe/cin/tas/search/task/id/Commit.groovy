@@ -7,6 +7,7 @@ class Commit {
     List<String> files
     String author
     long date
+    boolean isMerge
 
     String toString() {
         "$hash*${new Date(date * 1000)}*$author*$message*${files.toListString()}"

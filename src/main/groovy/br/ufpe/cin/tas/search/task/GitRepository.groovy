@@ -37,6 +37,7 @@ class GitRepository {
         searchCommits()
         log.info "Project: ${name}"
         log.info "All commits from project: ${commits.size()}"
+        lastCommit = commits.first().hash
     }
 
     def checkout(String sha) {
@@ -127,7 +128,8 @@ class GitRepository {
             revCommits?.each { c ->
                 def files = getAllChangedFilesFromCommit(c)
                 commits += new Commit(hash: c.name, message: c.fullMessage.replaceAll(RegexUtil.NEW_LINE_REGEX, " "),
-                        files: files, author: c.authorIdent.name, date: c.commitTime)
+                        files: files, author: c.authorIdent.name, date: c.commitTime, isMerge:c.parentCount>1)
+
             }
         }
     }
@@ -214,7 +216,6 @@ class GitRepository {
         if (isCloned()) {
             log.info "Already cloned from " + url + " to " + localPath
         } else cloneRepository()
-        this.lastCommit = searchAllRevCommits()?.last()?.name
     }
 
     private extractDataFromlocalRepository(String path){
@@ -249,7 +250,7 @@ class GitRepository {
         }
     }
 
-    private Iterable<RevCommit> searchAllRevCommits() {
+    Iterable<RevCommit> searchAllRevCommits() {
         def git = Git.open(new File(localPath))
         Iterable<RevCommit> logs = git?.log()?.all()?.call()
         git.close()

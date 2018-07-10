@@ -44,11 +44,10 @@ class Task {
     String toString() {
         def msg = "Task ${id}:\n"
         msg += "Commits: ${commits.size()}\n"
+        commits.each{ msg+= "${it.hash}\n" }
         msg += "Newest commit: $newestCommit\n"
         msg += "Production files: ${productionFiles.size()}\n"
-        productionFiles.each{ msg+= "${it}\n" }
         msg += "Test files: ${testFiles.size()}\n"
-        testFiles.each{ msg+= "${it}\n" }
         msg += "Gems: ${gems}\n"
         return msg
     }

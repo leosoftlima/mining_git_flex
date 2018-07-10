@@ -12,10 +12,12 @@ class MergeScenarioExtractor {
     GitRepository repository
     ProcessBuilder processBuilderMerges
     List<String> urls
+    List<String> fastForwardMerges
 
     MergeScenarioExtractor() {
         processBuilderMerges = new ProcessBuilder("git", "log", "--merges")
         urls = []
+        fastForwardMerges = []
     }
 
     private updateUrls(){
@@ -40,8 +42,14 @@ class MergeScenarioExtractor {
         CsvUtil.write(csv, content)
     }
 
+    private exportFastForwardMerges(){
+        def csv = ConstantData.MERGES_FOLDER+repository.name.replaceAll("/", "_")+ConstantData.FASTFORWARD_MERGE_TASK_SUFIX
+        List<String[]> content = []
+        fastForwardMerges.each { content += [it] as String[] }
+        CsvUtil.write(csv, content)
+    }
+
     private searchMergeCommits(String url){
-        def counter = 0
         List<MergeScenario> merges = []
 
         if(url==null || url.empty) {
@@ -66,13 +74,16 @@ class MergeScenarioExtractor {
                             mergeScenario.merge = merge
                             merges += mergeScenario
                             log.info mergeScenario.toString()
-                        } else counter++
+                        } else {
+                            fastForwardMerges += merge
+                        }
                     }
                 }
                 p1.inputStream.close()
                 exportResult(merges)
-                log.info "All merge commits: ${merges.size()+counter}"
-                log.info "Fast-fowarding merges: $counter"
+                exportFastForwardMerges()
+                log.info "All merge commits: ${merges.size()+fastForwardMerges.size()}"
+                log.info "Fast-fowarding merges: ${fastForwardMerges.size()}"
                 log.info "Selected merges: ${merges.size()}"
             } catch(Exception ex){
                 log.error "Error while searching merge commits."

@@ -51,6 +51,7 @@ abstract class ConstantData {
     public static final String TASKS_FILE = "${TASKS_FOLDER}tasks.csv"
     public static final String MERGES_FOLDER = "${TASKS_FOLDER}merges${File.separator}"
     public static final String MERGE_TASK_SUFIX = "_merges.csv"
+    public static final String FASTFORWARD_MERGE_TASK_SUFIX = "_fastforward_merges.csv"
     public static final String CONFLICTING_MERGE_FILE_SUFIX = "_merges_conflicting.csv"
     public static final String CLEAN_MERGE_FILE_SUFIX = "_merges_clean.csv"
     public static final String SELECTED_REPOSITORIES_FILE = "${TASKS_FOLDER}selected-projects.csv"
