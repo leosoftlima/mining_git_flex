@@ -81,16 +81,13 @@ class Util {
     }
 
     static void exportTasksWithConflictInfo(List<MergeTask> tasks, String file) {
-        String[] header = ["REPO_URL", "TASK_ID", "#HASHES", "HASHES", "#PROD_FILES", "#TEST_FILES", "LAST", "CONFLICT",
-                           "MERGE", "BASE", "#CONF_FILES", "CONF_FILES"]
+        String[] header = ["REPO_URL", "TASK_ID", "#HASHES", "HASHES", "#PROD_FILES", "#TEST_FILES", "LAST", "MERGE", "BASE"]
         List<String[]> content = []
         content += header
         tasks?.each{ task ->
             def hashes = task.commits*.hash
-            String[] line = [task.repositoryUrl, task.id, hashes.size(), hashes.toString(),
-                             task.productionFiles.size(), task.testFiles.size(), task.newestCommit, task.conflict,
-                             task.mergeScenario.merge, task.mergeScenario.base, task.conflictingFiles.size(),
-                             task.conflictingFiles]
+            String[] line = [task.repositoryUrl, task.id, hashes.size(), hashes.toString(), task.productionFiles.size(),
+                             task.testFiles.size(), task.newestCommit, task.merge, task.base]
             content += line
         }
         CsvUtil.write(file, content)

@@ -76,9 +76,7 @@ class TaskSearchManager {
         mergeFiles?.each { mergeFile ->
             try{
                 MergeTaskExtractor taskExtractor = new MergeTaskExtractor(mergeFile)
-                def r
-                if(DataProperties.CONFLICT_ANALYSIS) r = taskExtractor.extractCucumberConflictingTasks()
-                else r = taskExtractor.extractTasks()
+                def r = taskExtractor.extractTasks()
                 if(r){
                     if(!r.allTasks.empty) allTasks += r.allTasks
                     else log.info "No task was found!"

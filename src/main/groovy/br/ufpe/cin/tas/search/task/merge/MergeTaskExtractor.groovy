@@ -1,6 +1,7 @@
 package br.ufpe.cin.tas.search.task.merge
 
 import br.ufpe.cin.tas.search.task.id.Commit
+import br.ufpe.cin.tas.util.DataProperties
 import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.search.task.GitRepository
 import br.ufpe.cin.tas.util.ConstantData
@@ -52,10 +53,10 @@ class MergeTaskExtractor {
             def found = fastForwardMerges.find{ it == intermediateMerge.hash }
             if(found){
                 log.info "intermediateMerge é fast-forward merge: ${intermediateMerge.hash}"
-                leftTask = new MergeTask(repository.url, ++taskId as String, [intermediateMerge], merge, merge.left)
+                leftTask = new MergeTask(repository.url, ++taskId as String, [intermediateMerge], merge.merge, merge.base, merge.left)
             } else log.info "intermediateMerge não é fast-forward merge: ${intermediateMerge.hash}"
         } else if(!(commitsOfInterest.size()==1 && commitsOfInterest.get(0).isMerge) ) {
-            leftTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, merge, merge.left)
+            leftTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, merge.merge, merge.base, merge.left)
         }
         leftTask
     }
@@ -70,10 +71,10 @@ class MergeTaskExtractor {
             def found = fastForwardMerges.find{ it == intermediateMerge.hash }
             if(found){
                 log.info "intermediateMerge é fast-forward merge: ${intermediateMerge.hash}"
-                rightTask = new MergeTask(repository.url, ++taskId as String, [intermediateMerge], merge, merge.right)
+                rightTask = new MergeTask(repository.url, ++taskId as String, [intermediateMerge], merge.merge, merge.base, merge.right)
             } else log.info "intermediateMerge não é fast-forward merge: ${intermediateMerge.hash}"
         } else if(!(commitsOfInterest.size()==1 && commitsOfInterest.get(0).isMerge) ) {
-            rightTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, merge, merge.right)
+            rightTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest,  merge.merge, merge.base, merge.right)
         }
         rightTask
     }
@@ -85,7 +86,7 @@ class MergeTaskExtractor {
         log.info "Ramo left possui total de commits: ${commits1.size()}"
         commits1.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
 
-        def result = []
+        List<MergeTask> result = []
         if(mergeCommits1.size()==1){ //há apenas 1 merge
             log.info "há apenas 1 merge: ${mergeCommits1.get(0).hash}"
             def leftTask = extractLastLeftTask(mergeCommits1, commits1, merge)
@@ -103,8 +104,8 @@ class MergeTaskExtractor {
                 def index2 = commits1.indexOf(pair.get(1))
                 def commitsOfInterest = commits1.subList(index1+1, index2)
                 if(!commitsOfInterest.empty && !(commitsOfInterest.size()==1 && commitsOfInterest.get(0).isMerge) ) {
-                    leftTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, merge,
-                            commitsOfInterest.first().hash)
+                    leftTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, pair.get(0).hash,
+                            pair.get(1).hash, commitsOfInterest.first().hash)
                     result += leftTask
                 }
             }
@@ -121,7 +122,7 @@ class MergeTaskExtractor {
         log.info "Ramo right possui total de commits: ${commits2.size()}"
         commits2.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
 
-        def result = []
+        List<MergeTask> result = []
         if(mergeCommits2.size()==1){ //há apenas 1 merge
             log.info "há apenas 1 merge: ${mergeCommits2.get(0).hash}"
             def leftTask = extractLastRightTask(mergeCommits2, commits2, merge)
@@ -139,8 +140,8 @@ class MergeTaskExtractor {
                 def index2 = commits2.indexOf(pair.get(1))
                 def commitsOfInterest = commits2.subList(index1+1, index2)
                 if(!commitsOfInterest.empty && !(commitsOfInterest.size()==1 && commitsOfInterest.get(0).isMerge) ) {
-                    rightTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, merge,
-                            commitsOfInterest.first().hash)
+                    rightTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, pair.get(0).hash,
+                            pair.get(1).hash, commitsOfInterest.first().hash)
                     result += rightTask
                 }
             }
@@ -153,7 +154,7 @@ class MergeTaskExtractor {
     private configureMergeTask(MergeScenario merge){
         printMergeInfo(merge)
 
-        def result = []
+        List<MergeTask> result = []
         def commits1 = repository?.searchCommits(merge.leftCommits.reverse())
         def mergeCommits1 = commits1.findAll{ it.isMerge }
         def commits2 = repository?.searchCommits(merge.rightCommits.reverse())
@@ -224,7 +225,7 @@ class MergeTaskExtractor {
     }
 
     def extractTasks(){
-        def tasks = []
+        List<MergeTask> tasks = []
         mergeScenarios?.each{ tasks += configureMergeTask(it) }
         def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
         log.info "Found merge tasks: ${tasks.size()}"
@@ -239,6 +240,10 @@ class MergeTaskExtractor {
             group.getValue().each{ task -> task.gems = gems }
         }
         Util.exportProjectTasks(tasksPT, tasksCsv, repository.url)
+        if(DataProperties.CONFLICT_ANALYSIS){
+            def cucumberTasks = tasksPT.findAll{ it.hasTests() }
+            Util.exportTasksWithConflictInfo(cucumberTasks, cucumberConflictingTasksCsv)
+        }
     }
     
     def extractGemsInfo(String sha){
@@ -249,22 +254,6 @@ class MergeTaskExtractor {
         repository.reset()
         repository.checkout()
         gems
-    }
-
-    def extractCucumberConflictingTasks(){
-        List<MergeTask> tasks = []
-        mergeScenarios?.each{ tasks += configureMergeTaskWithConflictInfo(it) }
-        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-        def taskGroups = tasksPT.groupBy { it.newestCommit }
-        log.info "SHAs: ${taskGroups.size()}"
-        taskGroups.eachWithIndex{ group, index ->
-            def sha = group.key as String
-            def gems = extractGemsInfo(sha)
-            log.info "${index} Extracted gems for commit '${sha}'"
-            group.getValue().each{ task -> task.gems = gems }
-        }
-        def cucumberTasks = tasksPT.findAll{ it.hasTests() }
-        Util.exportTasksWithConflictInfo(cucumberTasks, cucumberConflictingTasksCsv)
     }
 
 }
