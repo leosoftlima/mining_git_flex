@@ -106,7 +106,7 @@ class MergeScenarioExtractor {
         ProcessBuilder builder = new ProcessBuilder("git", "rev-list", "${base}..${other}")
         builder.directory(new File(repository.localPath))
         Process process = builder.start()
-        def commitSet = process?.inputStream?.readLines()?.reverse()
+        def commitSet = process?.inputStream?.readLines()
         process?.inputStream?.close()
         commitSet
     }
@@ -117,8 +117,8 @@ class MergeScenarioExtractor {
         def leftCommits = getCommitSetBetween(base, left)
         def rightCommits = getCommitSetBetween(base, right)
         if(leftCommits.empty || rightCommits.empty) return null
-        def leftHash = leftCommits.last()
-        def rightHash = rightCommits.last()
+        def leftHash = leftCommits.first()
+        def rightHash = rightCommits.first()
         new MergeScenario(left: leftHash, right: rightHash, leftCommits: leftCommits, rightCommits: rightCommits, base: base)
     }
 
