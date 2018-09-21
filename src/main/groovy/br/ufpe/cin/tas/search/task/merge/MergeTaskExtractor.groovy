@@ -225,9 +225,9 @@ class MergeTaskExtractor {
     def extractTasks(){
         List<MergeTask> tasks = []
         mergeScenarios?.each{ tasks += configureMergeTask(it) }
-        tasks = tasks.unique{ [it.repositoryUrl, it.commits, it.newestCommit, it.merge, it.base] }
-        tasks = tasks.unique{ it.id }
-        tasks = tasks.unique{ it.commits }.sort{ it.id }
+        tasks = tasks.unique{ [it.repositoryUrl, it.newestCommit, it.merge, it.base] }
+        tasks = tasks.unique{ [it.repositoryUrl, it.commits] }
+        tasks = tasks.unique{ [it.repositoryUrl, it.id] }.sort{ it.id }
         log.info "Unique tasks: ${tasks.size()}"
 
         def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
