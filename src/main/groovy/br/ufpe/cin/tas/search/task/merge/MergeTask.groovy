@@ -32,4 +32,12 @@ class MergeTask extends Task {
         this.conflict = !conflictingFiles.empty
     }
 
+    @Override
+    String toString() {
+        def msg = super.toString()
+        msg += "Merge commit: $merge\n"
+        msg += "Base commit: ${base}\n"
+        return msg
+    }
+
 }
