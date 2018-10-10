@@ -62,9 +62,9 @@ class Task {
         else false
     }
 
-    boolean hasTests(){
+    boolean usesCucumber(){
         def hasGems = false
-        if(gems.contains("rails") && gems.contains("cucumber-rails")) {
+        if(gems.contains("cucumber-rails")) {
             hasGems = true
         }
         if(commits.size()<=500 && hasGems) true

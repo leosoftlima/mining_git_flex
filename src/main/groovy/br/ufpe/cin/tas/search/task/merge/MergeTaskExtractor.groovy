@@ -207,7 +207,7 @@ class MergeTaskExtractor {
         }
         Util.exportProjectTasks(tasksPT, tasksCsv, repository.url)
         if(DataProperties.CONFLICT_ANALYSIS){
-            def cucumberTasks = tasksPT.findAll{ it.hasTests() }
+            def cucumberTasks = tasksPT.findAll{ it.usesCucumber() }
             Util.exportTasksWithConflictInfo(cucumberTasks, cucumberConflictingTasksCsv)
         }
     }
