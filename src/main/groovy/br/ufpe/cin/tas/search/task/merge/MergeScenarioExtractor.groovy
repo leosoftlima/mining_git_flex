@@ -4,18 +4,15 @@ import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.search.task.GitRepository
 import br.ufpe.cin.tas.util.ConstantData
 import br.ufpe.cin.tas.util.CsvUtil
-import br.ufpe.cin.tas.util.RegexUtil
 import br.ufpe.cin.tas.util.Util
 
 @Slf4j
 class MergeScenarioExtractor {
     GitRepository repository
-    ProcessBuilder processBuilderMerges
     List<String> urls
     List<String> fastForwardMerges
 
     MergeScenarioExtractor() {
-        processBuilderMerges = new ProcessBuilder("git", "log", "--merges")
         urls = []
         fastForwardMerges = []
     }
@@ -59,10 +56,9 @@ class MergeScenarioExtractor {
             try{
                 log.info "Extracting merge commit from project '$url'"
                 repository = GitRepository.getRepository(url)
-                processBuilderMerges.directory(new File(repository.localPath))
-                Process p1 = processBuilderMerges.start()
-                List<String> lines = p1.inputStream.readLines()
+                List<String> lines = repository.searchMergeCommits()
                 lines?.eachWithIndex { line, index ->
+                    println line
                     if(line.startsWith('commit')){
                         def merge = line.split(' ')[1]
                         def nextLine = lines.get(index+1)
@@ -79,7 +75,7 @@ class MergeScenarioExtractor {
                         }
                     }
                 }
-                p1.inputStream.close()
+
                 exportResult(merges)
                 exportFastForwardMerges()
                 log.info "All merge commits: ${merges.size()+fastForwardMerges.size()}"
@@ -92,30 +88,11 @@ class MergeScenarioExtractor {
         }
     }
 
-    private findBase(String left, String right){
-        ProcessBuilder builder = new ProcessBuilder("git", "merge-base", left, right)
-        builder.directory(new File(repository.localPath))
-        Process process = builder.start()
-        def aux = process?.inputStream?.readLines()
-        process?.inputStream?.close()
-        if(!aux || aux.empty) return null
-        else aux?.first()?.replaceAll(RegexUtil.NEW_LINE_REGEX,"")
-    }
-
-    private getCommitSetBetween(String base, String other){
-        ProcessBuilder builder = new ProcessBuilder("git", "rev-list", "${base}..${other}")
-        builder.directory(new File(repository.localPath))
-        Process process = builder.start()
-        def commitSet = process?.inputStream?.readLines()
-        process?.inputStream?.close()
-        commitSet
-    }
-
     private configureMergeScenario(String left, String right){
-        def base = findBase(left, right)
+        def base = repository.findBase(left, right)
         if(!base || base.empty) { return null }
-        def leftCommits = getCommitSetBetween(base, left)
-        def rightCommits = getCommitSetBetween(base, right)
+        def leftCommits = repository.getCommitSetBetween(base, left)
+        def rightCommits = repository.getCommitSetBetween(base, right)
         if(leftCommits.empty || rightCommits.empty) return null
         def leftHash = leftCommits.first()
         def rightHash = rightCommits.first()
