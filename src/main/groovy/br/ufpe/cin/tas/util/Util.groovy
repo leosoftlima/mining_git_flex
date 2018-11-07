@@ -115,7 +115,7 @@ class Util {
         def coverageTasksFile = tasksCsv - ".csv" + ConstantData.COVERAGE_TASKS_FILE_SUFIX
         exportTasks(coverageTasks, coverageTasksFile)
 
-        def cucumberTasks = tasksPT.findAll{ it.hasTests() }
+        def cucumberTasks = tasksPT.findAll{ it.usesCucumber() }
         def cucumberTasksFile = tasksCsv - ".csv" + ConstantData.CUCUMBER_TASKS_FILE_SUFIX
         exportTasks(cucumberTasks, cucumberTasksFile)
 
