@@ -5,7 +5,8 @@ import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.CreateBranchCommand
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.MergeResult
-import org.eclipse.jgit.api.ResetCommand
+import org.eclipse.jgit.api.RebaseCommand
+import org.eclipse.jgit.api.RebaseResult
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.diff.RawTextComparator
@@ -84,6 +85,43 @@ class GitRepository {
 
     def revertMerge(){
         ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "merge", "--abort")
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
+    }
+
+    def searchMergeCommits(){
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "log", "--merges")
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
+        def result = p1?.inputStream?.readLines()
+        p1?.inputStream?.close()
+        result
+    }
+
+    def findBase(String left, String right){
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "merge-base", left, right)
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
+        def aux = p1?.inputStream?.readLines()
+        p1?.inputStream?.close()
+        if(!aux || aux.empty) return null
+        else aux?.first()?.replaceAll(RegexUtil.NEW_LINE_REGEX,"")
+    }
+
+    def getCommitSetBetween(String base, String other){
+        ProcessBuilder builder = new ProcessBuilder("git", "rev-list", "${base}..${other}")
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        def commitSet = process?.inputStream?.readLines()
+        process?.inputStream?.close()
+        commitSet
+    }
+
+    def deleteBranch(){
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "branch", "-D", "spgstudy")
         processBuilderMerges.directory(new File(localPath))
         Process p1 = processBuilderMerges.start()
         p1.waitFor()
@@ -169,6 +207,14 @@ class GitRepository {
         checkout
     }
 
+    def merge(){
+        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "merge", "spgstudy")
+        processBuilderMerges.directory(new File(localPath))
+        Process p1 = processBuilderMerges.start()
+        p1.waitFor()
+        p1.inputStream.readLines()
+    }
+
     def merge(Ref refNew){
         def git = Git.open(new File(localPath))
         MergeResult mergeResult = git.merge().include(refNew).call()
@@ -180,11 +226,12 @@ class GitRepository {
     def merge(String left, String right){
         def conflictingFiles = []
         try {
-            this.clean()
             this.reset(left)
-            this.checkout(left)
+            this.clean()
             def refNew = this.createBranch(right)
+            this.checkout("master")
             MergeResult mergeResult = this.merge(refNew)
+            this.deleteBranch()
             boolean conflict = (mergeResult.mergeStatus == MergeResult.MergeStatus.CONFLICTING)
             if (conflict) {
                 conflictingFiles = mergeResult.conflicts.keySet() as List
