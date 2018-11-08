@@ -43,73 +43,114 @@ class MergeTaskExtractor {
         log.info "right commit: ${merge.right}\n"
     }
 
-    private extractFirstTaskFromPartialMergeScenario(List<Commit> mergeCommits1, List<Commit> commits1, MergeScenario merge){
-        def intermediateMerge = mergeCommits1.get(0)
-        extractTask(intermediateMerge, commits1, merge)
-    }
-
-    private extractLastTaskFromPartialMergeScenario(List<Commit> mergeCommits1, List<Commit> commits1, MergeScenario merge){
-        def leftTask = null
-        def mergeCommit = mergeCommits1.last()
+    private extractLastTaskFromPartialMergeScenario(List<Commit> mergeCommits, List<Commit> commits, MergeScenario merge){
+        def task = null
+        def mergeCommit = mergeCommits.last()
         def baseCommit = merge.base
         log.info "Merge pairs: [${mergeCommit.hash}, ${baseCommit}]"
-        def index1 = commits1.indexOf(mergeCommit)
-        def commitsOfInterest = commits1.subList(index1+1, commits1.size())
-        if(!commitsOfInterest.empty && !(commitsOfInterest.size()==1 && commitsOfInterest.get(0).isMerge) ) {
-            leftTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, mergeCommit.hash,
+        def index = commits.indexOf(mergeCommit)
+        def commitsOfInterest = commits.subList(index+1, commits.size())
+        if(!commitsOfInterest.empty) {
+            task = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, mergeCommit.hash,
                     baseCommit, commitsOfInterest.first().hash)
         }
-        leftTask
+        task
     }
 
-    private extractTask(Commit intermediateMerge, List<Commit> commits1, MergeScenario merge){
-        def leftTask = null
-        def index = commits1.indexOf(intermediateMerge)
-        def commitsOfInterest = commits1.subList(0, index)
-        if(commitsOfInterest.empty){ //there is only an intermediate merge
-            def found = fastForwardMerges.find{ it == intermediateMerge.hash }
-            if(found){
-                log.info "Intermediate merge is fast-forward: ${intermediateMerge.hash}"
-                leftTask = new MergeTask(repository.url, ++taskId as String, [intermediateMerge], merge.merge, merge.base, merge.left)
-            } else log.info "Intermediate merge is not fast-forward: ${intermediateMerge.hash}"
-        } else if(!(commitsOfInterest.size()==1 && commitsOfInterest.get(0).isMerge) ) {
-            leftTask = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, merge.merge,
-                    intermediateMerge.hash, merge.left)
+    private extractFirstTaskFromPartialMergeScenario(List<Commit> mergeCommits, List<Commit> commits, MergeScenario merge){
+        def task = null
+        def mergeCommit = merge.merge
+        def baseCommit = mergeCommits.first()
+        log.info "Merge pairs: [${mergeCommit}, ${baseCommit.hash}]"
+        def index = commits.indexOf(baseCommit)
+        def commitsOfInterest = commits.subList(0, index)
+        if(!commitsOfInterest.empty) {
+            task = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, mergeCommit,
+                    baseCommit.hash, commitsOfInterest.first().hash)
         }
-        leftTask
+        task
     }
 
-    private extractTasksFromIntermediateMerge(MergeScenario originalMergeScenario, List<Commit> commits){
-        def mergeCommits = commits.findAll{ it.isMerge }
+    private extractTasksWhenThereIsOnlyOneIntermediateMerge(Commit intermediateMerge, List<Commit> commits,
+                                                            MergeScenario merge){
+        def tasks = []
+        if(commits.size()> 1){ //if there only 1 commit and it is a merge, we cannot extract any task
+            def index = commits.indexOf(intermediateMerge)
+            def  set1 = commits.subList(0, index) //task between merge.merge and intermediateMerge
+            if(!set1.empty){ //if the merge is not the first commit, there is a valid commit set
+                tasks += new MergeTask(repository.url, ++taskId as String, set1, merge.merge, intermediateMerge.hash,
+                        set1.first().hash)
+            }
+
+            def last = commits.size()-1
+            if(index<last) { //task between intermediateMerge and merge.base
+                def set2 = commits.subList(index+1, commits.size())
+                if(!set2.empty){
+                    tasks += new MergeTask(repository.url, ++taskId as String, set2, intermediateMerge.hash, merge.base,
+                            set2.first().hash)
+                }
+            }
+        }
+        tasks
+    }
+
+    private extractTasksFromIntermediateMerge(MergeScenario originalMergeScenario, List<Commit> commitsSetFromBranch){
+        def mergeCommits = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) }
         List<MergeTask> result = []
         if(mergeCommits.size()==1){ //only 1 merge
-            log.info "There is only 1 merge: ${mergeCommits.get(0).hash}"
+            log.info "There is only 1 intermediate merge: ${mergeCommits.get(0).hash}"
             log.info "Merge pairs: [${originalMergeScenario.merge}, ${mergeCommits.get(0).hash}]"
-            def task = extractFirstTaskFromPartialMergeScenario(mergeCommits, commits, originalMergeScenario)
-            if(task) result += task
+            result += extractTasksWhenThereIsOnlyOneIntermediateMerge(mergeCommits.get(0), commitsSetFromBranch,
+                    originalMergeScenario)
         } else{ //multiple merges
+            log.info "There is multiple intermediate merges: ${mergeCommits.size()}"
+
             /* commits set between merge and the first intermediate merge */
-            def task = extractFirstTaskFromPartialMergeScenario(mergeCommits, commits, originalMergeScenario)
-            log.info "Merge pairs: [${originalMergeScenario.merge}, ${mergeCommits.get(0).hash}]"
+            def task = extractFirstTaskFromPartialMergeScenario(mergeCommits, commitsSetFromBranch, originalMergeScenario)
             if(task) result += task
 
             /* commits set between merges */
             def pairs = mergeCommits.collate(2, 1, false)
             pairs.each{ pair ->
                 log.info "Merge pairs: ${pair*.hash}"
-                def index1 = commits.indexOf(pair.get(0))
-                def index2 = commits.indexOf(pair.get(1))
-                def commitsOfInterest = commits.subList(index1+1, index2)
+                def index1 = commitsSetFromBranch.indexOf(pair.get(0))
+                def index2 = commitsSetFromBranch.indexOf(pair.get(1))
+                def commitsOfInterest = commitsSetFromBranch.subList(index1+1, index2)
                 if(!commitsOfInterest.empty && !(commitsOfInterest.size()==1 && commitsOfInterest.get(0).isMerge) ) {
-                    task = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, pair.get(0).hash,
+                    result += new MergeTask(repository.url, ++taskId as String, commitsOfInterest, pair.get(0).hash,
                             pair.get(1).hash, commitsOfInterest.first().hash)
-                    result += task
                 }
             }
 
             /* commits set between last intermediate merge and base */
-            task = extractLastTaskFromPartialMergeScenario(mergeCommits, commits, originalMergeScenario)
+            task = extractLastTaskFromPartialMergeScenario(mergeCommits, commitsSetFromBranch, originalMergeScenario)
             if(task) result += task
+        }
+        result
+    }
+
+    private isFastForwardMerge(Commit commit){
+        def found = fastForwardMerges.find{ it == commit.hash }
+        (found == null)? false : true
+    }
+
+    private exntractTaskFromMergeBranch(MergeScenario mergeScenario, List<String> commitsFromBranch, String hash){
+        List<MergeTask> result = []
+        List<Commit> commitsSetFromBranch = repository?.searchCommits(commitsFromBranch)
+
+        def mergeCommitsSet = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) }
+        log.info "Extracting task from a branch of merge: ${mergeScenario.merge}"
+        if(!commitsSetFromBranch.empty && mergeCommitsSet.empty){ //there is no intermediate merges
+            def task = new MergeTask(repository.url, ++taskId as String, commitsSetFromBranch, mergeScenario, hash)
+            result += task
+            log.info "There is no intermediate merges"
+            log.info task.toString()
+        } else if(!commitsSetFromBranch.empty && !mergeCommitsSet.empty){ //there is intermediate merges
+            log.info "There is ${mergeCommitsSet.size()} intermediate merges"
+            mergeCommitsSet.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
+            log.info "There is ${commitsSetFromBranch.size()} commits"
+            commitsSetFromBranch.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
+            result += extractTasksFromIntermediateMerge(mergeScenario, commitsSetFromBranch)
         }
         result
     }
@@ -118,44 +159,16 @@ class MergeTaskExtractor {
         printMergeInfo(mergeScenario)
 
         List<MergeTask> result
-        List<MergeTask> resultLeft = []
-        List<MergeTask> resultRight = []
+        List<MergeTask> resultLeft
+        List<MergeTask> resultRight
 
         // Left
-        def commitsLeft = repository?.searchCommits(mergeScenario.leftCommits)
-        def mergeCommitsLeft = commitsLeft.findAll{ it.isMerge }
-        log.info "Extracting left tasks from merge: ${mergeScenario.merge}"
-        if(!commitsLeft.empty && mergeCommitsLeft.empty){ //there is no intermediate merges
-            def leftTask = new MergeTask(repository.url, ++taskId as String, commitsLeft, mergeScenario, mergeScenario.left)
-            resultLeft += leftTask
-            log.info "Left side does not have intermediate merges"
-            log.info leftTask.toString()
-        } else if(!commitsLeft.empty && !mergeCommitsLeft.empty){ //there is intermediate merges
-            log.info "Left side has intermediate merges: ${mergeCommitsLeft.size()}"
-            mergeCommitsLeft.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
-            log.info "Left side has commits: ${commitsLeft.size()}"
-            commitsLeft.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
-            extractTasksFromIntermediateMerge(mergeScenario, commitsLeft)
-        }
+        resultLeft = exntractTaskFromMergeBranch(mergeScenario, mergeScenario.leftCommits, mergeScenario.left)
         log.info "Tasks from left side: ${resultLeft.size()}"
         resultLeft.each{ log.info it.toString() }
 
         // Right
-        def commitsRight = repository?.searchCommits(mergeScenario.rightCommits)
-        def mergeCommitsRight = commitsRight.findAll{ it.isMerge }
-        log.info "Extracting right tasks from merge: ${mergeScenario.merge}"
-        if(!commitsRight.empty && mergeCommitsRight.empty){ //there is no intermediate merges
-            def rightTask = new MergeTask(repository.url, ++taskId as String, commitsRight, mergeScenario, mergeScenario.right)
-            resultRight += rightTask
-            log.info "Right side does not have intermediate merges"
-            log.info rightTask.toString()
-        } else if(!commitsRight.empty && !mergeCommitsRight.empty){ //there is intermediate merges
-            log.info "Right side has intermediate merges: ${mergeCommitsRight.size()}"
-            mergeCommitsRight.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
-            log.info "Right side has commits:  ${commitsRight.size()}"
-            commitsRight.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
-            extractTasksFromIntermediateMerge(mergeScenario, commitsRight)
-        }
+        resultRight = exntractTaskFromMergeBranch(mergeScenario, mergeScenario.rightCommits, mergeScenario.right)
         log.info "Tasks from right side: ${resultRight.size()}"
         resultRight.each{ log.info it.toString() }
 
