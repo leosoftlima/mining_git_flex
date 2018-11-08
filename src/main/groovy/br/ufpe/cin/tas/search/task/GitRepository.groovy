@@ -94,7 +94,6 @@ class GitRepository {
         ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "log", "--merges")
         processBuilderMerges.directory(new File(localPath))
         Process p1 = processBuilderMerges.start()
-        p1.waitFor()
         def result = p1?.inputStream?.readLines()
         p1?.inputStream?.close()
         result

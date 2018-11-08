@@ -58,7 +58,6 @@ class MergeScenarioExtractor {
                 repository = GitRepository.getRepository(url)
                 List<String> lines = repository.searchMergeCommits()
                 lines?.eachWithIndex { line, index ->
-                    println line
                     if(line.startsWith('commit')){
                         def merge = line.split(' ')[1]
                         def nextLine = lines.get(index+1)
