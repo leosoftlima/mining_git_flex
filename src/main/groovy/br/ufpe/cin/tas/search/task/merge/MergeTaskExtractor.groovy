@@ -134,7 +134,7 @@ class MergeTaskExtractor {
         (found == null)? false : true
     }
 
-    private exntractTaskFromMergeBranch(MergeScenario mergeScenario, List<String> commitsFromBranch, String hash){
+    private extractTaskFromMergeBranch(MergeScenario mergeScenario, List<String> commitsFromBranch, String hash){
         List<MergeTask> result = []
         List<Commit> commitsSetFromBranch = repository?.searchCommits(commitsFromBranch)
 
@@ -163,12 +163,12 @@ class MergeTaskExtractor {
         List<MergeTask> resultRight
 
         // Left
-        resultLeft = exntractTaskFromMergeBranch(mergeScenario, mergeScenario.leftCommits, mergeScenario.left)
+        resultLeft = extractTaskFromMergeBranch(mergeScenario, mergeScenario.leftCommits, mergeScenario.left)
         log.info "Tasks from left side: ${resultLeft.size()}"
         resultLeft.each{ log.info it.toString() }
 
         // Right
-        resultRight = exntractTaskFromMergeBranch(mergeScenario, mergeScenario.rightCommits, mergeScenario.right)
+        resultRight = extractTaskFromMergeBranch(mergeScenario, mergeScenario.rightCommits, mergeScenario.right)
         log.info "Tasks from right side: ${resultRight.size()}"
         resultRight.each{ log.info it.toString() }
 
