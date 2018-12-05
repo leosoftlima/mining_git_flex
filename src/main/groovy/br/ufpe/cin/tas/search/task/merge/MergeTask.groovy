@@ -40,4 +40,10 @@ class MergeTask extends Task {
         return msg
     }
 
+    boolean isBefore(MergeTask task){
+        def date1 = new Date(this.newestCommitObject.date * 1000)
+        def date2 = new Date(task.newestCommitObject.date * 1000)
+        date1<date2
+    }
+
 }
