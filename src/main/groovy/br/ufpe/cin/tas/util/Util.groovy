@@ -135,7 +135,7 @@ class Util {
         File file = new File(path + File.separator + ConstantData.GEM_FILE)
         if (file.exists()) {
             def lines = file.readLines()
-            ConstantData.GEMS_OF_INTEREST.each { gem ->
+            DataProperties.GEMS.each { gem ->
                 def regex = /\s*gem\s+"?'?${gem}"?'?.*/
                 def foundGem = lines.find { !(it.trim().startsWith("#")) && it ==~ regex }
                 if (foundGem) {
