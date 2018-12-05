@@ -69,7 +69,7 @@ class MergeScenarioExtractor {
                             mergeScenario.merge = merge
                             merges += mergeScenario
                             log.info mergeScenario.toString()
-                        } else {
+                        } else { //If it is null, it is fast-forward
                             fastForwardMerges += merge
                         }
                     }
@@ -89,12 +89,13 @@ class MergeScenarioExtractor {
 
     private configureMergeScenario(String left, String right){
         def base = repository.findBase(left, right)
-        if(!base || base.empty) { return null }
-        def leftCommits = repository.getCommitSetBetween(base, left)
-        def rightCommits = repository.getCommitSetBetween(base, right)
-        if(leftCommits.empty || rightCommits.empty) return null
-        def leftHash = leftCommits.first()
-        def rightHash = rightCommits.first()
+        def leftHash = repository.commits.find{ it.hash.contains(left) }?.hash
+        def rightHash = repository.commits.find{ it.hash.contains(right) }?.hash
+        if(!base || base.empty || base==leftHash || base==rightHash) { //fast-forward
+            return null
+        }
+        def leftCommits = repository.getCommitSetBetweenFirstParentOption(base, left)
+        def rightCommits = repository.getCommitSetBetweenFirstParentOption(base, right)
         new MergeScenario(left: leftHash, right: rightHash, leftCommits: leftCommits, rightCommits: rightCommits, base: base)
     }
 
