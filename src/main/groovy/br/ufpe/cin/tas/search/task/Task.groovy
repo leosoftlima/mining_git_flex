@@ -71,4 +71,8 @@ class Task {
         else false
     }
 
+    Commit getNewestCommitObject(){
+        commits.find{ it.hash == newestCommit }
+    }
+
 }
