@@ -111,20 +111,16 @@ class Util {
         exportTasks(tasksPT, tasksCsv)
         if(!tasksPT || tasksPT.empty) return null
 
+        /* COVERAGE CODE IT IS NOT NECESSARY ANYMORE
         def coverageTasks = tasksPT.findAll{ it.hasCoverageAndTests() }
         def coverageTasksFile = tasksCsv - ".csv" + ConstantData.COVERAGE_TASKS_FILE_SUFIX
         exportTasks(coverageTasks, coverageTasksFile)
+        log.info "Found coverage tasks (from P&T): ${coverageTasks.size()}" */
 
         def cucumberTasks = tasksPT.findAll{ it.usesCucumber() }
         def cucumberTasksFile = tasksCsv - ".csv" + ConstantData.CUCUMBER_TASKS_FILE_SUFIX
         exportTasks(cucumberTasks, cucumberTasksFile)
-
-        log.info "Found coverage tasks (from P&T): ${coverageTasks.size()}"
         log.info "Found cucumber tasks (from P&T): ${cucumberTasks.size()}"
-
-        tasksPT.each{ task ->
-            log.info "TASK ${task.id}: ${task.gems}"
-        }
 
         String[] info = [url, tasks.size(), tasksPT.size(), cucumberTasks.size()]
         [allTasks:cucumberTasks, repository:info]
