@@ -19,6 +19,8 @@ class MergeTaskExtractor {
     String cucumberConflictingTasksCsv
     private static int taskId
     List<String> fastForwardMerges
+    List<MergeTask> tasks
+    List<MergeTask> tasksPT
 
     MergeTaskExtractor(String mergeFile) throws Exception {
         taskId = 0
@@ -33,6 +35,8 @@ class MergeTaskExtractor {
         repository = GitRepository.getRepository(url)
         tasksCsv = "${ConstantData.TASKS_FOLDER}${repository.name}.csv"
         cucumberConflictingTasksCsv = "${ConstantData.TASKS_FOLDER}${repository.name}-conflict.csv"
+        tasks = []
+        tasksPT = []
     }
 
     private static printMergeInfo(MergeScenario merge){
@@ -183,9 +187,8 @@ class MergeTaskExtractor {
         def url = ""
         List<String[]> entries = CsvUtil.read(mergesCsv)
         if (entries.size() > 2){
-            url = entries.first()[0]
-            entries.removeAt(0)
-            entries.removeAt(0)
+            url = entries[0][0]
+            entries = entries.subList(2, entries.size())
             entries?.each{ entry ->
                 def v1, v2
                 if(entry[4].size()>2) v1 = entry[4].substring(1, entry[4].size()-1).tokenize(', ')
@@ -199,34 +202,86 @@ class MergeTaskExtractor {
         merges
     }
 
-    def extractTasks(){
-        List<MergeTask> tasks = []
-        mergeScenarios?.each{ tasks += configureMergeTask(it) }
+    private filterUniqueAndIndependentTasks(){
+        //unique tasks
         tasks = tasks.unique{ [it.repositoryUrl, it.newestCommit, it.merge, it.base] }
         tasks = tasks.unique{ [it.repositoryUrl, it.commits] }
         tasks = tasks.unique{ [it.repositoryUrl, it.id] }.sort{ it.id }
-        log.info "Unique tasks: ${tasks.size()}"
 
-        def tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-        log.info "Found merge tasks: ${tasks.size()}"
-        log.info "Found P&T tasks: ${tasksPT.size()}"
+        //independent tasks
+        tasks = filterSelfContainedTasks()
+    }
 
+    private filterSelfContainedTasks(){
+        def selfContained = []
+        def hashesSimilarity = computeHashSimilarity() //["task_a","hashes_a","task_b","hashes_b","intersection","%_a","%_b"]
+        if(hashesSimilarity.empty) return
+
+        def maxSimResult = []
+        def pairsMaxSimilarity = hashesSimilarity.findAll{ (it[5]==1) || (it[6]==1) }
+        def ids = tasks.collect{ it.id }
+        ids.each{ id ->
+            def n = pairsMaxSimilarity.findAll{ it[0]==id || it[2]==id }
+            if(n.size()>0) {
+                def temp = []
+                n.each{ pair ->
+                    if(pair[1]==pair[3]){
+                        def commitsNumber = pair[1] as String
+                        def idPair = [pair[0] as int, pair[2] as int].sort()
+                        temp.add(tasks.find{ it.id == (idPair[0] as String) && it[2] == commitsNumber })
+                    } else if(pair[0]==id && pair[1]<pair[3] ){
+                        temp.add(tasks.find{ it.id == pair[0] })
+                    } else if(pair[2]==id && pair[3]<pair[1]){
+                        temp.add(tasks.find{ it.id == pair[2] })
+                    }
+                }
+                maxSimResult += temp
+            }
+        }
+        maxSimResult = maxSimResult.unique()
+        selfContained = (tasks - maxSimResult).sort{ it.id as double }
+        selfContained
+    }
+
+    private computeHashSimilarity(){
+        def hashesSimilarity = []
+        def taskPairs = computeTaskPairs(tasks)
+        if(taskPairs.empty) return hashesSimilarity
+        taskPairs?.each { item ->
+            def task = item.task
+            def hashes1 = task.commits*.hash
+            item.pairs?.each { other ->
+                def hashes2 = other.commits*.hash
+                def intersection = hashes1.intersect(hashes2).size()
+                hashesSimilarity.add([task.id, hashes1.size(), other.id, hashes2.size(), intersection,
+                                      intersection/hashes1.size(), intersection/hashes2.size()])
+            }
+        }
+        hashesSimilarity
+    }
+
+    private static computeTaskPairs(List<MergeTask> set) {
+        def result = [] as Set
+        if (!set || set.empty || set.size() == 1) return result
+        set.eachWithIndex { v, k ->
+            def next = set.drop(k + 1)
+            result.add([task: v, pairs: next])
+        }
+        result
+    }
+
+    private extractTasksGems(){
         def taskGroups = tasksPT.groupBy { it.newestCommit }
         log.info "SHAs: ${taskGroups.size()}"
         taskGroups.eachWithIndex{ group, index ->
             def sha = group.key as String
             def gems = extractGemsInfo(sha)
-            log.info "${index} Extracted gems for commit '${sha}'"
+            log.info "(${index+1}) Extracted gems for commit '${sha}'"
             group.getValue().each{ task -> task.gems = gems }
         }
-        Util.exportProjectTasks(tasksPT, tasksCsv, repository.url)
-        if(DataProperties.CONFLICT_ANALYSIS){
-            def cucumberTasks = tasksPT.findAll{ it.usesCucumber() }
-            Util.exportTasksWithConflictInfo(cucumberTasks, cucumberConflictingTasksCsv)
-        }
     }
-    
-    def extractGemsInfo(String sha){
+
+    private extractGemsInfo(String sha){
         repository.clean()
         repository.reset(sha)
         repository.checkout(sha)
@@ -234,6 +289,24 @@ class MergeTaskExtractor {
         repository.reset()
         repository.checkout()
         gems
+    }
+
+    def extractTasks(){
+        tasks = []
+        mergeScenarios?.each{ tasks += configureMergeTask(it) }
+        tasks = filterUniqueAndIndependentTasks()
+        log.info "Unique and independent tasks: ${tasks.size()}"
+
+        tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
+        log.info "Found merge tasks: ${tasks.size()}"
+        log.info "Found P&T tasks: ${tasksPT.size()}"
+
+        extractTasksGems()
+        Util.exportProjectTasks(tasksPT, tasksCsv, repository.url)
+        if(DataProperties.CONFLICT_ANALYSIS){
+            def cucumberTasks = tasksPT.findAll{ it.usesCucumber() }
+            Util.exportTasksWithConflictInfo(cucumberTasks, cucumberConflictingTasksCsv)
+        }
     }
 
 }
