@@ -108,7 +108,7 @@ class MergeScenarioExtractor {
     def getMergeFiles(){
         generateMergeFiles()
         def mergeFiles = Util.findFilesFromFolder(ConstantData.MERGES_FOLDER)?.findAll{
-            it.endsWith(ConstantData.MERGE_TASK_SUFIX)
+            it.endsWith(ConstantData.MERGE_TASK_SUFIX) && !it.endsWith(ConstantData.FASTFORWARD_MERGE_TASK_SUFIX)
         }
         mergeFiles
     }
