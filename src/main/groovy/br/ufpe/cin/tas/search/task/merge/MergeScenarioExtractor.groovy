@@ -56,25 +56,17 @@ class MergeScenarioExtractor {
             try{
                 log.info "Extracting merge commit from project '$url'"
                 repository = GitRepository.getRepository(url)
-                List<String> lines = repository.searchMergeCommits()
-                lines?.eachWithIndex { line, index ->
-                    if(line.startsWith('commit')){
-                        def merge = line.split(' ')[1]
-                        def nextLine = lines.get(index+1)
-                        String[] data = nextLine.split(' ')
-                        def left  = data[1]
-                        def right = data[2]
-                        MergeScenario mergeScenario = configureMergeScenario(left, right)
-                        if(mergeScenario){
-                            mergeScenario.merge = merge
-                            merges += mergeScenario
-                            log.info mergeScenario.toString()
-                        } else { //If it is null, it is fast-forward
-                            fastForwardMerges += merge
-                        }
+                def result = repository.searchMergeCommits()
+                result.each{
+                    MergeScenario mergeScenario = configureMergeScenario(it.left, it.right)
+                    if(mergeScenario){
+                        mergeScenario.merge = it.merge
+                        merges += mergeScenario
+                        log.info mergeScenario.toString()
+                    } else { //If it is null, it is fast-forward
+                        fastForwardMerges += it.merge
                     }
                 }
-
                 exportResult(merges)
                 exportFastForwardMerges()
                 log.info "All merge commits: ${merges.size()+fastForwardMerges.size()}"
@@ -94,8 +86,8 @@ class MergeScenarioExtractor {
         if(!base || base.empty || base==leftHash || base==rightHash) { //fast-forward
             return null
         }
-        def leftCommits = repository.getCommitSetBetweenFirstParentOption(base, left)
-        def rightCommits = repository.getCommitSetBetweenFirstParentOption(base, right)
+        def leftCommits = repository.getCommitSetBetween(base, left)
+        def rightCommits = repository.getCommitSetBetween(base, right)
         new MergeScenario(left: leftHash, right: rightHash, leftCommits: leftCommits, rightCommits: rightCommits, base: base)
     }
 

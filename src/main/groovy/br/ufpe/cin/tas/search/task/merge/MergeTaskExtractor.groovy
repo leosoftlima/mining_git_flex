@@ -1,7 +1,6 @@
 package br.ufpe.cin.tas.search.task.merge
 
 import br.ufpe.cin.tas.search.task.id.Commit
-import br.ufpe.cin.tas.util.DataProperties
 import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.search.task.GitRepository
 import br.ufpe.cin.tas.util.ConstantData
@@ -148,7 +147,6 @@ class MergeTaskExtractor {
             def task = new MergeTask(repository.url, ++taskId as String, commitsSetFromBranch, mergeScenario, hash)
             result += task
             log.info "There is no intermediate merges"
-            log.info task.toString()
         } else if(!commitsSetFromBranch.empty && !mergeCommitsSet.empty){ //there is intermediate merges
             log.info "There is ${mergeCommitsSet.size()} intermediate merges"
             mergeCommitsSet.each{ log.info "${it.hash} (${new Date(it.date * 1000)})" }
@@ -228,10 +226,10 @@ class MergeTaskExtractor {
                     if(pair[1]==pair[3]){
                         def commitsNumber = pair[1] as String
                         def idPair = [pair[0] as int, pair[2] as int].sort()
-                        temp.add(tasks.find{ it.id == (idPair[0] as String) && it[2] == commitsNumber })
-                    } else if(pair[0]==id && pair[1]<pair[3] ){
+                        temp.add(tasks.find{ it.id == (idPair[0] as String) && it.commits.size() == commitsNumber })
+                    } else if(pair[0]==id && pair[1]>pair[3] ){
                         temp.add(tasks.find{ it.id == pair[0] })
-                    } else if(pair[2]==id && pair[3]<pair[1]){
+                    } else if(pair[2]==id && pair[3]>pair[1]){
                         temp.add(tasks.find{ it.id == pair[2] })
                     }
                 }
@@ -292,21 +290,26 @@ class MergeTaskExtractor {
     }
 
     def extractTasks(){
+        def mergeTasksFile = "${ConstantData.TASKS_FOLDER}${repository.name}-merge-tasks.csv"
+        def independentTasksFile = "${ConstantData.TASKS_FOLDER}${repository.name}-independent-tasks.csv"
+        def ptTasksFile = "${ConstantData.TASKS_FOLDER}${repository.name}-pt-tasks.csv"
+
         tasks = []
         mergeScenarios?.each{ tasks += configureMergeTask(it) }
         tasks = filterUniqueAndIndependentTasks()
-        log.info "Unique and independent tasks: ${tasks.size()}"
-
         tasksPT = tasks.findAll { !it.productionFiles.empty && !it.testFiles.empty }
-        log.info "Found merge tasks: ${tasks.size()}"
-        log.info "Found P&T tasks: ${tasksPT.size()}"
-
         extractTasksGems()
-        Util.exportProjectTasks(tasksPT, tasksCsv, repository.url)
-        if(DataProperties.CONFLICT_ANALYSIS){
-            def cucumberTasks = tasksPT.findAll{ it.usesCucumber() }
-            Util.exportTasksWithConflictInfo(cucumberTasks, cucumberConflictingTasksCsv)
-        }
+        def cucumberTasks = tasksPT.findAll{ it.usesCucumber() }
+
+        log.info "Found merge tasks: ${tasks.size()}"
+        log.info "Unique and independent tasks: ${tasks.size()}"
+        log.info "Found P&T tasks: ${tasksPT.size()}"
+        log.info "Found cucumber tasks: ${cucumberTasks.size()}"
+
+        Util.exportTasksWithConflictInfo(tasks, mergeTasksFile)
+        Util.exportTasksWithConflictInfo(tasks, independentTasksFile)
+        Util.exportTasksWithConflictInfo(tasksPT, ptTasksFile)
+        Util.exportTasksWithConflictInfo(cucumberTasks, cucumberConflictingTasksCsv)
     }
 
 }
