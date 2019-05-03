@@ -48,6 +48,7 @@ class MergeScenarioExtractor {
 
     private searchMergeCommits(String url){
         List<MergeScenario> merges = []
+        fastForwardMerges = []
 
         if(url==null || url.empty) {
             log.warn "It is not possible to extract merge commits for invalid project: url is empty!"
