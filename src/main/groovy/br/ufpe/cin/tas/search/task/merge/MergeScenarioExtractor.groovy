@@ -12,10 +12,12 @@ class MergeScenarioExtractor {
     GitRepository repository
     List<String> urls
     List<String> fastForwardMerges
+    List<String> problematicMerges
 
     MergeScenarioExtractor() {
         urls = []
         fastForwardMerges = []
+        problematicMerges = []
     }
 
     private updateUrls(){
@@ -47,9 +49,17 @@ class MergeScenarioExtractor {
         CsvUtil.write(csv, content)
     }
 
+    private exportProblematicMerges(){
+        def csv = ConstantData.MERGES_FOLDER+repository.name.replaceAll("/", "_")+ConstantData.PROBLEMATIC_MERGE_TASK_SUFIX
+        List<String[]> content = []
+        problematicMerges.each { content += [it] as String[] }
+        CsvUtil.write(csv, content)
+    }
+
     private searchMergeCommits(String url){
         List<MergeScenario> merges = []
         fastForwardMerges = []
+        problematicMerges = []
 
         if(url==null || url.empty) {
             log.warn "It is not possible to extract merge commits for invalid project: url is empty!"
@@ -60,17 +70,21 @@ class MergeScenarioExtractor {
                 repository = GitRepository.getRepository(url)
                 def result = repository.searchMergeCommits()
                 result.each{
-                    MergeScenario mergeScenario = configureMergeScenario(it.left, it.right, it.merge)
+                    MergeScenario mergeScenario = configureMergeScenario(it.left, it.right)
                     if(mergeScenario){
-                        mergeScenario.merge = it.merge
-                        merges += mergeScenario
-                        //log.info mergeScenario.toString()
+                        if(mergeScenario.base){
+                            mergeScenario.merge = it.merge
+                            merges += mergeScenario
+                        } else { //If base is null, there is a problem to analyse merge scenario
+                            problematicMerges += it.merge
+                        }
                     } else { //If it is null, it is fast-forward
                         fastForwardMerges += it.merge
                     }
                 }
                 exportResult(merges)
                 exportFastForwardMerges()
+                exportProblematicMerges()
                 log.info "All merge commits: ${merges.size()+fastForwardMerges.size()}"
                 log.info "Fast-fowarding merges: ${fastForwardMerges.size()}"
                 log.info "Selected merges: ${merges.size()}"
@@ -81,17 +95,14 @@ class MergeScenarioExtractor {
         }
     }
 
-    private configureMergeScenario(String left, String right, String merge){
+    private configureMergeScenario(String left, String right){
         def base = repository.findBase(left, right)
         def leftHash = repository.commits.find{ it.hash.contains(left) }?.hash
         def rightHash = repository.commits.find{ it.hash.contains(right) }?.hash
+
         if(!base || base.empty ) { //problem to analyse merge scenario
-            if(!base) log.info "base is null: '${base}'"
-            else if(base.empty) log.info "base is empty: '${base}'"
-            log.info "project: ${repository.url} ;merge: $merge; left: $left; right: $right"
-            return null
-        }
-        else if(base==leftHash || base==rightHash) { //fast-forward
+            return new MergeScenario(left: leftHash, right: rightHash, leftCommits: null, rightCommits: null, base: null)
+        } else if(base==leftHash || base==rightHash) { //fast-forward
             return null
         }
         def leftCommits = repository.getCommitSetBetween(base, left)
@@ -108,7 +119,8 @@ class MergeScenarioExtractor {
     def getMergeFiles(){
         if(DataProperties.SEARCH_MERGES) generateMergeFiles()
         def mergeFiles = Util.findFilesFromFolder(ConstantData.MERGES_FOLDER)?.findAll{
-            it.endsWith(ConstantData.MERGE_TASK_SUFIX) && !it.endsWith(ConstantData.FASTFORWARD_MERGE_TASK_SUFIX)
+            it.endsWith(ConstantData.MERGE_TASK_SUFIX) && !it.endsWith(ConstantData.FASTFORWARD_MERGE_TASK_SUFIX) &&
+                    !it.endsWith(ConstantData.PROBLEMATIC_MERGE_TASK_SUFIX)
         }
         mergeFiles
     }

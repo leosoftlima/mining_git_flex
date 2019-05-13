@@ -12,6 +12,7 @@ class MergeTaskExtractor {
 
     String mergesCsv
     String fastforwardMergesCsv
+    String problematicMergesCsv
 
     String tasksCsv
     String mergeTasksFile
@@ -24,6 +25,7 @@ class MergeTaskExtractor {
     private static int taskId
     GitRepository repository
     List<MergeScenario> mergeScenarios
+    List<String> problematicMerges
     List<String> fastForwardMerges
     List<MergeTask> tasks
     List<MergeTask> ptTasks
@@ -35,9 +37,10 @@ class MergeTaskExtractor {
     MergeTaskExtractor(String mergeFile) throws Exception {
         taskId = 0
         this.mergesCsv = mergeFile
+        this.problematicMergesCsv = mergeFile - ConstantData.MERGE_TASK_SUFIX + ConstantData.PROBLEMATIC_MERGE_TASK_SUFIX
         this.fastforwardMergesCsv = mergeFile - ConstantData.MERGE_TASK_SUFIX + ConstantData.FASTFORWARD_MERGE_TASK_SUFIX
         this.fastForwardMerges = CsvUtil.read(fastforwardMergesCsv).collect{ it[0] }
-
+        this.problematicMerges = CsvUtil.read(problematicMergesCsv).collect{ it[0] }
         this.mergeScenarios = extractMergeScenarios()
         if(this.mergeScenarios.empty) throw new Exception("No merge commit was found!")
 
@@ -120,7 +123,7 @@ class MergeTaskExtractor {
     }
 
     private extractTasksFromIntermediateMerge(MergeScenario originalMergeScenario, List<Commit> commitsSetFromBranch){
-        def mergeCommits = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) }
+        def mergeCommits = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) && !isProblematicMerge(it) }
         List<MergeTask> result = []
         if(mergeCommits.size()==1){ //only 1 merge
             log.info "There is only 1 intermediate merge: ${mergeCommits.get(0).hash}"
@@ -159,11 +162,16 @@ class MergeTaskExtractor {
         (found == null)? false : true
     }
 
+    private isProblematicMerge(Commit commit){
+        def found = problematicMerges.find{ it == commit.hash }
+        (found == null)? false : true
+    }
+
     private extractTaskFromMergeBranch(MergeScenario mergeScenario, List<String> commitsFromBranch, String hash){
         List<MergeTask> result = []
         List<Commit> commitsSetFromBranch = repository?.searchCommits(commitsFromBranch)
 
-        def mergeCommitsSet = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) }
+        def mergeCommitsSet = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) && !isProblematicMerge(it) }
         log.info "Extracting task from a branch of merge: ${mergeScenario.merge}"
         if(!commitsSetFromBranch.empty && mergeCommitsSet.empty){ //there is no intermediate merges
             def task = new MergeTask(repository.url, ++taskId as String, commitsSetFromBranch, mergeScenario, hash)
