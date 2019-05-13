@@ -26,6 +26,7 @@ class DataProperties {
     public static final boolean SEARCH_PROJECTS
     public static final boolean FILTER_PROJECTS
     public static final boolean SEARCH_TASKS
+    public static final boolean SEARCH_MERGES
     public static final boolean CONFLICT_ANALYSIS
 
     static {
@@ -65,6 +66,8 @@ class DataProperties {
                     ConstantData.DEFAULT_FILTER_PROJECTS)
             SEARCH_TASKS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_SEARCH_TASKS),
                     ConstantData.DEFAULT_SEARCH_TASKS)
+            SEARCH_MERGES = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_SEARCH_MERGES),
+                    ConstantData.DEFAULT_SEARCH_MERGES)
             CONFLICT_ANALYSIS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_CONFLICT_ANALYSIS),
                     ConstantData.DEFAULT_CONFLICT_ANALYSIS)
 

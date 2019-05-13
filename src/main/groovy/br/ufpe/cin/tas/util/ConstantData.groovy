@@ -21,6 +21,7 @@ abstract class ConstantData {
     public static final String PROP_SEARCH_PROJECTS = "spgroup.search.projects"
     public static final String PROP_FILTER_PROJECTS = "spgroup.filter.projects"
     public static final String PROP_SEARCH_TASKS = "spgroup.search.tasks"
+    public static final String PROP_SEARCH_MERGES = "spgroup.search.merges"
     public static final String PROP_CONFLICT_ANALYSIS = "spgroup.conflict.analysis"
 
     /* Defaults */
@@ -30,6 +31,7 @@ abstract class ConstantData {
     public static final boolean DEFAULT_SEARCH_PROJECTS = true
     public static final boolean DEFAULT_FILTER_PROJECTS = true
     public static final boolean DEFAULT_SEARCH_TASKS = true
+    public static final boolean DEFAULT_SEARCH_MERGES = true
     public static final boolean DEFAULT_CONFLICT_ANALYSIS = false
 
     /* Files and folders */
@@ -52,14 +54,11 @@ abstract class ConstantData {
     public static final String MERGES_FOLDER = "${TASKS_FOLDER}merges${File.separator}"
     public static final String MERGE_TASK_SUFIX = "_merges.csv"
     public static final String FASTFORWARD_MERGE_TASK_SUFIX = "_fastforward_merges.csv"
-    public static final String CONFLICTING_MERGE_FILE_SUFIX = "_merges_conflicting.csv"
-    public static final String CLEAN_MERGE_FILE_SUFIX = "_merges_clean.csv"
     public static final String SELECTED_REPOSITORIES_FILE = "${TASKS_FOLDER}selected-projects.csv"
     public static final String OUTPUT_FOLDER = "output${File.separator}"
     public static final String LOG_FILE = "${OUTPUT_FOLDER}execution.log"
     public static final String REPOSITORY_FOLDER = "spg_repos${File.separator}"
     public static final String CUCUMBER_TASKS_FILE_SUFIX = "_cucumber.csv"
-    public static final String COVERAGE_TASKS_FILE_SUFIX = "_cucumber_coverage.csv"
 
     /* Files */
     public static final String GIT_EXTENSION = ".git"

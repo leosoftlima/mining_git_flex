@@ -67,8 +67,7 @@ class Task {
         if(gems.contains("cucumber-rails")) {
             hasGems = true
         }
-        if(commits.size()<=500 && hasGems) true
-        else false
+        hasGems
     }
 
     Commit getNewestCommitObject(){

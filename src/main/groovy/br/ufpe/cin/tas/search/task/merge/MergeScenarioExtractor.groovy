@@ -1,5 +1,6 @@
 package br.ufpe.cin.tas.search.task.merge
 
+import br.ufpe.cin.tas.util.DataProperties
 import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.search.task.GitRepository
 import br.ufpe.cin.tas.util.ConstantData
@@ -59,11 +60,11 @@ class MergeScenarioExtractor {
                 repository = GitRepository.getRepository(url)
                 def result = repository.searchMergeCommits()
                 result.each{
-                    MergeScenario mergeScenario = configureMergeScenario(it.left, it.right)
+                    MergeScenario mergeScenario = configureMergeScenario(it.left, it.right, it.merge)
                     if(mergeScenario){
                         mergeScenario.merge = it.merge
                         merges += mergeScenario
-                        log.info mergeScenario.toString()
+                        //log.info mergeScenario.toString()
                     } else { //If it is null, it is fast-forward
                         fastForwardMerges += it.merge
                     }
@@ -80,11 +81,17 @@ class MergeScenarioExtractor {
         }
     }
 
-    private configureMergeScenario(String left, String right){
+    private configureMergeScenario(String left, String right, String merge){
         def base = repository.findBase(left, right)
         def leftHash = repository.commits.find{ it.hash.contains(left) }?.hash
         def rightHash = repository.commits.find{ it.hash.contains(right) }?.hash
-        if(!base || base.empty || base==leftHash || base==rightHash) { //fast-forward
+        if(!base || base.empty ) { //problem to analyse merge scenario
+            if(!base) log.info "base is null: '${base}'"
+            else if(base.empty) log.info "base is empty: '${base}'"
+            log.info "project: ${repository.url} ;merge: $merge; left: $left; right: $right"
+            return null
+        }
+        else if(base==leftHash || base==rightHash) { //fast-forward
             return null
         }
         def leftCommits = repository.getCommitSetBetween(base, left)
@@ -99,7 +106,7 @@ class MergeScenarioExtractor {
     }
 
     def getMergeFiles(){
-        generateMergeFiles()
+        if(DataProperties.SEARCH_MERGES) generateMergeFiles()
         def mergeFiles = Util.findFilesFromFolder(ConstantData.MERGES_FOLDER)?.findAll{
             it.endsWith(ConstantData.MERGE_TASK_SUFIX) && !it.endsWith(ConstantData.FASTFORWARD_MERGE_TASK_SUFIX)
         }
