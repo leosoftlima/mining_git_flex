@@ -231,7 +231,7 @@ class MergeTaskExtractor {
     }
 
     private filterUniqueTasks(){
-        uniqueTasks = tasks.unique{ it.commits } //se acontencer de haver commits em comum entre projetos, já eliminamos
+        uniqueTasks = tasks.unique{ it.commits }
         uniqueTasks = uniqueTasks.unique{ [it.repositoryUrl, it.newestCommit, it.merge, it.base] }
         uniqueTasks = uniqueTasks.unique{ [it.repositoryUrl, it.id] }.sort{ it.id }
     }
