@@ -408,9 +408,8 @@ class GitRepository {
             log.info "Latest commit on branch '$newerBranch': ${objectId2.name}"
             log.info "#Commits on branch '$newerBranch': ${this.listCommitsInBranch(newerBranch).size()}"
 
-        } catch(Exception ex){
-            log.warn "Exception while integrating tasks: ${ex.message}"
-            ex.stackTrace.each{ log.warn it.toString() }
+        } catch(IntegrationException ex){
+            log.warn ex.message
             conflictingFiles = null
         } finally {
             this.checkoutBranch(defaultBranch)
@@ -485,10 +484,11 @@ class GitRepository {
         //Reseting the destination branch to the HEAD commit
         if(conflictingFiles.empty) this.checkoutBranch(destinationBranch)
         else {
-            log.warn "Error while reproducing commits on branch '${destinationBranch}'"
-            log.info "Conflicts: ${conflictingFiles.size()}"
-            conflictingFiles.each{ log.info it.toString() }
-            throw new Exception("Error while reproducing commits on branch '${destinationBranch}'")
+            def conflicts = ""
+            conflictingFiles.each{ conflicts += "${it}\n" }
+            def message = "Error while reproducing commits of task ${task.id} on branch ${destinationBranch}. " +
+                    "Conflicting files (${conflictingFiles.size()}):\n" + conflicts
+            throw new IntegrationException(message)
         }
     }
 
