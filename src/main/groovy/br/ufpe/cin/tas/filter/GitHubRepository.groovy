@@ -119,10 +119,9 @@ class GitHubRepository {
     }
 
     boolean hasGems(){
-        List<String[]> cucumberProjects = []
-        List<String[]> simplecovProjects = []
-        List<String[]> coverallsProjects = []
         List<String[]> railsProjects = []
+        List<String[]> cucumberProjects = []
+
         def result = false
         File gemfile = FileHandler.retrieveFile(ConstantData.GEM_FILE, getZipFolderName())
         if(gemfile) {
@@ -139,8 +138,6 @@ class GitHubRepository {
                             cucumberProjects += project
                             result = true
                         }
-                        if(gem.contains("simplecov")) simplecovProjects += project
-                        if(gem.contains("coveralls")) coverallsProjects += project
 
                     } else log.info "Project does not use gem '${gem}'"
                 }
@@ -153,8 +150,6 @@ class GitHubRepository {
 
         CsvUtil.append(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
         CsvUtil.append(ConstantData.CUCUMBER_REPOSITORIES_FILE, cucumberProjects)
-        CsvUtil.append(ConstantData.SIMPLECOV_REPOSITORIES_FILE, simplecovProjects)
-        CsvUtil.append(ConstantData.COVERALLS_REPOSITORIES_FILE, coverallsProjects)
         result
     }
 
