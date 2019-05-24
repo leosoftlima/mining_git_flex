@@ -292,26 +292,19 @@ class GitRepository {
     }
 
     def rebaseBranch(String currentBranch, String otherBranch){
-        def lastConflictingFiles = []
         ProcessBuilder pb = new ProcessBuilder("git", "rebase", otherBranch, currentBranch)
         pb.directory(new File(localPath))
         Process process = pb.start()
         int exit = process.waitFor()
         def result = process?.inputStream?.readLines()
         process?.inputStream?.close()
-        log.info "Result of reproducing commits: ${result.size()}"
-        result.each{ log.info it.toString() }
+        /*log.info "Result of reproducing commits: ${result.size()}"
+        result.each{ log.info it.toString() }*/
 
         def status = verifyStatus()
         log.info "Rebase status: ${exit}"
-        status.each{ log.info it.toString() }
-        if (status.find{ it.contains("Unmerged paths:")}) {
-            lastConflictingFiles = extractProblematicFilesDuringIntegration(status)
-            lastConflictingFiles.each{ cf ->
-                new File(localPath + File.separator+ (cf as String)).readLines().each{ println it }
-            }
-        }
-        lastConflictingFiles
+        //status.each{ log.info it.toString() }
+        extractProblematicFilesDuringIntegration(status)
     }
 
     def retrieveIdFromLatestCommitOnBranch(String branch){
@@ -411,6 +404,9 @@ class GitRepository {
         } catch(IntegrationException ex){
             log.warn ex.message
             conflictingFiles = null
+        } catch(Exception ex){
+            log.warn "${ex.class}: ${ex.message}"
+            conflictingFiles = null
         } finally {
             this.checkoutBranch(defaultBranch)
             this.resetToLastCommit()
@@ -441,25 +437,16 @@ class GitRepository {
     }
 
     private extractConflictingFilesFromRebaseOutput(def exit){
-        def conflictingFiles = []
         def status = verifyStatus()
         log.info "Rebase status: ${exit}"
-        status.each{ log.info it.toString() }
-
-        if (status.find{ it.contains("Unmerged paths:")}) {
-            conflictingFiles += extractProblematicFilesDuringIntegration(status)
-            /*conflictingFiles.each{ cf ->
-                new File(localPath + File.separator + (cf as String)).readLines().each{ println it }
-            }*/
-        }
-        conflictingFiles
+        //status.each{ log.info it.toString() }
+        extractProblematicFilesDuringIntegration(status)
     }
 
     /* Tutorial: https://chenghlee.com/2013/10/04/git-copying-subset-of-commits/ */
     def reproduceCommits(MergeTask task, String destinationBranch){
         this.checkoutBranch(defaultBranch)
         this.stash()
-        def conflictingFiles = []
         log.info "Reproducing ${task.commits.size()} commits"
         def olderHash = task.commits.last().hash
         def latestHash = task.commits.first().hash
@@ -473,13 +460,13 @@ class GitRepository {
         def errorResult = process?.errorStream?.readLines()
         process?.errorStream?.close()
 
-        log.info "Result of reproducing commits: ${result.size()}"
+        /*log.info "Result of reproducing commits: ${result.size()}"
         result.each{ log.info it.toString() }
 
         log.info "Error result of reproducing commits: ${errorResult.size()}"
-        errorResult.each{ log.info it.toString() }
+        errorResult.each{ log.info it.toString() }*/
 
-        conflictingFiles = extractConflictingFilesFromRebaseOutput(exit)
+        def conflictingFiles = extractConflictingFilesFromRebaseOutput(exit)
 
         //Reseting the destination branch to the HEAD commit
         if(conflictingFiles.empty) this.checkoutBranch(destinationBranch)
