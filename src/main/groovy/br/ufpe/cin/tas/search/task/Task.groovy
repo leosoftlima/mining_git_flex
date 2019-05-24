@@ -10,6 +10,7 @@ class Task {
     List<Commit> commits
     List<String> productionFiles
     List<String> testFiles
+    List<String> changedFiles
     String newestCommit
     List<String> gems
 
@@ -23,6 +24,7 @@ class Task {
         commits = []
         productionFiles = []
         testFiles = []
+        changedFiles = []
         gems = []
     }
 
@@ -34,7 +36,8 @@ class Task {
     }
 
     private organizeFiles(){
-        commits*.files?.flatten()?.unique()?.each { file ->
+        changedFiles = commits*.files?.flatten()?.unique()
+        changedFiles?.each { file ->
             if (Util.isTestFile(file)) testFiles += file
             else if(Util.isProductionFile(file)) productionFiles += file
         }
