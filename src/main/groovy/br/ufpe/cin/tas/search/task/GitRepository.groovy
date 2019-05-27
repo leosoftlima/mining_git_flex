@@ -393,7 +393,7 @@ class GitRepository {
 
             //Integrating tasks
             log.info "Integrating tasks by rebase"
-            this.rebaseBranch(olderBranch, newerBranch)
+            conflictingFiles = this.rebaseBranch(olderBranch, newerBranch)
             objectId1 = this.retrieveIdFromLatestCommitOnBranch(olderBranch)
             log.info "Latest commit on branch '$olderBranch': ${objectId1.name}"
             log.info "#Commits on branch '$olderBranch': ${this.listCommitsInBranch(olderBranch).size()}"
@@ -438,7 +438,7 @@ class GitRepository {
 
     private extractConflictingFilesFromRebaseOutput(def exit){
         def status = verifyStatus()
-        log.info "Rebase status: ${exit}"
+        log.info "Rebase status when reproducing a task's commits: ${exit}"
         //status.each{ log.info it.toString() }
         extractProblematicFilesDuringIntegration(status)
     }
@@ -525,7 +525,7 @@ class GitRepository {
         if(index>-1){
             def linesOfInterest = lines.subList(index+3, lines.size())
             linesOfInterest.each{
-                def i = it.indexOf(":")
+                def i = it.lastIndexOf(":")
                 if(i>-1) conflicts += it.substring(i+2, it.size()).trim()
             }
         }
