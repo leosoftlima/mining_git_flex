@@ -1,6 +1,5 @@
 package br.ufpe.cin.tas.search.task
 
-import br.ufpe.cin.tas.search.task.merge.MergeScenario
 import br.ufpe.cin.tas.search.task.merge.MergeTask
 import groovy.util.logging.Slf4j
 import org.eclipse.jgit.api.CreateBranchCommand
@@ -9,6 +8,7 @@ import org.eclipse.jgit.api.MergeResult
 import org.eclipse.jgit.diff.DiffEntry
 import org.eclipse.jgit.diff.DiffFormatter
 import org.eclipse.jgit.diff.RawTextComparator
+import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevTree
@@ -29,12 +29,10 @@ class GitRepository {
     String name
     String localPath
     String lastCommit
-    String branch
     String defaultBranch
 
     private GitRepository(String path) {
         commits = []
-        branch = "spgstudy"
         if (path.startsWith("http")) extractDataFromRemoteRepository(path)
         else extractDataFromlocalRepository(path)
         searchCommits()
@@ -46,67 +44,68 @@ class GitRepository {
     }
 
     def checkoutBranch(String branch){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "checkout", "-B", branch)
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
+        ProcessBuilder builder = new ProcessBuilder("git", "checkout", "-B", branch)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
     }
 
     def checkout(String sha) {
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "checkout", "-f", sha)
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
+        ProcessBuilder builder = new ProcessBuilder("git", "checkout", "-f", sha)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
     }
 
     def checkout() {
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "checkout", "-f", lastCommit)
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
+        ProcessBuilder builder = new ProcessBuilder("git", "checkout", "-f", lastCommit)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
     }
 
     def clean() {
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "clean", "-f", "-d", "-x")
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
+        ProcessBuilder builder = new ProcessBuilder("git", "clean", "-f", "-d", "-x")
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
     }
 
     def reset(String sha){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "reset", "--hard", sha)
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
+        ProcessBuilder builder = new ProcessBuilder("git", "reset", "--hard", sha)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
+        process.inputStream.readLines()
     }
 
     def reset(){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "reset", "--hard")
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
+        ProcessBuilder builder = new ProcessBuilder("git", "reset", "--hard")
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
     }
 
     def resetToLastCommit(){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "reset", "--hard", lastCommit)
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
+        ProcessBuilder builder = new ProcessBuilder("git", "reset", "--hard", lastCommit)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
     }
 
     def revertMerge(){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "merge", "--abort")
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
+        ProcessBuilder builder = new ProcessBuilder("git", "merge", "--abort")
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
     }
 
     def searchMergeCommits(){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "log", "--merges")
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        def lines = p1?.inputStream?.readLines()
-        p1?.inputStream?.close()
+        ProcessBuilder builder = new ProcessBuilder("git", "log", "--merges")
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        def lines = process?.inputStream?.readLines()
+        process?.inputStream?.close()
         def result = []
         lines?.eachWithIndex { line, index ->
             if (line.startsWith('commit')) {
@@ -122,12 +121,12 @@ class GitRepository {
     }
 
     def findBase(String left, String right){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "merge-base", left, right)
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
-        def aux = p1?.inputStream?.readLines()
-        p1?.inputStream?.close()
+        ProcessBuilder builder = new ProcessBuilder("git", "merge-base", left, right)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
+        def aux = process?.inputStream?.readLines()
+        process?.inputStream?.close()
         if(!aux || aux.empty) return null
         else aux?.first()?.replaceAll(RegexUtil.NEW_LINE_REGEX,"")
     }
@@ -147,36 +146,11 @@ class GitRepository {
         commitSet
     }
 
-    def deleteBranch(){
-        deleteBranch(branch)
-    }
-
     def deleteBranch(String branch){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "branch", "-D", branch)
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        p1.waitFor()
-    }
-
-    def extractConflictingFiles(MergeScenario mergeScenario) {
-        def conflictingFiles = []
-        try{
-            this.clean()
-            this.reset(mergeScenario.left)
-            this.checkout(mergeScenario.left)
-            def refNew = this.createBranchFromCommit(mergeScenario.right)
-            MergeResult mergeResult = this.mergeBranch(refNew)
-            boolean conflict = (mergeResult.mergeStatus == MergeResult.MergeStatus.CONFLICTING)
-            if (conflict) {
-                conflictingFiles = mergeResult.conflicts.keySet() as List
-            }
-        } catch(ignored){
-            this.clean()
-            this.resetToLastCommit()
-            this.checkout()
-            conflictingFiles = null
-        }
-        conflictingFiles
+        ProcessBuilder builder = new ProcessBuilder("git", "branch", "-D", branch)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
     }
     
     def searchCommits(List hashes){
@@ -226,29 +200,6 @@ class GitRepository {
         else null
     }
 
-    def createBranch(){
-        def git = Git.open(new File(localPath))
-        Ref checkout = git.branchCreate()
-                .setName(branch)
-                .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
-                .setForce(true)
-                .call()
-        git.close()
-        checkout
-    }
-
-    def createBranchFromCommit(String commit){
-        def git = Git.open(new File(localPath))
-        Ref checkout = git.branchCreate()
-                .setName(branch)
-                .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM)
-                .setStartPoint(commit)
-                .setForce(true)
-                .call()
-        git.close()
-        checkout
-    }
-
     def createBranchFromCommit(String branch, String commit){
         def git = Git.open(new File(localPath))
         Ref checkout = git.branchCreate()
@@ -261,50 +212,51 @@ class GitRepository {
         checkout
     }
 
-    def mergeBranch(Ref refNew){
+    def findObjectId(String sha){
         def git = Git.open(new File(localPath))
-        MergeResult mergeResult = git.merge().include(refNew).call()
+        ObjectId objectId = git.repository.resolve(sha)
         git.close()
-        revertMerge()
+        objectId
+    }
+
+    MergeResult mergeCommitByJgit(String sha){
+        ObjectId objectId = findObjectId(sha)
+        def git = Git.open(new File(localPath))
+        MergeResult mergeResult = git.merge().include(objectId).call()
+        git.close()
         mergeResult
     }
 
-    def merge(String commit1, String commit2){
-        def conflictingFiles = []
-        try {
-            this.reset(commit1)
-            this.clean()
-            def refNew = this.createBranchFromCommit(commit2)
-            this.checkout("master")
-            MergeResult mergeResult = this.mergeBranch(refNew)
-            this.deleteBranch()
-            boolean conflict = (mergeResult.mergeStatus == MergeResult.MergeStatus.CONFLICTING)
-            if (conflict) {
-                conflictingFiles = mergeResult.conflicts.keySet() as List
-            }
-        } catch(ignored){
-            this.clean()
-            this.resetToLastCommit()
-            this.checkout()
-            conflictingFiles = null
-        }
-        conflictingFiles
+    def mergeCommit(String sha){
+        def builder = new ProcessBuilder('git','merge', sha)
+        builder.directory(new File(localPath))
+        def process = builder.start()
+        def status = process.waitFor()
+        process.inputStream.eachLine { log.info it.toString() }
+        status
     }
 
     def rebaseBranch(String currentBranch, String otherBranch){
-        ProcessBuilder pb = new ProcessBuilder("git", "rebase", otherBranch, currentBranch)
-        pb.directory(new File(localPath))
-        Process process = pb.start()
+        ProcessBuilder builder = new ProcessBuilder("git", "rebase", otherBranch, currentBranch)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
         int exit = process.waitFor()
         def result = process?.inputStream?.readLines()
         process?.inputStream?.close()
-        /*log.info "Result of reproducing commits: ${result.size()}"
-        result.each{ log.info it.toString() }*/
 
-        def status = verifyStatus()
         log.info "Rebase status: ${exit}"
-        //status.each{ log.info it.toString() }
-        extractProblematicFilesDuringIntegration(status)
+        if(exit == 128) extractProblematicFilesDuringIntegration(status)
+        else if (exit!=0) {
+            def status = verifyStatus()
+            status.each{ log.info it.toString() }
+
+            def normalOutput = ""
+            result.each{ normalOutput += "${it}\n" }
+
+            def message = "Error while integrating branches ${currentBranch} and ${otherBranch}. " +
+                    "Rebase normal output:\n${normalOutput}"
+            throw new IntegrationException(message)
+        }
     }
 
     def retrieveIdFromLatestCommitOnBranch(String branch){
@@ -319,15 +271,38 @@ class GitRepository {
     }
 
     def stash(){
-        ProcessBuilder pb = new ProcessBuilder("git", "stash")
-        pb.directory(new File(localPath))
-        Process process = pb.start()
+        ProcessBuilder builder = new ProcessBuilder("git", "stash")
+        builder.directory(new File(localPath))
+        Process process = builder.start()
         def status = verifyStatus()
         status.each{ log.info it.toString() }
     }
 
+    List<String> reproduceMergeScenarioByJgit(String base, String left, String right){
+        def conflictingFiles = []
+        try {
+            this.reset(base)
+            this.mergeCommitByJgit(left)
+            def mergeResult = this.mergeCommitByJgit(right)
+            boolean conflict = (mergeResult.mergeStatus == MergeResult.MergeStatus.CONFLICTING)
+            if (conflict) conflictingFiles = mergeResult.conflicts.keySet() as List
+            this.revertMerge()
+        } catch(Exception ex){
+            def message = "Error while merging ${left} and ${right}. Output: ${ex.message}"
+            log.warn message
+            conflictingFiles = null
+        }
+        conflictingFiles
+    }
+
+    def reproduceMergeScenario(String base, String left, String right){
+        this.reset(base)
+        def status = this.mergeCommit(left)
+        if(status == 0) this.mergeCommit(right)
+    }
+
     //If the result is null, there is a problem to reproduce merge scenario
-    List integrateTasks(MergeTask task1, MergeTask task2){
+    List integrateTasksByRebase(MergeTask task1, MergeTask task2){
         List<String> conflictingFiles = []
         def olderBranch = "olderBranch_spg"
         def newerBranch = "newerBranch_spg"
@@ -409,7 +384,9 @@ class GitRepository {
             conflictingFiles = null
         } finally {
             this.checkoutBranch(defaultBranch)
+            this.clean()
             this.resetToLastCommit()
+            this.checkout()
             this.verifyStatusDefaultBranch()
 
             if(refOlderBranch) {
@@ -436,13 +413,6 @@ class GitRepository {
         aux
     }
 
-    private extractConflictingFilesFromRebaseOutput(def exit){
-        def status = verifyStatus()
-        log.info "Rebase status when reproducing a task's commits: ${exit}"
-        //status.each{ log.info it.toString() }
-        extractProblematicFilesDuringIntegration(status)
-    }
-
     /* Tutorial: https://chenghlee.com/2013/10/04/git-copying-subset-of-commits/ */
     def reproduceCommits(MergeTask task, String destinationBranch){
         this.checkoutBranch(defaultBranch)
@@ -454,27 +424,36 @@ class GitRepository {
         ProcessBuilder pb = new ProcessBuilder("git", "rebase", "-p","--onto", destinationBranch, "${olderHash}^", latestHash)
         pb.directory(new File(localPath))
         Process process = pb.start()
-        def exit = process.waitFor()
+        int exit = process.waitFor()
         def result = process?.inputStream?.readLines()
         process?.inputStream?.close()
         def errorResult = process?.errorStream?.readLines()
         process?.errorStream?.close()
 
-        /*log.info "Result of reproducing commits: ${result.size()}"
-        result.each{ log.info it.toString() }
-
-        log.info "Error result of reproducing commits: ${errorResult.size()}"
-        errorResult.each{ log.info it.toString() }*/
-
-        def conflictingFiles = extractConflictingFilesFromRebaseOutput(exit)
-
-        //Reseting the destination branch to the HEAD commit
-        if(conflictingFiles.empty) this.checkoutBranch(destinationBranch)
-        else {
+        log.info "Rebase status when reproducing a task's commits: ${exit}"
+        if(exit == 0){
+            //Reseting the destination branch to the HEAD commit
+            this.checkoutBranch(destinationBranch)
+        }
+        else if(exit==128){
+            def conflictingFiles = extractProblematicFilesDuringIntegration(status)
             def conflicts = ""
             conflictingFiles.each{ conflicts += "${it}\n" }
             def message = "Error while reproducing commits of task ${task.id} on branch ${destinationBranch}. " +
                     "Conflicting files (${conflictingFiles.size()}):\n" + conflicts
+            throw new IntegrationException(message)
+        } else {
+            def status = verifyStatus()
+            status.each{ log.info it.toString() }
+
+            def normalOutput = ""
+            result.each{ normalOutput += "${it}\n" }
+
+            def errorOutput = ""
+            errorResult.each{ errorOutput += "${it}\n" }
+
+            def message = "Error while reproducing commits of task ${task.id} on branch ${destinationBranch}. " +
+                    "Rebase normal output:\n${normalOutput}\nRebase error output:\n${errorOutput}"
             throw new IntegrationException(message)
         }
     }
@@ -506,11 +485,11 @@ class GitRepository {
     }
 
     def getNameFromDefaultBranch(){
-        ProcessBuilder processBuilderMerges = new ProcessBuilder("git", "branch")
-        processBuilderMerges.directory(new File(localPath))
-        Process p1 = processBuilderMerges.start()
-        def lines = p1?.inputStream?.readLines()
-        p1?.inputStream?.close()
+        ProcessBuilder builder = new ProcessBuilder("git", "branch")
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        def lines = process?.inputStream?.readLines()
+        process?.inputStream?.close()
         def currentBranch = lines.find{ it.contains("*") }
         if(currentBranch) {
             def index = currentBranch.indexOf("*")
@@ -549,11 +528,11 @@ class GitRepository {
     }
 
     private verifyCommits(String branch){
-        ProcessBuilder pb = new ProcessBuilder("git", "log", "--oneline", branch)
-        pb.directory(new File(localPath))
-        Process p1 = pb.start()
-        def result = p1?.inputStream?.readLines()
-        p1?.inputStream?.close()
+        ProcessBuilder builder = new ProcessBuilder("git", "log", "--oneline", branch)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        def result = process?.inputStream?.readLines()
+        process?.inputStream?.close()
         def hashes = []
         result.each{ hashes.add(it.split(" ").first()) }
         hashes
@@ -592,8 +571,8 @@ class GitRepository {
                 folder.mkdir()
             }
             String command = "git clone $url $name"
-            Process p = Runtime.getRuntime().exec(command, null, new File(ConstantData.REPOSITORY_FOLDER))
-            p.waitFor()
+            Process process = Runtime.getRuntime().exec(command, null, new File(ConstantData.REPOSITORY_FOLDER))
+            process.waitFor()
         } catch (Exception ex) {
             log.error "Error while cloning repository '${url}' to '${localPath}'."
             ex.stackTrace.each{ log.error it.toString() }
