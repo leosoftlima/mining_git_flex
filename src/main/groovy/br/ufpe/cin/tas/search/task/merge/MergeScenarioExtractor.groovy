@@ -85,8 +85,9 @@ class MergeScenarioExtractor {
                 exportResult(merges)
                 exportFastForwardMerges()
                 exportProblematicMerges()
-                log.info "All merge commits: ${merges.size()+fastForwardMerges.size()}"
+                log.info "All merge commits: ${merges.size()+fastForwardMerges.size()+problematicMerges.size()}"
                 log.info "Fast-fowarding merges: ${fastForwardMerges.size()}"
+                log.info "Problematic merges: ${problematicMerges.size()}"
                 log.info "Selected merges: ${merges.size()}"
             } catch(Exception ex){
                 log.error "Error while searching merge commits."
