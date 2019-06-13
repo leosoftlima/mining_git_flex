@@ -43,11 +43,22 @@ class GitRepository {
         log.info "Default branch: ${defaultBranch}"
     }
 
-    def checkoutBranch(String branch){
-        ProcessBuilder builder = new ProcessBuilder("git", "checkout", "-B", branch)
+    def checkoutBranch(String branch, String startpoint){
+        ProcessBuilder builder = new ProcessBuilder("git", "checkout", "-f", "-B", branch, startpoint)
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
+    }
+
+    def checkoutBranch(String branch){
+        ProcessBuilder builder = new ProcessBuilder("git", "checkout", "-f", "-B", branch)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
 
     def checkout(String sha) {
@@ -55,6 +66,8 @@ class GitRepository {
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
 
     def checkout() {
@@ -62,6 +75,8 @@ class GitRepository {
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
 
     def clean() {
@@ -69,6 +84,8 @@ class GitRepository {
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
 
     def reset(String sha){
@@ -76,7 +93,9 @@ class GitRepository {
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
-        process.inputStream.readLines()
+        def lines = process.inputStream.readLines()
+        process.inputStream.close()
+        lines
     }
 
     def reset(){
@@ -84,6 +103,8 @@ class GitRepository {
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
 
     def resetToLastCommit(){
@@ -91,6 +112,8 @@ class GitRepository {
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
 
     def revertMerge(){
@@ -98,6 +121,8 @@ class GitRepository {
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
 
     def searchMergeCommits(){
@@ -151,6 +176,8 @@ class GitRepository {
         builder.directory(new File(localPath))
         Process process = builder.start()
         process.waitFor()
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
     
     def searchCommits(List hashes){
@@ -237,26 +264,27 @@ class GitRepository {
     }
 
     def rebaseBranch(String currentBranch, String otherBranch){
+        def conflicts = []
         ProcessBuilder builder = new ProcessBuilder("git", "rebase", otherBranch, currentBranch)
         builder.directory(new File(localPath))
         Process process = builder.start()
-        int exit = process.waitFor()
+        int processStatus = process.waitFor()
         def result = process?.inputStream?.readLines()
         process?.inputStream?.close()
+        process?.errorStream?.close()
 
-        log.info "Rebase status: ${exit}"
-        if(exit == 128) extractProblematicFilesDuringIntegration(status)
-        else if (exit!=0) {
-            def status = verifyStatus()
-            status.each{ log.info it.toString() }
-
+        log.info "Rebase status: ${processStatus}"
+        def status = verifyStatus()
+        status.each{ log.info it.toString() }
+        if(processStatus == 128) conflicts = extractProblematicFilesDuringIntegration(status)
+        else if (processStatus!=0) {
             def normalOutput = ""
             result.each{ normalOutput += "${it}\n" }
-
             def message = "Error while integrating branches ${currentBranch} and ${otherBranch}. " +
                     "Rebase normal output:\n${normalOutput}"
             throw new IntegrationException(message)
         }
+        conflicts
     }
 
     def retrieveIdFromLatestCommitOnBranch(String branch){
@@ -267,17 +295,18 @@ class GitRepository {
     def verifyStatusDefaultBranch(){
         def objectIdDefaultBranch = retrieveIdFromLatestCommitOnBranch(defaultBranch)
         log.info "Latest commit on branch '$defaultBranch': ${objectIdDefaultBranch.name}"
-        log.info "#Commits on branch '$defaultBranch': ${this.listCommitsInBranch(defaultBranch).size()}"
+        log.info "#Commits on branch '$defaultBranch': ${this.verifyCommits(defaultBranch).size()}"
     }
 
     def stash(){
         ProcessBuilder builder = new ProcessBuilder("git", "stash")
         builder.directory(new File(localPath))
         Process process = builder.start()
-        def status = verifyStatus()
-        status.each{ log.info it.toString() }
+        process.inputStream.readLines()
+        process.inputStream.close()
     }
 
+    //If the result is null, there is a problem to reproduce merge scenario
     List<String> reproduceMergeScenarioByJgit(String base, String left, String right){
         def conflictingFiles = []
         try {
@@ -301,11 +330,12 @@ class GitRepository {
         if(status == 0) this.mergeCommit(right)
     }
 
+    //Reproduz commits em branch via rebase; implementação com problema, vide br/ufpe/cin/tas/other/testing/Wpcc_72_97.groovy
     //If the result is null, there is a problem to reproduce merge scenario
-    List integrateTasksByRebase(MergeTask task1, MergeTask task2){
+    List integrateTasksByRebase1(MergeTask task1, MergeTask task2){
         List<String> conflictingFiles = []
-        def olderBranch = "olderBranch_spg"
-        def newerBranch = "newerBranch_spg"
+        def branch1 = "branch1_spg"
+        def branch2 = "branch2_spg"
         def refOlderBranch
         def refNewerBranch
 
@@ -317,65 +347,51 @@ class GitRepository {
         log.info "olderTask: ${olderTask.id}; base: ${olderTask.base}; commits: ${olderTask.commits.size()}"
         log.info "newerTask: ${newerTask.id}; base: ${newerTask.base}; commits: ${newerTask.commits.size()}"
 
-        //Verigy common base among tasks
+        //Verify common base among tasks
         def gitBase = findBase(olderTask, newerTask)
         log.info "Common base: $gitBase"
 
         try{
+            this.checkoutBranch(defaultBranch)
+            this.resetToLastCommit()
             this.verifyStatusDefaultBranch()
 
-            log.info "Creating a new branch from the older task's base"
-            refOlderBranch = this.createBranchFromCommit(olderBranch, olderTask.base)
-            log.info "'$olderBranch' was created"
-            def objectId1 = this.retrieveIdFromLatestCommitOnBranch(olderBranch)
-            log.info "Latest commit on branch '$olderBranch': ${objectId1.name}"
-            log.info "#Commits on branch '$olderBranch': ${this.listCommitsInBranch(olderBranch).size()}"
+            log.info "Creating a new branch from task1's base"
+            this.checkoutBranch(branch1, olderTask.base)
+            this.verifyStatus()
+            this.reset(olderTask.base)
+            def commits1 = this.searchRevCommits()
+            log.info "#Latest commit on branch '$branch1': ${commits1.first().name} (#commits: ${commits1.size()})"
 
             log.info "Reproducing the older task's commits in the branch"
-            this.reproduceCommits(olderTask, olderBranch)
-            objectId1 = this.retrieveIdFromLatestCommitOnBranch(olderBranch)
-            log.info "Latest commit on branch '$olderBranch': ${objectId1.name}"
-            log.info "#Commits on branch '$olderBranch': ${this.listCommitsInBranch(olderBranch).size()}"
+            this.reproduceCommits(olderTask, branch1)
+            commits1 = this.searchRevCommits()
+            log.info "#Latest commit on branch '$branch1': ${commits1.first().name} (#commits: ${commits1.size()})"
+            log.info "Latest commit of task1: ${olderTask.newestCommit}"
 
             this.checkoutBranch(defaultBranch)
-            this.verifyStatusDefaultBranch()
             this.resetToLastCommit()
             this.verifyStatusDefaultBranch()
 
             log.info "Creating a new branch from the newer task's base"
-            refNewerBranch = this.createBranchFromCommit(newerBranch, newerTask.base)
-            log.info "'$newerBranch' was created"
-            def objectId2 = retrieveIdFromLatestCommitOnBranch(newerBranch)
-            log.info "Latest commit on branch '$newerBranch': ${objectId2.name}"
-            log.info "#Commits on branch '$newerBranch': ${this.listCommitsInBranch(newerBranch).size()}"
+            this.checkoutBranch(branch2, newerTask.base)
+            this.reset(newerTask.base)
+            def commits2 = this.searchRevCommits()
+            log.info "#Latest commit on branch '$branch2': ${commits2.first().name} (#commits: ${commits2.size()})"
 
             log.info "Reproducing the newer task's commits in the branch"
-            this.reproduceCommits(newerTask, newerBranch)
-            objectId2 = retrieveIdFromLatestCommitOnBranch(newerBranch)
-            log.info "Latest commit on branch '$newerBranch': ${objectId2.name}"
-            def commitsOnNewerBranch = this.listCommitsInBranch(newerBranch)
-            log.info "#Commits on branch '$newerBranch': ${commitsOnNewerBranch.size()}"
-            olderTask.commits*.hash.each{
-                if(commitsOnNewerBranch.contains(it)){
-                    log.info "commit '${it}' from the older branch is part of the newer branch"
-                }
-            }
+            this.reproduceCommits(newerTask, branch2)
+            commits2 = this.searchRevCommits()
+            log.info "#Latest commit on branch '$branch2': ${commits2.first().name} (#commits: ${commits2.size()})"
+            log.info "Latest commit of task2: ${newerTask.newestCommit}"
 
             this.checkoutBranch(defaultBranch)
-            this.verifyStatusDefaultBranch()
             this.resetToLastCommit()
             this.verifyStatusDefaultBranch()
 
             //Integrating tasks
             log.info "Integrating tasks by rebase"
-            conflictingFiles = this.rebaseBranch(olderBranch, newerBranch)
-            objectId1 = this.retrieveIdFromLatestCommitOnBranch(olderBranch)
-            log.info "Latest commit on branch '$olderBranch': ${objectId1.name}"
-            log.info "#Commits on branch '$olderBranch': ${this.listCommitsInBranch(olderBranch).size()}"
-            objectId2 = retrieveIdFromLatestCommitOnBranch(newerBranch)
-            log.info "Latest commit on branch '$newerBranch': ${objectId2.name}"
-            log.info "#Commits on branch '$newerBranch': ${this.listCommitsInBranch(newerBranch).size()}"
-
+            conflictingFiles = this.rebaseBranch(branch1, branch2)
         } catch(IntegrationException ex){
             log.warn ex.message
             conflictingFiles = null
@@ -384,19 +400,115 @@ class GitRepository {
             conflictingFiles = null
         } finally {
             this.checkoutBranch(defaultBranch)
-            this.clean()
             this.resetToLastCommit()
-            this.checkout()
             this.verifyStatusDefaultBranch()
 
             if(refOlderBranch) {
-                this.deleteBranch(olderBranch)
-                log.info "Branch '$olderBranch' was deleted"
+                this.deleteBranch(branch1)
+                log.info "Branch '$branch1' was deleted"
             }
 
             if(refNewerBranch){
-                this.deleteBranch(newerBranch)
-                log.info "Branch '$newerBranch' was deleted"
+                this.deleteBranch(branch2)
+                log.info "Branch '$branch2' was deleted"
+            }
+        }
+
+        conflictingFiles
+    }
+
+    def countCommitsInBranch(String branch){
+        ProcessBuilder builder = new ProcessBuilder("git", "rev-list", "--count", branch)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        def status = verifyStatus()
+        status.each{ log.info it.toString() }
+        def counter = process.inputStream.readLines().first().trim() as int
+        process?.inputStream?.close()
+        counter
+    }
+
+    //Reproduz commits em branch via merge; implementação com problema, vide br/ufpe/cin/tas/other/testing/Wpcc_72_97.groovy
+    //If the result is null, there is a problem to reproduce merge scenario
+    List integrateTasksByRebase2(MergeTask task1, MergeTask task2){
+        List<String> conflictingFiles = []
+        def branch1 = "branch1_spg"
+        def branch2 = "branch2_spg"
+        def refOlderBranch
+        def refNewerBranch
+
+        //Verify the oldest task
+        def taskDate = checkOldestTask(task1, task2)
+        MergeTask olderTask = taskDate.olderTask
+        MergeTask newerTask = taskDate.newerTask
+        log.info "Integrating tasks '${olderTask.id}' and '${newerTask.id}'"
+        log.info "olderTask: ${olderTask.id}; base: ${olderTask.base}; commits: ${olderTask.commits.size()}"
+        log.info "newerTask: ${newerTask.id}; base: ${newerTask.base}; commits: ${newerTask.commits.size()}"
+
+        //Verify common base among tasks
+        def gitBase = findBase(olderTask, newerTask)
+        log.info "Common base: $gitBase"
+
+        try{
+            this.checkoutBranch(defaultBranch)
+            this.resetToLastCommit()
+            this.verifyStatusDefaultBranch()
+
+            log.info "Creating a new branch from task1's base"
+            this.checkoutBranch(branch1, olderTask.base)
+            this.reset(olderTask.base)
+            def commits1 = this.searchRevCommits()
+            log.info "#Latest commit on branch '$branch1': ${commits1.first().name} (#commits: ${commits1.size()})"
+            log.info "Reproducing task1's commits in the branch"
+            this.mergeCommitByJgit(olderTask.newestCommit)
+            this.verifyStatus()
+            commits1 = this.searchRevCommits()
+            log.info "#Latest commit on branch '$branch1': ${commits1.first().name} (#commits: ${commits1.size()})"
+            log.info "Latest commit of task1: ${olderTask.newestCommit}"
+
+            this.checkoutBranch(defaultBranch)
+            this.resetToLastCommit()
+            this.verifyStatusDefaultBranch()
+
+            log.info "Creating a new branch from task2's base"
+            this.checkoutBranch(branch2, newerTask.base)
+            this.reset(newerTask.base)
+            def commits2 = this.searchRevCommits()
+            log.info "#Latest commit on branch '$branch2': ${commits2.first().name} (#commits: ${commits2.size()})"
+            log.info "Reproducing task2's commits in the branch"
+            this.mergeCommitByJgit(newerTask.newestCommit)
+            this.verifyStatus()
+            commits2 = this.searchRevCommits()
+            log.info "#Latest commit on branch '$branch2': ${commits2.first().name} (#commits: ${commits2.size()})"
+            log.info "Latest commit of task2: ${newerTask.newestCommit}"
+
+            this.checkoutBranch(defaultBranch)
+            this.resetToLastCommit()
+            this.verifyStatusDefaultBranch()
+
+            //Integrating tasks
+            log.info "Integrating tasks by rebase"
+            this.checkoutBranch(branch1)
+            conflictingFiles = this.rebaseBranch(branch1, branch2)
+        } catch(IntegrationException ex){
+            log.warn ex.message
+            conflictingFiles = null
+        } catch(Exception ex){
+            log.warn "${ex.class}: ${ex.message}"
+            conflictingFiles = null
+        } finally {
+            this.checkoutBranch(defaultBranch)
+            this.resetToLastCommit()
+            this.verifyStatusDefaultBranch()
+
+            if(refOlderBranch) {
+                this.deleteBranch(branch1)
+                log.info "Branch '$branch1' was deleted"
+            }
+
+            if(refNewerBranch){
+                this.deleteBranch(branch2)
+                log.info "Branch '$branch2' was deleted"
             }
         }
 
@@ -410,6 +522,7 @@ class GitRepository {
         process.waitFor()
         def aux = process?.inputStream?.readLines()
         process?.inputStream?.close()
+        aux.each{ log.info it.toString() }
         aux
     }
 
@@ -468,6 +581,13 @@ class GitRepository {
     Iterable<RevCommit> searchAllRevCommits() {
         def git = Git.open(new File(localPath))
         Iterable<RevCommit> logs = git?.log()?.all()?.call()
+        git.close()
+        logs
+    }
+
+    Iterable<RevCommit> searchRevCommits() {
+        def git = Git.open(new File(localPath))
+        Iterable<RevCommit> logs = git?.log()?.call()
         git.close()
         logs
     }
