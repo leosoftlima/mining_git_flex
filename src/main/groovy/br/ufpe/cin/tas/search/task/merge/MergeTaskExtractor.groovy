@@ -123,7 +123,7 @@ class MergeTaskExtractor {
     }
 
     private extractTasksFromIntermediateMerge(MergeScenario originalMergeScenario, List<Commit> commitsSetFromBranch){
-        def mergeCommits = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) && !isProblematicMerge(it) }
+        def mergeCommits = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) }
         List<MergeTask> result = []
         if(mergeCommits.size()==1){ //only 1 merge
             log.info "There is only 1 intermediate merge: ${mergeCommits.get(0).hash}"
@@ -171,7 +171,7 @@ class MergeTaskExtractor {
         List<MergeTask> result = []
         List<Commit> commitsSetFromBranch = repository?.searchCommits(commitsFromBranch)
 
-        def mergeCommitsSet = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) && !isProblematicMerge(it) }
+        def mergeCommitsSet = commitsSetFromBranch.findAll{ it.isMerge && !isFastForwardMerge(it) }
         log.info "Extracting task from a branch of merge: ${mergeScenario.merge}"
         if(!commitsSetFromBranch.empty && mergeCommitsSet.empty){ //there is no intermediate merges
             def task = new MergeTask(repository.url, ++taskId as String, commitsSetFromBranch, mergeScenario, hash)
@@ -210,6 +210,31 @@ class MergeTaskExtractor {
         result.unique{ [it.repositoryUrl, it.commits, it.newestCommit, it.merge, it.base] }
     }
 
+    private configureMergeTaskFromRealScenario(MergeScenario mergeScenario){
+        printMergeInfo(mergeScenario)
+
+        def leftTask, rightTask
+        def counter = 0
+
+        List<Commit> leftCommits = repository.searchCommits(mergeScenario.leftCommits)
+        def intermediateMergeCommitsInLeft = leftCommits.findAll{ it.isMerge && !isFastForwardMerge(it) }
+        if(intermediateMergeCommitsInLeft == null || intermediateMergeCommitsInLeft.empty){
+            leftTask = new MergeTask(repository.url, ++taskId as String, leftCommits, mergeScenario, mergeScenario.left)
+            counter++
+        }
+
+        List<Commit> rightCommits = repository.searchCommits(mergeScenario.rightCommits)
+        def intermediateMergeCommitsInRight = rightCommits.findAll{ it.isMerge && !isFastForwardMerge(it) }
+        if(intermediateMergeCommitsInRight == null || intermediateMergeCommitsInRight.empty){
+            rightTask = new MergeTask(repository.url, ++taskId as String, rightCommits, mergeScenario, mergeScenario.right)
+            counter++
+        }
+
+        log.info "Final tasks number: ${counter}"
+        if(leftTask && rightTask) [leftTask, rightTask]
+        else []
+    }
+
     private List<MergeScenario> extractMergeScenarios(){
         def merges = []
         def url = ""
@@ -243,7 +268,10 @@ class MergeTaskExtractor {
     private filterIndependentTasks(){
         independentTasks = []
         def hashesSimilarity = computeHashSimilarity() //["task_a","hashes_a","task_b","hashes_b","intersection","%_a","%_b"]
-        if(hashesSimilarity.empty) return
+        if(hashesSimilarity.empty && !ptTasks.empty) {
+            independentTasks = ptTasks
+            return
+        } else if (hashesSimilarity.empty) return
 
         def maxSimResult = []
         def pairsMaxSimilarity = hashesSimilarity.findAll{ (it[5]==1) || (it[6]==1) }
@@ -254,7 +282,7 @@ class MergeTaskExtractor {
                 def temp = []
                 n.each{ pair ->
                     if(pair[1]==pair[3]){
-                        def commitsNumber = pair[1] as String
+                        def commitsNumber = pair[1]
                         def idPair = [pair[0] as int, pair[2] as int].sort()
                         temp.add(ptTasks.find{ it.id == (idPair[0] as String) && it.commits.size() == commitsNumber })
                     } else if(pair[0]==id && pair[1]>pair[3] ){
@@ -330,6 +358,30 @@ class MergeTaskExtractor {
     def extractTasks(){
         tasks = []
         mergeScenarios?.each{ tasks += configureMergeTask(it) }
+        filterUniqueTasks()
+        filterProductionAndTestTasks()
+        filterIndependentTasks()
+        filterCucumberTasks()
+        filterCucumberIndependentTasks()
+
+        log.info "Found merge tasks: ${tasks.size()}"
+        log.info "Found unique tasks (from merge tasks): ${uniqueTasks.size()}"
+        log.info "Found P&T tasks (from unique tasks): ${ptTasks.size()}"
+        log.info "Found independent tasks (from P&T tasks): ${independentTasks.size()}"
+        log.info "Found cucumber tasks (from P&T tasks): ${cucumberTasks.size()}"
+        log.info "Found cucumber independent tasks: ${cucumberIndependentTasks.size()}"
+
+        Util.exportTasksWithConflictInfo(tasks, mergeTasksFile)
+        Util.exportTasksWithConflictInfo(uniqueTasks, uniqueTasksFile)
+        Util.exportTasksWithConflictInfo(ptTasks, ptTasksFile)
+        Util.exportTasksWithConflictInfo(independentTasks, independentTasksFile)
+        Util.exportTasksWithConflictInfo(cucumberTasks, cucumberTasksFile)
+        Util.exportTasksWithConflictInfo(cucumberIndependentTasks, cucumberIndependentTasksFile)
+    }
+
+    def extractTasksFromRealScenarios(){
+        tasks = []
+        mergeScenarios?.each{ tasks += configureMergeTaskFromRealScenario(it) }
         filterUniqueTasks()
         filterProductionAndTestTasks()
         filterIndependentTasks()
