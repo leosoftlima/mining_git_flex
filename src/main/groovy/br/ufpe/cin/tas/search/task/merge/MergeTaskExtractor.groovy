@@ -71,20 +71,6 @@ class MergeTaskExtractor {
         log.info "right commit: ${merge.right}\n"
     }
 
-    private extractLastTaskFromPartialMergeScenario(List<Commit> mergeCommits, List<Commit> commits, MergeScenario merge){
-        def task = null
-        def mergeCommit = mergeCommits.last()
-        def baseCommit = merge.base
-        log.info "Merge pairs: [${mergeCommit.hash}, ${baseCommit}]"
-        def index = commits.indexOf(mergeCommit)
-        def commitsOfInterest = commits.subList(index+1, commits.size())
-        if(!commitsOfInterest.empty) {
-            task = new MergeTask(repository.url, ++taskId as String, commitsOfInterest, mergeCommit.hash,
-                    baseCommit, commitsOfInterest.first().hash)
-        }
-        task
-    }
-
     private extractFirstTaskFromPartialMergeScenario(List<Commit> mergeCommits, List<Commit> commits, MergeScenario merge){
         def task = null
         def mergeCommit = merge.merge
@@ -109,15 +95,6 @@ class MergeTaskExtractor {
                 tasks += new MergeTask(repository.url, ++taskId as String, set1, merge.merge, intermediateMerge.hash,
                         set1.first().hash)
             }
-
-            def last = commits.size()-1
-            if(index<last) { //task between intermediateMerge and merge.base
-                def set2 = commits.subList(index+1, commits.size())
-                if(!set2.empty){
-                    tasks += new MergeTask(repository.url, ++taskId as String, set2, intermediateMerge.hash, merge.base,
-                            set2.first().hash)
-                }
-            }
         }
         tasks
     }
@@ -135,23 +112,6 @@ class MergeTaskExtractor {
 
             /* commits set between merge and the first intermediate merge */
             def task = extractFirstTaskFromPartialMergeScenario(mergeCommits, commitsSetFromBranch, originalMergeScenario)
-            if(task) result += task
-
-            /* commits set between merges */
-            def pairs = mergeCommits.collate(2, 1, false)
-            pairs.each{ pair ->
-                log.info "Merge pairs: ${pair*.hash}"
-                def index1 = commitsSetFromBranch.indexOf(pair.get(0))
-                def index2 = commitsSetFromBranch.indexOf(pair.get(1))
-                def commitsOfInterest = commitsSetFromBranch.subList(index1+1, index2)
-                if(!commitsOfInterest.empty && !(commitsOfInterest.size()==1 && commitsOfInterest.get(0).isMerge) ) {
-                    result += new MergeTask(repository.url, ++taskId as String, commitsOfInterest, pair.get(0).hash,
-                            pair.get(1).hash, commitsOfInterest.first().hash)
-                }
-            }
-
-            /* commits set between last intermediate merge and base */
-            task = extractLastTaskFromPartialMergeScenario(mergeCommits, commitsSetFromBranch, originalMergeScenario)
             if(task) result += task
         }
         result
@@ -208,31 +168,6 @@ class MergeTaskExtractor {
         log.info "Final tasks number: ${result.size()}"
 
         result.unique{ [it.repositoryUrl, it.commits, it.newestCommit, it.merge, it.base] }
-    }
-
-    private configureMergeTaskFromRealScenario(MergeScenario mergeScenario){
-        printMergeInfo(mergeScenario)
-
-        def leftTask, rightTask
-        def counter = 0
-
-        List<Commit> leftCommits = repository.searchCommits(mergeScenario.leftCommits)
-        def intermediateMergeCommitsInLeft = leftCommits.findAll{ it.isMerge && !isFastForwardMerge(it) }
-        if(intermediateMergeCommitsInLeft == null || intermediateMergeCommitsInLeft.empty){
-            leftTask = new MergeTask(repository.url, ++taskId as String, leftCommits, mergeScenario, mergeScenario.left)
-            counter++
-        }
-
-        List<Commit> rightCommits = repository.searchCommits(mergeScenario.rightCommits)
-        def intermediateMergeCommitsInRight = rightCommits.findAll{ it.isMerge && !isFastForwardMerge(it) }
-        if(intermediateMergeCommitsInRight == null || intermediateMergeCommitsInRight.empty){
-            rightTask = new MergeTask(repository.url, ++taskId as String, rightCommits, mergeScenario, mergeScenario.right)
-            counter++
-        }
-
-        log.info "Final tasks number: ${counter}"
-        if(leftTask && rightTask) [leftTask, rightTask]
-        else []
     }
 
     private List<MergeScenario> extractMergeScenarios(){
@@ -358,30 +293,6 @@ class MergeTaskExtractor {
     def extractTasks(){
         tasks = []
         mergeScenarios?.each{ tasks += configureMergeTask(it) }
-        filterUniqueTasks()
-        filterProductionAndTestTasks()
-        filterIndependentTasks()
-        filterCucumberTasks()
-        filterCucumberIndependentTasks()
-
-        log.info "Found merge tasks: ${tasks.size()}"
-        log.info "Found unique tasks (from merge tasks): ${uniqueTasks.size()}"
-        log.info "Found P&T tasks (from unique tasks): ${ptTasks.size()}"
-        log.info "Found independent tasks (from P&T tasks): ${independentTasks.size()}"
-        log.info "Found cucumber tasks (from P&T tasks): ${cucumberTasks.size()}"
-        log.info "Found cucumber independent tasks: ${cucumberIndependentTasks.size()}"
-
-        Util.exportTasksWithConflictInfo(tasks, mergeTasksFile)
-        Util.exportTasksWithConflictInfo(uniqueTasks, uniqueTasksFile)
-        Util.exportTasksWithConflictInfo(ptTasks, ptTasksFile)
-        Util.exportTasksWithConflictInfo(independentTasks, independentTasksFile)
-        Util.exportTasksWithConflictInfo(cucumberTasks, cucumberTasksFile)
-        Util.exportTasksWithConflictInfo(cucumberIndependentTasks, cucumberIndependentTasksFile)
-    }
-
-    def extractTasksFromRealScenarios(){
-        tasks = []
-        mergeScenarios?.each{ tasks += configureMergeTaskFromRealScenario(it) }
         filterUniqueTasks()
         filterProductionAndTestTasks()
         filterIndependentTasks()
