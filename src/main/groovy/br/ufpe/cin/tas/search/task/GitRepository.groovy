@@ -43,6 +43,60 @@ class GitRepository {
         log.info "Default branch: ${defaultBranch}"
     }
 
+    def diff(String sha1, String sha2){
+        //-M to deal with renaming and -U for unified format
+        //A saída seria pegar no resultado do diff, todas as linhas que começam com @@, pois temos informação da área alterada
+        ProcessBuilder builder = new ProcessBuilder("git", "diff", "-M", "-U", sha1, sha2)
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        def lines = process.inputStream.readLines()
+        process.inputStream.close()
+        def result = lines.findAll{ it.startsWith("diff --git ") || it.startsWith("@@ ") }
+        formatDiffOutput(result)
+    }
+
+    static formatDiffOutput(List<String> result){
+        def changes = []
+        def file
+        def lines
+        result.each{ line ->
+            if(line.startsWith("diff --git ")){
+                def index = line.lastIndexOf(" ")
+                file = (line.substring(index+1)).substring(2)
+                lines = null
+            }
+            else if(line.startsWith("@@ ")){
+                //consideramos a nova versão do arquivo, mas para lidar com linhas removidas, teríamos que considerar a versão original
+                /* Exemplo: @@ -11,6 +9,4 @@
+                * Na versão original, temos 6 linhas, a contar da linha 11.
+                * Na versão nova, a região equivalente possui 4 linhas, a contar da linha 9. Ou seja, 2 linhas foram removidas.
+                * */
+                def index1 = line.lastIndexOf("+") //aqui pegamos a hunk da nova versão; para pegar a da original, usar "-"
+                def interval = line.substring(index1+1)
+                def index2 = interval.indexOf(" ")
+                interval = interval.substring(0, index2)
+                def index3 = interval.indexOf(",")
+                def n
+                if(index3<0) {
+                    index3 = interval.indexOf(" ")
+                    n = 0 as int
+                }
+                def indexInit = (interval.substring(0, index3) as int) - 1
+                if(n==null) n = interval.substring(index3+1) as int
+                def indexEnd = indexInit - 1 + n
+                lines = indexInit..indexEnd
+            }
+            if(file && lines) changes.add([file:file, lines:lines])
+        }
+        def grouped = changes.groupBy{ it.file }
+        def finalResult = []
+        grouped.each{
+            def changedLines = (it.value*.lines).flatten()
+            finalResult += [file: it.key, lines:changedLines.unique()]
+        }
+        finalResult
+    }
+
     def checkoutBranch(String branch, String startpoint){
         ProcessBuilder builder = new ProcessBuilder("git", "checkout", "-f", "-B", branch, startpoint)
         builder.directory(new File(localPath))

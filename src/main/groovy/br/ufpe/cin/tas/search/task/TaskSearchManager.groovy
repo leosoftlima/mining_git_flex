@@ -77,6 +77,7 @@ class TaskSearchManager {
             try{
                 MergeTaskExtractor taskExtractor = new MergeTaskExtractor(mergeFile)
                 def r = taskExtractor.extractTasks()
+                //def r = taskExtractor.extractTasksFromRealScenarios()
                 if(r){
                     if(!r.allTasks.empty) allTasks += r.allTasks
                     else log.info "No task was found!"

@@ -11,6 +11,7 @@ class Task {
     List<String> productionFiles
     List<String> testFiles
     List<String> changedFiles
+    List changedFilesWithLines //[file:"", lines:[]]
     String newestCommit
     List<String> gems
 
@@ -25,6 +26,7 @@ class Task {
         productionFiles = []
         testFiles = []
         changedFiles = []
+        changedFilesWithLines = []
         gems = []
     }
 
@@ -40,6 +42,13 @@ class Task {
         changedFiles?.each { file ->
             if (Util.isTestFile(file)) testFiles += file
             else if(Util.isProductionFile(file)) productionFiles += file
+        }
+
+        GitRepository gitRepository = GitRepository.getRepository(repositoryUrl)
+        def firstCommit = commits?.last()
+        def lastCommit = commits?.first()
+        if(firstCommit && lastCommit){
+            changedFilesWithLines += gitRepository.diff(firstCommit.hash, lastCommit.hash)
         }
     }
 
