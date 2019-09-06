@@ -43,13 +43,6 @@ class Task {
             if (Util.isTestFile(file)) testFiles += file
             else if(Util.isProductionFile(file)) productionFiles += file
         }
-
-        GitRepository gitRepository = GitRepository.getRepository(repositoryUrl)
-        def firstCommit = commits?.last()
-        def lastCommit = commits?.first()
-        if(firstCommit && lastCommit){
-            changedFilesWithLines += gitRepository.diff(firstCommit.hash, lastCommit.hash)
-        }
     }
 
     @Override

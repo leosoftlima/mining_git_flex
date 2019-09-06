@@ -43,6 +43,21 @@ class GitRepository {
         log.info "Default branch: ${defaultBranch}"
     }
 
+    def getChangedFileBetweenCommits(String sha1, String sha2){
+        ProcessBuilder builder
+        if(sha1==sha2) {
+            builder = new ProcessBuilder("git", "diff", "-M", "--name-only", "${sha1}~", sha1)
+        } else {
+            builder = new ProcessBuilder("git", "diff", "-M", "--name-only", "${sha1}", sha2)
+        }
+        builder.directory(new File(localPath))
+        Process process = builder.start()
+        def lines = process.inputStream.readLines()
+        process.inputStream.close()
+        lines
+    }
+
+    //CORRIGIR! Deu erro com projeto sharetribe, par de tarefas 909 e 1003
     def diff(String sha1, String sha2){
         //-M to deal with renaming and -U for unified format
         //A saída seria pegar no resultado do diff, todas as linhas que começam com @@, pois temos informação da área alterada
