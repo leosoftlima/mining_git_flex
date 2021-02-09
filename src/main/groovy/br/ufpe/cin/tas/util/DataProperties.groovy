@@ -9,16 +9,13 @@ class DataProperties {
     public static final Properties properties
     public static final String BIGQUERY_PROJECT_ID
     public static final String LANGUAGE
-    public static final String GITHUB_LOGIN
-    public static final String GITHUB_PASSWORD
+    public static final String GITHUB_TOKEN
     public static final boolean SIMPLE_GITHUB_SEARCH
 
     public static final String FILE_TYPE
     public static final boolean FILTER_BY_DEFAULT_MESSAGE
     public static final boolean FILTER_BY_PIVOTAL_TRACKER
     public static final boolean FILTER_BY_FILE
-    public static final boolean FILTER_RAILS
-    public static final List<String> GEMS
     public static final String FILTER_STARS
     public static final String FILTER_YEAR
     public static final boolean FILTER_BY_LAST_UPDATE
@@ -26,8 +23,13 @@ class DataProperties {
     public static final boolean SEARCH_PROJECTS
     public static final boolean FILTER_PROJECTS
     public static final boolean SEARCH_TASKS
+    public static final boolean SEARCH_PT_TASKS
+    public static final List<String> PRODUCTION_FOLDERS
+    public static final List<String> VALID_PROD_FILES_EXTENSION
+    public static final String UNIT_FOLDER
+    public static final String GHERKIN_FOLDER
+    public static final String STEPS_FOLDER
     public static final boolean SEARCH_MERGES
-    public static final boolean CONFLICT_ANALYSIS
 
     static {
         try {
@@ -45,17 +47,12 @@ class DataProperties {
             SIMPLE_GITHUB_SEARCH = !FILTER_BY_DEFAULT_MESSAGE && !FILTER_BY_PIVOTAL_TRACKER
             LANGUAGE = configureLanguage()
 
-            def loginData = configGithubLogin()
-            GITHUB_LOGIN = loginData.login
-            GITHUB_PASSWORD = loginData.password
+            GITHUB_TOKEN = configGithubLogin()
 
             def fileFilter = configureFileFilter()
             FILE_TYPE = fileFilter.fileType
             FILTER_BY_FILE = fileFilter.filter
 
-            def result = configureGemsFilter()
-            GEMS = result.gems
-            FILTER_RAILS = result.filter
             FILTER_STARS = configureStarsFilter()
             FILTER_BY_LAST_UPDATE = FILTER_STARS.empty
             FILTER_YEAR = configureYearFilter()
@@ -68,8 +65,19 @@ class DataProperties {
                     ConstantData.DEFAULT_SEARCH_TASKS)
             SEARCH_MERGES = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_SEARCH_MERGES),
                     ConstantData.DEFAULT_SEARCH_MERGES)
-            CONFLICT_ANALYSIS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_CONFLICT_ANALYSIS),
-                    ConstantData.DEFAULT_CONFLICT_ANALYSIS)
+            SEARCH_PT_TASKS = configureMandatoryBooleanProperties(properties.(ConstantData.PROP_SEARCH_PT_TASKS),
+                    ConstantData.DEFAULT_SEARCH_PT_TASKS)
+            PRODUCTION_FOLDERS = configureProductionFolders()
+            VALID_PROD_FILES_EXTENSION = configureProductionFiles()
+            UNIT_FOLDER = configureMandatoryProperties(properties.(ConstantData.PROP_UNIT_FOLDER),
+                    ConstantData.DEFAULT_UNIT_FOLDER)
+            if(!UNIT_FOLDER.endsWith(File.separator)) UNIT_FOLDER += File.separator
+            GHERKIN_FOLDER = configureMandatoryProperties(properties.(ConstantData.PROP_GHERKIN_FOLDER),
+                    ConstantData.DEFAULT_GHERKIN_FOLDER)
+            if(!GHERKIN_FOLDER.endsWith(File.separator)) GHERKIN_FOLDER += File.separator
+            STEPS_FOLDER = configureMandatoryProperties(properties.(ConstantData.PROP_STEPS_FOLDER),
+                    ConstantData.DEFAULT_STEPS_FOLDER)
+            if(!STEPS_FOLDER.endsWith(File.separator)) STEPS_FOLDER += File.separator
 
         } catch (Exception ex) {
             log.info ex.message
@@ -79,13 +87,36 @@ class DataProperties {
         log.info "SEARCH_PROJECTS: ${SEARCH_PROJECTS}"
         log.info "FILTER_PROJECTS: ${FILTER_PROJECTS}"
         log.info "SEARCH_TASKS: ${SEARCH_TASKS}"
+        log.info "SEARCH_PT_TASKS: ${SEARCH_PT_TASKS}"
         log.info "FILTER_BY_FILE: ${FILTER_BY_FILE}; FILE_TYPE: ${FILE_TYPE}"
-        log.info "FILTER_RAILS: ${FILTER_RAILS}"
         log.info "FILTER_BY_DEFAULT_MESSAGE: ${FILTER_BY_DEFAULT_MESSAGE}"
         log.info "FILTER_BY_PIVOTAL_TRACKER: ${FILTER_BY_PIVOTAL_TRACKER}"
         log.info "FILTER_STARS: ${FILTER_STARS}"
         log.info "FILTER_YEAR: ${FILTER_YEAR}"
 
+    }
+
+    private static configureProductionFolders(){
+        def folders = properties.(ConstantData.PROP_PRODUCTION_FOLDERS)
+        def foldersSet
+        if(!folders || folders.empty) {
+            foldersSet = ConstantData.DEFAULT_PRODUCTION_FOLDERS
+        }
+        else {
+            foldersSet = folders?.split(",")*.replaceAll(" ", "")
+        }
+        foldersSet
+    }
+    private static configureProductionFiles(){
+        def folders = properties.(ConstantData.PROP_PROD_FILES_EXTENSIONS)
+        def foldersSet
+        if(!folders || folders.empty) {
+            foldersSet = ConstantData.DEFAULT_PRODUCTION_FILES_EXTENSIONS
+        }
+        else {
+            foldersSet = folders?.split(",")*.replaceAll(" ", "")
+        }
+        foldersSet
     }
 
     private static loadProperties() {
@@ -131,21 +162,6 @@ class DataProperties {
         [default:defaultOption, pivotal:pivotalOption]
     }
 
-    private static configureGemsFilter(){
-        def gems = properties.(ConstantData.PROP_GEMS_FILTER)
-        def gemSet
-        def filter
-        if(!gems || gems.empty) {
-            gemSet = []
-            filter = false
-        }
-        else {
-            gemSet = gems?.split(",")*.replaceAll(" ", "")
-            filter = gemSet.size() > 0
-        }
-        [gems:gemSet, filter:filter]
-    }
-
     private static configureFileFilter(){
         def fileType = "." + properties.(ConstantData.PROP_FILE_TYPE_FILTER).toLowerCase()
         if (fileType.length() == 1) fileType = ""
@@ -164,12 +180,11 @@ class DataProperties {
     }
 
     private static configGithubLogin() throws Exception {
-        def login = properties.(ConstantData.PROP_GITHUB_LOGIN)
-        def password = properties.(ConstantData.PROP_GITHUB_PASSWORD)
-        if(SIMPLE_GITHUB_SEARCH && (!login || !password || login?.empty || password?.empty)) {
-            throw new Exception("Please, inform a valid GitHub username and password!")
+        def token = properties.(ConstantData.PROP_GITHUB_TOKEN)
+        if(SIMPLE_GITHUB_SEARCH && (!token || token?.empty)) {
+            throw new Exception("Please, inform a valid GitHub token!")
         }
-        [login:login, password:password]
+        token
     }
 
     private static configBigQuery()throws Exception {

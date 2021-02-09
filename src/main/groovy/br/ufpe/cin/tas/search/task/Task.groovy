@@ -13,7 +13,6 @@ class Task {
     List<String> changedFiles
     List changedFilesWithLines //[file:"", lines:[]]
     String newestCommit
-    List<String> gems
 
     Task() {
 
@@ -27,7 +26,6 @@ class Task {
         testFiles = []
         changedFiles = []
         changedFilesWithLines = []
-        gems = []
     }
 
     Task(String url, String id, List<Commit> commits, String newestCommit) {
@@ -53,26 +51,7 @@ class Task {
         msg += "Newest commit: $newestCommit\n"
         msg += "Production files: ${productionFiles.size()}\n"
         msg += "Test files: ${testFiles.size()}\n"
-        msg += "Gems: ${gems}\n"
         return msg
-    }
-
-    boolean hasCoverageAndTests(){
-        def hasGems = false
-        if(gems.contains("rails") && gems.contains("cucumber-rails") && (gems.contains("simplecov")
-                || gems.contains("coveralls"))) {
-            hasGems = true
-        }
-        if(commits.size()<=500 && hasGems) true
-        else false
-    }
-
-    boolean usesCucumber(){
-        def hasGems = false
-        if(gems.contains("cucumber-rails")) {
-            hasGems = true
-        }
-        hasGems
     }
 
     Commit getNewestCommitObject(){

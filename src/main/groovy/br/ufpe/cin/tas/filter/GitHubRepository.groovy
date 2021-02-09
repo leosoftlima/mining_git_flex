@@ -1,6 +1,5 @@
 package br.ufpe.cin.tas.filter
 
-import br.ufpe.cin.tas.util.CsvUtil
 import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.util.ConstantData
 import br.ufpe.cin.tas.util.DataProperties
@@ -44,13 +43,6 @@ class GitHubRepository {
         this.zipUrl = url + ConstantData.ZIP_FILE_URL + branch + ConstantData.FILE_EXTENSION
     }
 
-    private static boolean isRailsProject(List<String> gemFileLines){
-        def regex =  /\s*gem\s+"?'?${ConstantData.RAILS_GEM}"?'?.*/
-        def hasGem = gemFileLines.find{ !(it.trim().startsWith("#")) && it==~regex }
-        if(hasGem) true
-        else false
-    }
-
     String getZipFolderName() {
         ConstantData.UNZIPPED_FILES_FOLDER + name
     }
@@ -89,67 +81,17 @@ class GitHubRepository {
 
     boolean satisfiesFilteringCriteria() {
         boolean result = false
-        if(!DataProperties.FILTER_BY_FILE && !DataProperties.FILTER_RAILS) result = true
-        else {
+        if (DataProperties.FILTER_BY_FILE){
             try {
                 downloadZip()
                 unzip()
-                if (DataProperties.FILTER_BY_FILE && DataProperties.FILTER_RAILS) {
-                    def r1 = hasGems()
-                    def r2 = false
-                    if(r1) r2 = FileHandler.hasFileType(getZipFolderName())
-                    if(r2){
-                        List<String[]> featuresProjects = []
-                        String[] project = [url, branch, createdAt, stars, size, description, result]
-                        featuresProjects += project
-                        CsvUtil.append(ConstantData.FEATURES_REPOSITORIES_FILE, featuresProjects)
-                    }
-                    if(r1 && r2) result = true
-                } else if (DataProperties.FILTER_BY_FILE) {
-                    result = FileHandler.hasFileType(getZipFolderName())
-                } else if (DataProperties.FILTER_RAILS) {
-                    result = hasGems()
-                }
+                result = FileHandler.hasFileType(getZipFolderName())
                 deleteUnzippedDir()
             } catch (Exception e) {
                 log.info e.getMessage()
             }
         }
-        result
-    }
-
-    boolean hasGems(){
-        List<String[]> railsProjects = []
-        List<String[]> cucumberProjects = []
-
-        def result = false
-        File gemfile = FileHandler.retrieveFile(ConstantData.GEM_FILE, getZipFolderName())
-        if(gemfile) {
-            def lines = gemfile.readLines()
-            def railsProject = isRailsProject(lines)
-            if(railsProject){
-                DataProperties.GEMS.each { gem ->
-                    def regex = /\s*gem\s+"?'?${gem}"?'?.*/
-                    def hasGem = lines.find{ !(it.trim().startsWith("#")) && it==~regex }
-                    if(hasGem) {
-                        log.info "Project does use gem '${gem}'"
-                        String[] project = [url, branch, createdAt, stars, size, description, result]
-                        if(gem.contains("cucumber")) {
-                            cucumberProjects += project
-                            result = true
-                        }
-
-                    } else log.info "Project does not use gem '${gem}'"
-                }
-                String[] project = [url, branch, createdAt, stars, size, description, result]
-                railsProjects += project
-            } else log.info "It is not a Rails project!"
-        } else {
-            log.info "Gemfile was not found! It is not a Rails project!"
-        }
-
-        CsvUtil.append(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
-        CsvUtil.append(ConstantData.CUCUMBER_REPOSITORIES_FILE, cucumberProjects)
+        else result = true
         result
     }
 

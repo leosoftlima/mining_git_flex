@@ -5,8 +5,7 @@ abstract class ConstantData {
     public static final String PROPERTIES_FILE_NAME = "configuration.properties"
 
     /* Project search */
-    public static final String PROP_GITHUB_LOGIN = "spgroup.github.user"
-    public static final String PROP_GITHUB_PASSWORD = "spgroup.github.password"
+    public static final String PROP_GITHUB_TOKEN = "spgroup.github.token"
     public static final String PROP_BIGQUERY_ID = "spgroup.bigquery.project.id"
     public static final String PROP_LANGUAGE_FILTER = "spgroup.project.search.language"
     public static final String PROP_STARS_FILTER = "spgroup.project.search.stars"
@@ -15,14 +14,13 @@ abstract class ConstantData {
 
     /* Project filter */
     public static final String PROP_FILE_TYPE_FILTER = "spgroup.project.filter.file"
-    public static final String PROP_GEMS_FILTER = "spgroup.project.filter.gems"
 
     /* Tool */
     public static final String PROP_SEARCH_PROJECTS = "spgroup.search.projects"
     public static final String PROP_FILTER_PROJECTS = "spgroup.filter.projects"
     public static final String PROP_SEARCH_TASKS = "spgroup.search.tasks"
+    public static final String PROP_SEARCH_PT_TASKS = "spgroup.search.pt.tasks"
     public static final String PROP_SEARCH_MERGES = "spgroup.search.merges"
-    public static final String PROP_CONFLICT_ANALYSIS = "spgroup.conflict.analysis"
 
     /* Defaults */
     public static final String DEFAULT_LANGUAGE = "ruby"
@@ -31,8 +29,14 @@ abstract class ConstantData {
     public static final boolean DEFAULT_SEARCH_PROJECTS = true
     public static final boolean DEFAULT_FILTER_PROJECTS = true
     public static final boolean DEFAULT_SEARCH_TASKS = true
+    public static final boolean DEFAULT_SEARCH_PT_TASKS = false
     public static final boolean DEFAULT_SEARCH_MERGES = true
-    public static final boolean DEFAULT_CONFLICT_ANALYSIS = false
+    public static final String DEFAULT_UNIT_FOLDER = "spec${File.separator}"
+    public static final String DEFAULT_GHERKIN_FOLDER = "features${File.separator}"
+    public static final String DEFAULT_STEPS_FOLDER = "features${File.separator}step_definitions${File.separator}"
+    public static final List<String> DEFAULT_PRODUCTION_FOLDERS = ["app", "lib"]
+    public static final List<String> DEFAULT_PRODUCTION_FILES_EXTENSIONS = [".rb", ".html", ".html.haml",
+                                                                            ".html.erb", ".html.slim", ".erb", ".haml", ".slim"]
 
     /* Files and folders */
     public static final String ZIP_FILE_URL = "/archive/"
@@ -44,11 +48,6 @@ abstract class ConstantData {
     public static final String REPOSITORIES_TO_DOWNLOAD_FILE = "${GITHUB_SEARCH_RESULT_FOLDER}projects.csv"
     public static final String FILTERED_RESULT_FOLDER = "2-filtered${File.separator}"
     public static final String CANDIDATE_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}candidate-projects.csv"
-    public static final String RAILS_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}rails-projects.csv"
-    public static final String CUCUMBER_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}cucumber-projects.csv"
-    public static final String SIMPLECOV_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}simplecov-projects.csv"
-    public static final String COVERALLS_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}coveralls-projects.csv"
-    public static final String FEATURES_REPOSITORIES_FILE = "${FILTERED_RESULT_FOLDER}features-projects.csv"
     public static final String TASKS_FOLDER = "3-tasks${File.separator}"
     public static final String TASKS_FILE = "${TASKS_FOLDER}tasks.csv"
     public static final String MERGES_FOLDER = "${TASKS_FOLDER}merges${File.separator}"
@@ -59,22 +58,18 @@ abstract class ConstantData {
     public static final String OUTPUT_FOLDER = "output${File.separator}"
     public static final String LOG_FILE = "${OUTPUT_FOLDER}execution.log"
     public static final String REPOSITORY_FOLDER = "spg_repos${File.separator}"
-    public static final String CUCUMBER_TASKS_FILE_SUFIX = "_cucumber.csv"
 
     /* Files */
     public static final String GIT_EXTENSION = ".git"
     public static final String FILE_EXTENSION = ".zip"
     public static final String GITHUB_URL = "https://github.com/"
 
-    /* Rails files */
-    public static final String GEM_FILE = "Gemfile"
-    public static final String RAILS_GEM = "rails"
-    public static final String UNIT_TEST_FILES_RELATIVE_PATH = "spec${File.separator}"
-    public static final String GHERKIN_FILES_RELATIVE_PATH = "features${File.separator}"
-    public static final String STEPS_FILES_RELATIVE_PATH = "${GHERKIN_FILES_RELATIVE_PATH}step_definitions${File.separator}"
-    public static final String PRODUCTION_FILES_RELATIVE_PATH = "app${File.separator}"
-    public static final String LIB_RELATIVE_PATH = "lib${File.separator}"
-    public static final List<String> VALID_PROD_FOLDERS = [PRODUCTION_FILES_RELATIVE_PATH, LIB_RELATIVE_PATH]
+    /* FILTERING PRODUCTION AND TEST FILES  */
+    public static final String PROP_UNIT_FOLDER = "spgroup.search.unit.folder"
+    public static final String PROP_GHERKIN_FOLDER = "spgroup.search.gherkin.folder"
+    public static final String PROP_STEPS_FOLDER = "spgroup.search.steps.folder"
+    public static final String PROP_PRODUCTION_FOLDERS = "spgroup.search.production.folders"
+    public static final String PROP_PROD_FILES_EXTENSIONS = "spgroup.search.production.extensions"
     public static final List<String> VALID_PROD_EXTENSIONS = [".rb", ".html", ".html.haml", ".html.erb", ".html.slim"]
     public static final String VALID_TEST_EXTENSION = ".feature"
 

@@ -5,7 +5,6 @@ import br.ufpe.cin.tas.search.repository.ResultManager
 import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.util.ConstantData
 import br.ufpe.cin.tas.util.CsvUtil
-import br.ufpe.cin.tas.util.DataProperties
 
 @Slf4j
 class RepositoryFilterManager {
@@ -18,25 +17,13 @@ class RepositoryFilterManager {
     RepositoryFilterManager() {
         candidates = []
         resultManager = new ResultManager()
-        configureRailsFile()
-    }
-
-    private static configureRailsFile(){
-        String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION", "GEMS"]
-        List<String[]> railsProjects = []
-        railsProjects += header
-        CsvUtil.write(ConstantData.RAILS_REPOSITORIES_FILE, railsProjects)
-        CsvUtil.write(ConstantData.CUCUMBER_REPOSITORIES_FILE, railsProjects)
-        CsvUtil.write(ConstantData.SIMPLECOV_REPOSITORIES_FILE, railsProjects)
-        CsvUtil.write(ConstantData.COVERALLS_REPOSITORIES_FILE, railsProjects)
-        CsvUtil.write(ConstantData.FEATURES_REPOSITORIES_FILE, railsProjects)
     }
 
     private configureFile(){
         file = new File(ConstantData.CANDIDATE_REPOSITORIES_FILE)
         if(file.exists()) file.delete()
         List<String[]> content = []
-        String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION", "GEMS"]
+        String[] header = ["URL", "MASTER_BRANCH", "CREATED_AT", "STARS", "SIZE", "DESCRIPTION"]
         content += header
         CsvUtil.append(ConstantData.CANDIDATE_REPOSITORIES_FILE, content)
     }
@@ -66,7 +53,7 @@ class RepositoryFilterManager {
             log.info "${repository.url} satisfies filtering criteria!"
             candidates.add(repository)
             String[] args = [repository.url, repository.branch, repository.createdAt, repository.stars, repository.size,
-                             repository.description, DataProperties.GEMS]
+                             repository.description]
             CSVWriter writer = new CSVWriter(new FileWriter(file, true))
             writer.writeNext(args)
             writer.close()
@@ -76,7 +63,7 @@ class RepositoryFilterManager {
         }
     }
 
-    def searchRepositoriesByFileTypeAndGems() {
+    def searchRepositoriesByFileType() {
         CSVWriter writer = null
         List<GitHubRepository> repositories
         resetCounters()
@@ -88,7 +75,7 @@ class RepositoryFilterManager {
             printCounter()
             listCandidateRepositories()
         } catch (IOException e) {
-            log.error "Error while filtering repositories by file type and gems."
+            log.error "Error while filtering repositories by file type."
             e.stackTrace.each{ log.error it.toString() }
         } finally {
             writer?.close()

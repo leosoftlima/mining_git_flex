@@ -1,6 +1,7 @@
 package br.ufpe.cin.tas.search.task.merge
 
 import br.ufpe.cin.tas.search.task.id.Commit
+import br.ufpe.cin.tas.util.DataProperties
 import groovy.util.logging.Slf4j
 import br.ufpe.cin.tas.search.task.GitRepository
 import br.ufpe.cin.tas.util.ConstantData
@@ -19,8 +20,6 @@ class MergeTaskExtractor {
     String uniqueTasksFile
     String independentTasksFile
     String ptTasksFile
-    String cucumberIndependentTasksFile
-    String cucumberTasksFile
 
     private static int taskId
     GitRepository repository
@@ -31,8 +30,6 @@ class MergeTaskExtractor {
     List<MergeTask> ptTasks
     List<MergeTask> uniqueTasks
     List<MergeTask> independentTasks
-    List<MergeTask> cucumberTasks
-    List<MergeTask> cucumberIndependentTasks
 
     MergeTaskExtractor(String mergeFile) throws Exception {
         taskId = 0
@@ -52,15 +49,11 @@ class MergeTaskExtractor {
         this.uniqueTasksFile = "${ConstantData.TASKS_FOLDER}${repository.name}-unique-tasks.csv"
         this.independentTasksFile = "${ConstantData.TASKS_FOLDER}${repository.name}-independent-tasks.csv"
         this.ptTasksFile = "${ConstantData.TASKS_FOLDER}${repository.name}-pt-tasks.csv"
-        this.cucumberTasksFile = "${ConstantData.TASKS_FOLDER}${repository.name}-cucumber.csv"
-        this.cucumberIndependentTasksFile =  "${ConstantData.TASKS_FOLDER}${repository.name}-cucumber-independent-tasks.csv"
 
         this.tasks = []
         this.ptTasks = []
         this.uniqueTasks = []
         this.independentTasks = []
-        this.cucumberTasks = []
-        this.cucumberIndependentTasks = []
     }
 
     private static printMergeInfo(MergeScenario merge){
@@ -119,12 +112,12 @@ class MergeTaskExtractor {
 
     private isFastForwardMerge(Commit commit){
         def found = fastForwardMerges.find{ it == commit.hash }
-        (found == null)? false : true
+        !(found == null)
     }
 
     private isProblematicMerge(Commit commit){
         def found = problematicMerges.find{ it == commit.hash }
-        (found == null)? false : true
+        !(found == null)
     }
 
     private extractTaskFromMergeBranch(MergeScenario mergeScenario, List<String> commitsFromBranch, String hash){
@@ -233,15 +226,6 @@ class MergeTaskExtractor {
         independentTasks = (ptTasks - maxSimResult).sort{ it.id as double }
     }
 
-    private filterCucumberTasks(){
-        extractTasksGems()
-        cucumberTasks = ptTasks.findAll{ it.usesCucumber() }
-    }
-
-    private filterCucumberIndependentTasks(){
-        cucumberIndependentTasks = independentTasks.findAll{ it.usesCucumber() }
-    }
-
     private computeHashSimilarity(){
         def hashesSimilarity = []
         def taskPairs = computeTaskPairs(ptTasks)
@@ -269,49 +253,25 @@ class MergeTaskExtractor {
         result
     }
 
-    private extractTasksGems(){
-        def taskGroups = ptTasks.groupBy { it.newestCommit }
-        log.info "SHAs: ${taskGroups.size()}"
-        taskGroups.eachWithIndex{ group, index ->
-            def sha = group.key as String
-            def gems = extractGemsInfo(sha)
-            log.info "(${index+1}) Extracted gems for commit '${sha}'"
-            group.getValue().each{ task -> task.gems = gems }
-        }
-    }
-
-    private extractGemsInfo(String sha){
-        repository.clean()
-        repository.reset(sha)
-        repository.checkout(sha)
-        def gems = Util.checkRailsVersionAndGems(repository.getLocalPath())
-        repository.reset()
-        repository.checkout()
-        gems
-    }
-
     def extractTasks(){
         tasks = []
         mergeScenarios?.each{ tasks += configureMergeTask(it) }
-        filterUniqueTasks()
-        filterProductionAndTestTasks()
-        filterIndependentTasks()
-        filterCucumberTasks()
-        filterCucumberIndependentTasks()
-
         log.info "Found merge tasks: ${tasks.size()}"
-        log.info "Found unique tasks (from merge tasks): ${uniqueTasks.size()}"
-        log.info "Found P&T tasks (from unique tasks): ${ptTasks.size()}"
-        log.info "Found independent tasks (from P&T tasks): ${independentTasks.size()}"
-        log.info "Found cucumber tasks (from P&T tasks): ${cucumberTasks.size()}"
-        log.info "Found cucumber independent tasks: ${cucumberIndependentTasks.size()}"
-
         Util.exportTasksWithConflictInfo(tasks, mergeTasksFile)
+
+        filterUniqueTasks()
+        log.info "Found unique tasks (from merge tasks): ${uniqueTasks.size()}"
         Util.exportTasksWithConflictInfo(uniqueTasks, uniqueTasksFile)
-        Util.exportTasksWithConflictInfo(ptTasks, ptTasksFile)
-        Util.exportTasksWithConflictInfo(independentTasks, independentTasksFile)
-        Util.exportTasksWithConflictInfo(cucumberTasks, cucumberTasksFile)
-        Util.exportTasksWithConflictInfo(cucumberIndependentTasks, cucumberIndependentTasksFile)
+
+        if(DataProperties.SEARCH_PT_TASKS){
+            filterProductionAndTestTasks()
+            log.info "Found P&T tasks (from unique tasks): ${ptTasks.size()}"
+            Util.exportTasksWithConflictInfo(ptTasks, ptTasksFile)
+
+            filterIndependentTasks()
+            log.info "Found independent tasks (from P&T tasks): ${independentTasks.size()}"
+            Util.exportTasksWithConflictInfo(independentTasks, independentTasksFile)
+        }
     }
 
 }

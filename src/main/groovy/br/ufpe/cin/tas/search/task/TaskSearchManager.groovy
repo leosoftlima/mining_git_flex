@@ -119,7 +119,7 @@ class TaskSearchManager {
     }
 
     def filterGithubProjects(){
-        repoFilterManager.searchRepositoriesByFileTypeAndGems()
+        repoFilterManager.searchRepositoriesByFileType()
         log.info "Filtered repositories are saved in ${ConstantData.CANDIDATE_REPOSITORIES_FILE}"
     }
 

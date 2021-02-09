@@ -20,12 +20,12 @@ class GithubApiSearchManager implements RepositorySearchManager {
     GithubApiSearchManager(){
         pagesLimit = 10
         client = new GitHubClient()
-        client.setCredentials(DataProperties.GITHUB_LOGIN, DataProperties.GITHUB_PASSWORD)
+        client.setOAuth2Token("f412425d01fb5ae901dd6f597bc03ff9c43215dd")
         repositoryService = new RepositoryService(client)
         if(DataProperties.FILTER_BY_LAST_UPDATE){
-            query = [language:'ruby', created:DataProperties.FILTER_YEAR, sort:'updated']
+            query = [language:DataProperties.LANGUAGE, created:DataProperties.FILTER_YEAR, sort:'updated']
         } else {
-            query = [language:'ruby', created:DataProperties.FILTER_YEAR, stars:DataProperties.FILTER_STARS, sort:'stars']
+            query = [language:DataProperties.LANGUAGE, created:DataProperties.FILTER_YEAR, stars:DataProperties.FILTER_STARS, sort:'stars']
         }
     }
 

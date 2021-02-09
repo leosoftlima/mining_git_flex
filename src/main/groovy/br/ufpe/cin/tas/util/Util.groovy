@@ -70,7 +70,7 @@ class Util {
     static boolean isTestFile(path) {
         if(!path || path.empty) return false
         def p = configurePath(path)
-        if (p.startsWith(ConstantData.GHERKIN_FILES_RELATIVE_PATH) && p.endsWith(ConstantData.VALID_TEST_EXTENSION)) true
+        if (p.startsWith(DataProperties.GHERKIN_FOLDER) && p.endsWith(ConstantData.VALID_TEST_EXTENSION)) true
         else false
     }
 
@@ -111,19 +111,8 @@ class Util {
         exportTasks(tasksPT, tasksCsv)
         if(!tasksPT || tasksPT.empty) return null
 
-        /* COVERAGE CODE IT IS NOT NECESSARY ANYMORE
-        def coverageTasks = tasksPT.findAll{ it.hasCoverageAndTests() }
-        def coverageTasksFile = tasksCsv - ".csv" + ConstantData.COVERAGE_TASKS_FILE_SUFIX
-        exportTasks(coverageTasks, coverageTasksFile)
-        log.info "Found coverage tasks (from P&T): ${coverageTasks.size()}" */
-
-        def cucumberTasks = tasksPT.findAll{ it.usesCucumber() }
-        def cucumberTasksFile = tasksCsv - ".csv" + ConstantData.CUCUMBER_TASKS_FILE_SUFIX
-        exportTasks(cucumberTasks, cucumberTasksFile)
-        log.info "Found cucumber tasks (from P&T): ${cucumberTasks.size()}"
-
-        String[] info = [url, tasks.size(), tasksPT.size(), cucumberTasks.size()]
-        [allTasks:cucumberTasks, repository:info]
+        String[] info = [url, tasks.size(), tasksPT.size()]
+        [allTasks:tasksPT, repository:info]
     }
 
     static checkRailsVersionAndGems(String path) {
@@ -162,7 +151,7 @@ class Util {
     private static boolean isSecondaryTestFile(path){
         if(!path || path.empty) return false
         def p = configurePath(path)
-        if (p.startsWith(ConstantData.UNIT_TEST_FILES_RELATIVE_PATH) || p.startsWith(ConstantData.STEPS_FILES_RELATIVE_PATH)
+        if (p.startsWith(DataProperties.UNIT_FOLDER) || p.startsWith(DataProperties.STEPS_FOLDER)
                 || p.startsWith("test${File.separator}")) true
         else false
     }
@@ -170,11 +159,9 @@ class Util {
     private static boolean isValidFile(path) {
         if(!path || path.empty) return false
         def p = configurePath(path)
-        def validFolder = ConstantData.VALID_PROD_FOLDERS.any { p.startsWith(it) }
-        def validExtension = ConstantData.VALID_PROD_EXTENSIONS.any { p.endsWith(it) }
-        def validViewExtension = (p?.endsWith(".erb") || p?.endsWith(".haml") || p?.endsWith(".slim"))
+        def validFolder = DataProperties.PRODUCTION_FOLDERS.any { p.startsWith(it) }
+        def validExtension = DataProperties.VALID_PROD_FILES_EXTENSION.any { p.endsWith(it) }
         if (validFolder && validExtension) true
-        else if(validFolder && p?.count(".")==1 && validViewExtension) true
         else false
     }
 
