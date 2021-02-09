@@ -20,7 +20,7 @@ class GithubApiSearchManager implements RepositorySearchManager {
     GithubApiSearchManager(){
         pagesLimit = 10
         client = new GitHubClient()
-        client.setOAuth2Token("f412425d01fb5ae901dd6f597bc03ff9c43215dd")
+        client.setOAuth2Token(DataProperties.GITHUB_TOKEN)
         repositoryService = new RepositoryService(client)
         if(DataProperties.FILTER_BY_LAST_UPDATE){
             query = [language:DataProperties.LANGUAGE, created:DataProperties.FILTER_YEAR, sort:'updated']
