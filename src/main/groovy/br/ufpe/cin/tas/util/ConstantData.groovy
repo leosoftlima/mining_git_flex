@@ -70,7 +70,6 @@ abstract class ConstantData {
     public static final String PROP_STEPS_FOLDER = "spgroup.search.steps.folder"
     public static final String PROP_PRODUCTION_FOLDERS = "spgroup.search.production.folders"
     public static final String PROP_PROD_FILES_EXTENSIONS = "spgroup.search.production.extensions"
-    public static final List<String> VALID_PROD_EXTENSIONS = [".rb", ".html", ".html.haml", ".html.erb", ".html.slim"]
     public static final String VALID_TEST_EXTENSION = ".feature"
 
 }
