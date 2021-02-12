@@ -38,13 +38,12 @@ class DataProperties {
 
             createFolders()
 
+            SIMPLE_GITHUB_SEARCH = !FILTER_BY_DEFAULT_MESSAGE && !FILTER_BY_PIVOTAL_TRACKER
             BIGQUERY_PROJECT_ID = configBigQuery()
-
             def searchConfig = configureSearchMechanism()
             FILTER_BY_DEFAULT_MESSAGE = searchConfig.default
             FILTER_BY_PIVOTAL_TRACKER = searchConfig.pivotal
 
-            SIMPLE_GITHUB_SEARCH = !FILTER_BY_DEFAULT_MESSAGE && !FILTER_BY_PIVOTAL_TRACKER
             LANGUAGE = configureLanguage()
 
             GITHUB_TOKEN = configGithubLogin()
