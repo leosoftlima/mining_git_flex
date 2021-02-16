@@ -24,6 +24,7 @@ class DataProperties {
     public static final boolean FILTER_PROJECTS
     public static final boolean SEARCH_TASKS
     public static final boolean SEARCH_PT_TASKS
+    public static final boolean UNDEFINED_DIRECTORY_STRUCTURE
     public static final List<String> PRODUCTION_FOLDERS
     public static final List<String> VALID_PROD_FILES_EXTENSION
     public static final String UNIT_FOLDER
@@ -68,15 +69,21 @@ class DataProperties {
                     ConstantData.DEFAULT_SEARCH_PT_TASKS)
             PRODUCTION_FOLDERS = configureProductionFolders()
             VALID_PROD_FILES_EXTENSION = configureProductionFiles()
-            UNIT_FOLDER = configureMandatoryProperties(properties.(ConstantData.PROP_UNIT_FOLDER),
-                    ConstantData.DEFAULT_UNIT_FOLDER)
-            if(!UNIT_FOLDER.endsWith(File.separator)) UNIT_FOLDER += File.separator
-            GHERKIN_FOLDER = configureMandatoryProperties(properties.(ConstantData.PROP_GHERKIN_FOLDER),
-                    ConstantData.DEFAULT_GHERKIN_FOLDER)
-            if(!GHERKIN_FOLDER.endsWith(File.separator)) GHERKIN_FOLDER += File.separator
-            STEPS_FOLDER = configureMandatoryProperties(properties.(ConstantData.PROP_STEPS_FOLDER),
-                    ConstantData.DEFAULT_STEPS_FOLDER)
-            if(!STEPS_FOLDER.endsWith(File.separator)) STEPS_FOLDER += File.separator
+            UNIT_FOLDER = configureOptionalProperty(properties.(ConstantData.PROP_UNIT_FOLDER))
+            if(!UNIT_FOLDER.empty && !UNIT_FOLDER.endsWith(File.separator)) UNIT_FOLDER += File.separator
+            GHERKIN_FOLDER = configureOptionalProperty(properties.(ConstantData.PROP_GHERKIN_FOLDER))
+            if(!GHERKIN_FOLDER.empty && !GHERKIN_FOLDER.endsWith(File.separator)) GHERKIN_FOLDER += File.separator
+            STEPS_FOLDER = configureOptionalProperty(properties.(ConstantData.PROP_STEPS_FOLDER))
+            if(!STEPS_FOLDER.empty && !STEPS_FOLDER.endsWith(File.separator)) STEPS_FOLDER += File.separator
+
+            //Undefined directory structure
+            if(!UNIT_FOLDER || !GHERKIN_FOLDER || !STEPS_FOLDER || UNIT_FOLDER.empty ||
+                    GHERKIN_FOLDER.empty || STEPS_FOLDER.empty){
+                UNIT_FOLDER = ""
+                GHERKIN_FOLDER = ""
+                STEPS_FOLDER = ""
+                UNDEFINED_DIRECTORY_STRUCTURE = true
+            }
 
         } catch (Exception ex) {
             log.info ex.message
@@ -84,36 +91,34 @@ class DataProperties {
         }
 
         log.info "SEARCH_PROJECTS: ${SEARCH_PROJECTS}"
+        log.info "FILTER_STARS: ${FILTER_STARS}"
+        log.info "FILTER_YEAR: ${FILTER_YEAR}\n"
         log.info "FILTER_PROJECTS: ${FILTER_PROJECTS}"
-        log.info "SEARCH_TASKS: ${SEARCH_TASKS}"
-        log.info "SEARCH_PT_TASKS: ${SEARCH_PT_TASKS}"
         log.info "FILTER_BY_FILE: ${FILTER_BY_FILE}; FILE_TYPE: ${FILE_TYPE}"
         log.info "FILTER_BY_DEFAULT_MESSAGE: ${FILTER_BY_DEFAULT_MESSAGE}"
-        log.info "FILTER_BY_PIVOTAL_TRACKER: ${FILTER_BY_PIVOTAL_TRACKER}"
-        log.info "FILTER_STARS: ${FILTER_STARS}"
-        log.info "FILTER_YEAR: ${FILTER_YEAR}"
-
+        log.info "FILTER_BY_PIVOTAL_TRACKER: ${FILTER_BY_PIVOTAL_TRACKER}\n"
+        log.info "SEARCH_TASKS: ${SEARCH_TASKS}"
+        log.info "SEARCH_PT_TASKS: ${SEARCH_PT_TASKS}"
+        log.info "UNDEFINED DIRECTORY STRUCTURE: ${UNDEFINED_DIRECTORY_STRUCTURE}"
     }
 
     private static configureProductionFolders(){
         def folders = properties.(ConstantData.PROP_PRODUCTION_FOLDERS)
         def foldersSet
-        if(!folders || folders.empty) {
-            foldersSet = ConstantData.DEFAULT_PRODUCTION_FOLDERS
-        }
-        else {
+        if(folders && !folders.empty) {
             foldersSet = folders?.split(",")*.replaceAll(" ", "")
+        } else {
+            foldersSet = []
         }
         foldersSet
     }
     private static configureProductionFiles(){
         def folders = properties.(ConstantData.PROP_PROD_FILES_EXTENSIONS)
         def foldersSet
-        if(!folders || folders.empty) {
-            foldersSet = ConstantData.DEFAULT_PRODUCTION_FILES_EXTENSIONS
-        }
-        else {
+        if(folders && !folders.empty) {
             foldersSet = folders?.split(",")*.replaceAll(" ", "")
+        } else {
+            foldersSet = []
         }
         foldersSet
     }
@@ -132,6 +137,12 @@ class DataProperties {
     private static configureMandatoryProperties(value, defaultValue) {
         if (!value || value.empty) value = defaultValue
         value.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
+    }
+
+    private static configureOptionalProperty(value) {
+        if (value && !value.empty)
+            value.replaceAll(RegexUtil.FILE_SEPARATOR_REGEX, Matcher.quoteReplacement(File.separator))
+        else value = ""
     }
 
     private static configureLanguage(){
