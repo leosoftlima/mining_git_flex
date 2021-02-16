@@ -31,12 +31,6 @@ abstract class ConstantData {
     public static final boolean DEFAULT_SEARCH_TASKS = true
     public static final boolean DEFAULT_SEARCH_PT_TASKS = false
     public static final boolean DEFAULT_SEARCH_MERGES = true
-    public static final String DEFAULT_UNIT_FOLDER = "spec${File.separator}"
-    public static final String DEFAULT_GHERKIN_FOLDER = "features${File.separator}"
-    public static final String DEFAULT_STEPS_FOLDER = "features${File.separator}step_definitions${File.separator}"
-    public static final List<String> DEFAULT_PRODUCTION_FOLDERS = ["app", "lib"]
-    public static final List<String> DEFAULT_PRODUCTION_FILES_EXTENSIONS = [".rb", ".html", ".html.haml",
-                                                                            ".html.erb", ".html.slim", ".erb", ".haml", ".slim"]
 
     /* Files and folders */
     public static final String ZIP_FILE_URL = "/archive/"

@@ -70,8 +70,14 @@ class Util {
     static boolean isTestFile(path) {
         if(!path || path.empty) return false
         def p = configurePath(path)
-        if (p.startsWith(DataProperties.GHERKIN_FOLDER) && p.endsWith(ConstantData.VALID_TEST_EXTENSION)) true
-        else false
+        if(DataProperties.UNDEFINED_DIRECTORY_STRUCTURE){
+            if(p.startsWith("test${File.separator}") || p.contains("${File.separator}test${File.separator}"))
+                true
+            else false
+        } else {
+            if (p.startsWith(DataProperties.GHERKIN_FOLDER) && p.endsWith(ConstantData.VALID_TEST_EXTENSION)) true
+            else false
+        }
     }
 
     static boolean isProductionFile(path) {
@@ -115,22 +121,6 @@ class Util {
         [allTasks:tasksPT, repository:info]
     }
 
-    static checkRailsVersionAndGems(String path) {
-        List<String> gems = []
-        File file = new File(path + File.separator + ConstantData.GEM_FILE)
-        if (file.exists()) {
-            def lines = file.readLines()
-            DataProperties.GEMS.each { gem ->
-                def regex = /\s*gem\s+"?'?${gem}"?'?.*/
-                def foundGem = lines.find { !(it.trim().startsWith("#")) && it ==~ regex }
-                if (foundGem) {
-                    gems += gem
-                }
-            }
-        }
-        gems
-    }
-
     private static extractRootFolder(path){
         def root = ""
         if(!path || path.empty) return root
@@ -151,18 +141,29 @@ class Util {
     private static boolean isSecondaryTestFile(path){
         if(!path || path.empty) return false
         def p = configurePath(path)
-        if (p.startsWith(DataProperties.UNIT_FOLDER) || p.startsWith(DataProperties.STEPS_FOLDER)
-                || p.startsWith("test${File.separator}")) true
-        else false
+        if(DataProperties.UNDEFINED_DIRECTORY_STRUCTURE){
+            if(p.startsWith("spec${File.separator}") || p.contains("${File.separator}spec${File.separator}"))
+                true
+            else false
+        } else {
+            if (p.startsWith(DataProperties.UNIT_FOLDER) || p.startsWith(DataProperties.STEPS_FOLDER)
+                    || p.startsWith("test${File.separator}")) true
+            else false
+        }
     }
 
     private static boolean isValidFile(path) {
         if(!path || path.empty) return false
         def p = configurePath(path)
-        def validFolder = DataProperties.PRODUCTION_FOLDERS.any { p.startsWith(it) }
-        def validExtension = DataProperties.VALID_PROD_FILES_EXTENSION.any { p.endsWith(it) }
-        if (validFolder && validExtension) true
-        else false
+        if(DataProperties.UNDEFINED_DIRECTORY_STRUCTURE){
+            def validExtension = DataProperties.VALID_PROD_FILES_EXTENSION.any { p.endsWith(it) }
+            validExtension
+        } else {
+            def validFolder = DataProperties.PRODUCTION_FOLDERS.any { p.startsWith(it) }
+            def validExtension = DataProperties.VALID_PROD_FILES_EXTENSION.any { p.endsWith(it) }
+            if (validFolder && validExtension) true
+            else false
+        }
     }
 
 }
