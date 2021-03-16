@@ -71,7 +71,8 @@ class Util {
         if(!path || path.empty) return false
         def p = configurePath(path)
         if(DataProperties.UNDEFINED_DIRECTORY_STRUCTURE){
-            if(p.startsWith("test${File.separator}") || p.contains("${File.separator}test${File.separator}"))
+            if( (p.startsWith("test${File.separator}") || p.contains("${File.separator}test${File.separator}")) &&
+                p.endsWith(ConstantData.VALID_TEST_EXTENSION))
                 true
             else false
         } else {
